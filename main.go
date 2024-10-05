@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
+import "github.com/bignyap/go-gate-keeper/initialize"
 
-func main() {
-	fmt.Println("Hello, World!!")
-}
+func main() { initialize.InitializeApp() }

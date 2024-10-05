@@ -57,3 +57,6 @@ testdata/
 # Ignore the Go workspace file if using Go workspaces
 go.work
 go.work.sum
+
+
+.env
