@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/bignyap/go-gate-keeper/database"
+	"github.com/bignyap/go-gate-keeper/database/dbconn"
+	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
+	"github.com/bignyap/go-gate-keeper/handler"
 	"github.com/bignyap/go-gate-keeper/router"
 	"github.com/joho/godotenv"
 )
@@ -21,7 +23,7 @@ func GetEnvVals() error {
 }
 
 func LoadDBConn() (*sql.DB, error) {
-	dbConfig := database.DBConfig{
+	dbConfig := dbconn.DBConfig{
 		Driver:   os.Getenv("Driver"),
 		Host:     os.Getenv("Host"),
 		Port:     os.Getenv("Port"),
@@ -30,9 +32,9 @@ func LoadDBConn() (*sql.DB, error) {
 		DBName:   os.Getenv("DBName"),
 	}
 
-	poolProperties := database.DefaultDBPoolProperties()
+	poolProperties := dbconn.DefaultDBPoolProperties()
 
-	conn, err := database.DBConn(dbConfig, poolProperties)
+	conn, err := dbconn.DBConn(dbConfig, poolProperties)
 	if err != nil {
 		return nil, fmt.Errorf("error while connecting to database %v", err)
 	}
@@ -40,11 +42,11 @@ func LoadDBConn() (*sql.DB, error) {
 	return conn, nil
 }
 
-func InitializeWebServer() error {
+func InitializeWebServer(apiConfig *handler.ApiConfig) error {
 
 	mux := http.NewServeMux()
 
-	router.RegisterHandlers(mux)
+	router.RegisterHandlers(mux, apiConfig)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -71,9 +73,13 @@ func InitializeApp() {
 	}
 	defer conn.Close()
 
+	apiCfg := &handler.ApiConfig{
+		DB: sqlcgen.New(conn),
+	}
+
 	fmt.Printf("Here is my %v", conn)
 
-	if err := InitializeWebServer(); err != nil {
+	if err := InitializeWebServer(apiCfg); err != nil {
 		log.Fatalf("Failed to start web server: %v", err)
 	}
 }

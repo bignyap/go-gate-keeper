@@ -1,0 +1,8 @@
+version: "2"
+sql:
+  - schema: "database/sqlc/schema"
+    queries: "database/sqlc/queries"
+    engine: "mysql"
+    gen:
+      go:
+        out: "database/sqlcgen"

@@ -1,20 +1,21 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/bignyap/go-gate-keeper/handler"
 )
 
-func RootHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome !!")
+func OrgTypeHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
+
+	mux.HandleFunc("POST /orgType", apiConfig.CreateOrgTypeHandler)
+	mux.HandleFunc("GET /orgType", apiConfig.ListOrgTypeHandler)
+	mux.HandleFunc("DELETE /orgType/{Id}", apiConfig.DeleteOrgTypeHandler)
+
 }
 
-func AdminHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Admin !!")
-}
+func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
-func RegisterHandlers(mux *http.ServeMux) {
-
-	mux.HandleFunc("/", RootHandler)
-	mux.HandleFunc("GET /api/admin", AdminHandler)
+	mux.HandleFunc("/", handler.RootHandler)
+	OrgTypeHandler(mux, apiConfig)
 }

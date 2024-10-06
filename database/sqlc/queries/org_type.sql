@@ -1,0 +1,11 @@
+-- name: ListOrgType :many
+SELECT * FROM organization_type
+ORDER BY organization_type_name;
+
+-- name: CreateOrgType :execresult 
+INSERT INTO organization_type (organization_type_name) 
+VALUES (?);
+
+-- name: DeleteOrgTypeById :exec
+DELETE FROM organization_type
+WHERE organization_type_id = ?;

@@ -1,4 +1,4 @@
-package database
+package dbconn
 
 import (
 	"database/sql"
