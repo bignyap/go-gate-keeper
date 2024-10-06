@@ -19,11 +19,11 @@ type RegisterEndpointOutputs struct {
 	RegisterEndpointParams
 }
 
-func (apiCfg *ApiConfig) RegisterEndpoint(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *ApiConfig) RegisterEndpointHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
-		respondWithError(w, 400,
+		respondWithError(w, StatusBadRequest,
 			fmt.Sprintf("Error parsing form data: %s", err),
 		)
 		return
@@ -38,19 +38,19 @@ func (apiCfg *ApiConfig) RegisterEndpoint(w http.ResponseWriter, r *http.Request
 	}
 
 	if input.EndpointName == "" {
-		respondWithError(w, 400, "Name is required")
+		respondWithError(w, StatusBadRequest, "Name is required")
 		return
 	}
 
 	apiEndpoint, err := apiCfg.DB.RegisterApiEndpoint(r.Context(), input)
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't register the api endpoint: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't register the api endpoint: %s", err))
 		return
 	}
 
 	insertedID, err := apiEndpoint.LastInsertId()
 	if err != nil {
-		respondWithError(w, 500, fmt.Sprintf("couldn't retrieve last insert ID: %s", err))
+		respondWithError(w, StatusInternalServerError, fmt.Sprintf("couldn't retrieve last insert ID: %s", err))
 		return
 	}
 
@@ -67,14 +67,14 @@ func (apiCfg *ApiConfig) RegisterEndpoint(w http.ResponseWriter, r *http.Request
 		},
 	}
 
-	respondWithJSON(w, 201, output)
+	respondWithJSON(w, StatusCreated, output)
 }
 
-func (apiCfg *ApiConfig) ListEndpoints(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *ApiConfig) ListEndpointsHandler(w http.ResponseWriter, r *http.Request) {
 
 	apiEndpoints, err := apiCfg.DB.ListApiEndpoint(r.Context())
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't retrieve the organization types: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the organization types: %s", err))
 		return
 	}
 
@@ -96,30 +96,30 @@ func (apiCfg *ApiConfig) ListEndpoints(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	respondWithJSON(w, 201, output)
+	respondWithJSON(w, StatusOK, output)
 }
 
-func (apiCfg *ApiConfig) DeleteEndpoints(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *ApiConfig) DeleteEndpointsByIdHandler(w http.ResponseWriter, r *http.Request) {
 
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
-		respondWithError(w, 400, "ID is required")
+		respondWithError(w, StatusBadRequest, "ID is required")
 		return
 	}
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
 	if err != nil {
-		respondWithError(w, 400, "Invalid ID format")
+		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
 	}
 
 	err = apiCfg.DB.DeleteApiEndpointById(r.Context(), int32(id64))
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't delete the endpoint: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the endpoint: %s", err))
 		return
 	}
 
-	respondWithJSON(w, 200, map[string]string{
+	respondWithJSON(w, StatusNoContent, map[string]string{
 		"message": fmt.Sprintf("Api endpoint with ID %d deleted successfully", int32(id64)),
 	})
 }

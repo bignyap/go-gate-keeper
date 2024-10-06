@@ -22,11 +22,11 @@ type CreateSubTierOuput struct {
 	CreateSubTierParams
 }
 
-func (apiCfg *ApiConfig) CreateSubTier(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
-		respondWithError(w, 400,
+		respondWithError(w, StatusBadRequest,
 			fmt.Sprintf("Error parsing form data: %s", err),
 		)
 		return
@@ -43,19 +43,19 @@ func (apiCfg *ApiConfig) CreateSubTier(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if input.TierName == "" {
-		respondWithError(w, 400, "Name is required")
+		respondWithError(w, StatusBadRequest, "Name is required")
 		return
 	}
 
 	subTier, err := apiCfg.DB.CreateSubscriptionTier(r.Context(), input)
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't create the subscription tier: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the subscription tier: %s", err))
 		return
 	}
 
 	insertedID, err := subTier.LastInsertId()
 	if err != nil {
-		respondWithError(w, 500, fmt.Sprintf("couldn't retrieve last insert ID: %s", err))
+		respondWithError(w, StatusInternalServerError, fmt.Sprintf("couldn't retrieve last insert ID: %s", err))
 		return
 	}
 
@@ -74,14 +74,14 @@ func (apiCfg *ApiConfig) CreateSubTier(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	respondWithJSON(w, 201, output)
+	respondWithJSON(w, StatusCreated, output)
 }
 
-func (apiCfg *ApiConfig) ListSubTiers(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *http.Request) {
 
 	subTiers, err := apiCfg.DB.ListSubscriptionTier(r.Context())
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't retrieve the subscripion tiers: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the subscripion tiers: %s", err))
 		return
 	}
 
@@ -105,30 +105,30 @@ func (apiCfg *ApiConfig) ListSubTiers(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	respondWithJSON(w, 201, output)
+	respondWithJSON(w, StatusOK, output)
 }
 
-func (apiCfg *ApiConfig) DeleteSubTier(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *ApiConfig) DeleteSubscriptionTierHandler(w http.ResponseWriter, r *http.Request) {
 
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
-		respondWithError(w, 400, "ID is required")
+		respondWithError(w, StatusBadRequest, "ID is required")
 		return
 	}
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
 	if err != nil {
-		respondWithError(w, 400, "Invalid ID format")
+		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
 	}
 
 	err = apiCfg.DB.DeleteSubscriptionTierById(r.Context(), int32(id64))
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't delete the subscription tier: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the subscription tier: %s", err))
 		return
 	}
 
-	respondWithJSON(w, 200, map[string]string{
+	respondWithJSON(w, StatusNoContent, map[string]string{
 		"message": fmt.Sprintf("Subscription tier with ID %d deleted successfully", int32(id64)),
 	})
 }

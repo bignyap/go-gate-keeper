@@ -19,7 +19,7 @@ func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Req
 
 	err := r.ParseForm()
 	if err != nil {
-		respondWithError(w, 400,
+		respondWithError(w, StatusBadRequest,
 			fmt.Sprintf("Error parsing form data: %s", err),
 		)
 		return
@@ -30,7 +30,7 @@ func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	if input.Name == "" {
-		respondWithError(w, 400, "Name is required")
+		respondWithError(w, StatusBadRequest, "Name is required")
 		return
 	}
 
@@ -39,13 +39,13 @@ func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Req
 		input.Name,
 	)
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't create the organization type: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the organization type: %s", err))
 		return
 	}
 
 	insertedID, err := orgType.LastInsertId()
 	if err != nil {
-		respondWithError(w, 500, fmt.Sprintf("couldn't retrieve last insert ID: %s", err))
+		respondWithError(w, StatusInternalServerError, fmt.Sprintf("couldn't retrieve last insert ID: %s", err))
 		return
 	}
 
@@ -54,14 +54,14 @@ func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Req
 		CreateOrgTypeInput: input,
 	}
 
-	respondWithJSON(w, 201, output)
+	respondWithJSON(w, StatusCreated, output)
 }
 
 func (apiCfg *ApiConfig) ListOrgTypeHandler(w http.ResponseWriter, r *http.Request) {
 
 	orgTypes, err := apiCfg.DB.ListOrgType(r.Context())
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't retrieve the organization types: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the organization types: %s", err))
 		return
 	}
 
@@ -76,30 +76,30 @@ func (apiCfg *ApiConfig) ListOrgTypeHandler(w http.ResponseWriter, r *http.Reque
 		})
 	}
 
-	respondWithJSON(w, 201, output)
+	respondWithJSON(w, StatusOK, output)
 }
 
 func (apiCfg *ApiConfig) DeleteOrgTypeHandler(w http.ResponseWriter, r *http.Request) {
 
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
-		respondWithError(w, 400, "ID is required")
+		respondWithError(w, StatusBadRequest, "ID is required")
 		return
 	}
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
 	if err != nil {
-		respondWithError(w, 400, "Invalid ID format")
+		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
 	}
 
 	err = apiCfg.DB.DeleteOrgTypeById(r.Context(), int32(id64))
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't delete the organization type: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the organization type: %s", err))
 		return
 	}
 
-	respondWithJSON(w, 200, map[string]string{
+	respondWithJSON(w, StatusNoContent, map[string]string{
 		"message": fmt.Sprintf("Organization type with ID %d deleted successfully", int32(id64)),
 	})
 }
