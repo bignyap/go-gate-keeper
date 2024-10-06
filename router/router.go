@@ -39,6 +39,15 @@ func OrganizationHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 }
 
+func TierPricingHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
+
+	mux.HandleFunc("POST /tierPricing", apiConfig.CreateTierPricingHandler)
+	mux.HandleFunc("DELETE /tierPricing/{tier_id}", apiConfig.DeleteTierPricingHandler)
+	mux.HandleFunc("DELETE /tierPricing/{id}", apiConfig.DeleteTierPricingHandler)
+	mux.HandleFunc("GET /tierPricing/{tier_id}", apiConfig.GetTierPricingByTierIdHandler)
+
+}
+
 func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("/", handler.RootHandler)

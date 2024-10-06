@@ -29,8 +29,8 @@ type ApiUsage struct {
 	CallTimestamp  time.Time
 	UnixTimestamp  int32
 	NumberOfCalls  int32
-	CostPerCall    string
-	TotalCost      string
+	CostPerCall    float64
+	TotalCost      float64
 	SubscriptionID int32
 	BillingID      int32
 	ApiEndpointID  int32
@@ -40,7 +40,7 @@ type BillingHistory struct {
 	BillingID        int32
 	BillingStartDate time.Time
 	BillingEndDate   time.Time
-	TotalAmountDue   string
+	TotalAmountDue   float64
 	TotalCalls       int32
 	PaymentStatus    string
 	PaymentDate      sql.NullTime
@@ -90,7 +90,7 @@ type Subscription struct {
 }
 
 type SubscriptionEndpointPricing struct {
-	CustomCostPerCall sql.NullString
+	CustomCostPerCall sql.NullFloat64
 	CustomRateLimit   sql.NullInt32
 	SubscriptionID    int32
 	TierBasePricingID int32
@@ -106,7 +106,7 @@ type SubscriptionTier struct {
 
 type TierBasePricing struct {
 	TierBasePricingID  int32
-	BaseCostPerCall    string
+	BaseCostPerCall    float64
 	BaseRateLimit      sql.NullInt32
 	ApiEndpointID      int32
 	SubscriptionTierID int32

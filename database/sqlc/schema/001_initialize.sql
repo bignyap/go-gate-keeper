@@ -58,14 +58,14 @@ CREATE TABLE api_endpoint (
 
 CREATE TABLE tier_base_pricing (
   tier_base_pricing_id int PRIMARY KEY NOT NULL,
-  base_cost_per_call decimal NOT NULL,
+  base_cost_per_call float NOT NULL,
   base_rate_limit int,
   api_endpoint_id int NOT NULL,
   subscription_tier_id int NOT NULL
 );
 
 CREATE TABLE subscription_endpoint_pricing (
-  custom_cost_per_call decimal,
+  custom_cost_per_call float,
   custom_rate_limit int,
   subscription_id int NOT NULL,
   tier_base_pricing_id int NOT NULL
@@ -81,7 +81,7 @@ CREATE TABLE billing_history (
   billing_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   billing_start_date date NOT NULL,
   billing_end_date date NOT NULL,
-  total_amount_due decimal NOT NULL,
+  total_amount_due float NOT NULL,
   total_calls int NOT NULL,
   payment_status varchar(50) NOT NULL DEFAULT 'Pending',
   payment_date datetime,
@@ -94,8 +94,8 @@ CREATE TABLE api_usage (
   call_timestamp datetime NOT NULL,
   unix_timestamp int NOT NULL,
   number_of_calls int NOT NULL,
-  cost_per_call decimal NOT NULL,
-  total_cost decimal NOT NULL,
+  cost_per_call float NOT NULL,
+  total_cost float NOT NULL,
   subscription_id int NOT NULL,
   billing_id int NOT NULL,
   api_endpoint_id int NOT NULL
