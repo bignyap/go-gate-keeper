@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 func StrToInt(str string) (int, error) {
@@ -32,6 +33,32 @@ func StrToFloat(str string) (float64, error) {
 	return floatValue, nil
 }
 
+func StrToBool(str string) (bool, error) {
+	if str == "" {
+		return false, fmt.Errorf("empty string cannot be converted to boolean")
+	}
+
+	boolVal, err := strconv.ParseBool(str)
+	if err != nil {
+		return false, fmt.Errorf("not a valid boolean: %v", err)
+	}
+
+	return boolVal, nil
+}
+
+func StrToDate(str string) (time.Time, error) {
+	if str == "" {
+		return time.Time{}, fmt.Errorf("empty string cannot be converted to date")
+	}
+
+	dateValue, err := time.Parse("2006-01-02", str)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("not a valid date: %v", err)
+	}
+
+	return dateValue, nil
+}
+
 func StrToNullBool(str string) (sql.NullBool, error) {
 	if str == "" {
 		return sql.NullBool{Valid: false}, nil
@@ -41,6 +68,19 @@ func StrToNullBool(str string) (sql.NullBool, error) {
 		return sql.NullBool{}, fmt.Errorf("not a valid boolean: %v", err)
 	}
 	return sql.NullBool{Bool: activeBool, Valid: true}, nil
+}
+
+func StrToNullTime(str string) (sql.NullTime, error) {
+	if str == "" {
+		return sql.NullTime{Valid: false}, nil
+	}
+
+	timeValue, err := time.Parse("2006-01-02", str)
+	if err != nil {
+		return sql.NullTime{}, fmt.Errorf("not a valid date: %v", err)
+	}
+
+	return sql.NullTime{Time: timeValue, Valid: true}, nil
 }
 
 func StrToNullInt(str string, bitSize int) (interface{}, error) {

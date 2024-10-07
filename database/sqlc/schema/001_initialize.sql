@@ -43,7 +43,6 @@ CREATE TABLE subscription (
   subscription_start_date date NOT NULL,
   subscription_api_limit int,
   subscription_expiry_date date,
-  subscription_api_rate text,
   subscription_description text,
   subscription_status boolean DEFAULT true,
   organization_id int NOT NULL,

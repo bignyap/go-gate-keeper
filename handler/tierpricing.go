@@ -123,31 +123,31 @@ func (apiCfg *ApiConfig) GetTierPricingByTierIdHandler(w http.ResponseWriter, r 
 
 func (apiCfg *ApiConfig) DeleteTierPricingHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("tier_id")
+	idStr := r.URL.Query().Get("organization_id")
 	var err error
 
 	if idStr != "" {
 		id32, err := utils.StrToInt(idStr)
 		if err != nil {
-			respondWithError(w, StatusBadRequest, "Invalid tier_id format")
+			respondWithError(w, StatusBadRequest, "Invalid organization_id format")
 			return
 		}
 
-		err = apiCfg.DB.DeleteTierPricingByTierId(r.Context(), int32(id32))
+		err = apiCfg.DB.DeleteSubscriptionByOrgId(r.Context(), int32(id32))
 		if err != nil {
-			respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the tier pricing by tier_id: %s", err))
+			respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the subscription by organization_id: %s", err))
 			return
 		}
 
 		respondWithJSON(w, StatusNoContent, map[string]string{
-			"message": fmt.Sprintf("tier pricing with tier_id %d deleted successfully", int32(id32)),
+			"message": fmt.Sprintf("subscription with organization_id %d deleted successfully", int32(id32)),
 		})
 		return
 	}
 
 	idStr = r.URL.Query().Get("id")
 	if idStr == "" {
-		respondWithError(w, StatusBadRequest, "Missing tier_id or id")
+		respondWithError(w, StatusBadRequest, "Missing organization_id or id")
 		return
 	}
 
@@ -157,13 +157,13 @@ func (apiCfg *ApiConfig) DeleteTierPricingHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	err = apiCfg.DB.DeleteTierPricingById(r.Context(), int32(id32))
+	err = apiCfg.DB.DeleteSubscriptionById(r.Context(), int32(id32))
 	if err != nil {
-		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the tier pricing by id: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the subscription by id: %s", err))
 		return
 	}
 
 	respondWithJSON(w, StatusNoContent, map[string]string{
-		"message": fmt.Sprintf("tier pricing with id %d deleted successfully", int32(id32)),
+		"message": fmt.Sprintf("subscription with id %d deleted successfully", int32(id32)),
 	})
 }

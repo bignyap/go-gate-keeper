@@ -82,7 +82,6 @@ type Subscription struct {
 	SubscriptionStartDate   time.Time
 	SubscriptionApiLimit    sql.NullInt32
 	SubscriptionExpiryDate  sql.NullTime
-	SubscriptionApiRate     sql.NullString
 	SubscriptionDescription sql.NullString
 	SubscriptionStatus      sql.NullBool
 	OrganizationID          int32
