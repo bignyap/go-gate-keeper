@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
@@ -131,6 +132,27 @@ func (apiCfg *ApiConfig) CreateSubscriptionHandler(w http.ResponseWriter, r *htt
 
 func (apiCfg *ApiConfig) DeleteSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		respondWithError(w, StatusBadRequest, "ID is required")
+		return
+	}
+
+	id64, err := strconv.ParseInt(idStr, 10, 32)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	err = apiCfg.DB.DeleteOrganizationById(r.Context(), int32(id64))
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the organization: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusNoContent, map[string]string{
+		"message": fmt.Sprintf("organization with ID %d deleted successfully", int32(id64)),
+	})
 }
 
 func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
