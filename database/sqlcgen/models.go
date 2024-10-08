@@ -71,9 +71,10 @@ type Organization struct {
 }
 
 type OrganizationPermission struct {
-	ResourceTypeID int32
-	PermissionCode string
-	OrganizationID int32
+	OrganizationPermissionID int32
+	ResourceTypeID           int32
+	PermissionCode           string
+	OrganizationID           int32
 }
 
 type OrganizationType struct {

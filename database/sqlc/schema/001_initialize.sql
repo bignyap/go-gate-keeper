@@ -79,6 +79,7 @@ CREATE TABLE custom_endpoint_pricing (
 );
 
 CREATE TABLE organization_permission (
+  organization_permission_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   resource_type_id int NOT NULL,
   permission_code varchar(50) NOT NULL,
   organization_id int NOT NULL

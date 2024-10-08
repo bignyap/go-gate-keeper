@@ -76,6 +76,14 @@ func ResourceTypeHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 }
 
+func OrgPermissionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
+
+	mux.HandleFunc("POST /orgPermission", apiConfig.CreateOrgPermissionHandler)
+	mux.HandleFunc("DELETE /orgPermission/{organization_id}", apiConfig.DeleteOrgPermissionHandler)
+	mux.HandleFunc("GET /orgPermission/{organization_id}", apiConfig.GetOrgPermissionHandler)
+
+}
+
 func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("/", handler.RootHandler)
@@ -87,4 +95,5 @@ func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 	SubscriptionHandler(mux, apiConfig)
 	CustomEndpointHandler(mux, apiConfig)
 	ResourceTypeHandler(mux, apiConfig)
+	OrgPermissionHandler(mux, apiConfig)
 }
