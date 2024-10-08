@@ -15,15 +15,6 @@ type ApiEndpoint struct {
 	EndpointDescription sql.NullString
 }
 
-type ApiKey struct {
-	ApiKeyID       int32
-	ApiKey         string
-	ApiKeyStatus   sql.NullBool
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	OrganizationID int32
-}
-
 type ApiUsage struct {
 	UsageID        int32
 	CallTimestamp  time.Time
