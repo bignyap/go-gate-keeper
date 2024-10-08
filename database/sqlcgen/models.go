@@ -71,7 +71,7 @@ type Organization struct {
 }
 
 type OrganizationPermission struct {
-	ResourceCode   string
+	ResourceTypeID int32
 	PermissionCode string
 	OrganizationID int32
 }
@@ -79,6 +79,13 @@ type OrganizationPermission struct {
 type OrganizationType struct {
 	OrganizationTypeID   int32
 	OrganizationTypeName string
+}
+
+type ResourceType struct {
+	ResourceTypeID          int32
+	ResourceTypeCode        string
+	ResourceTypeName        string
+	ResourceTypeDescription sql.NullString
 }
 
 type Subscription struct {

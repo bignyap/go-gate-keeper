@@ -1,3 +1,10 @@
+CREATE TABLE resource_type (
+  resource_type_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  resource_type_code varchar(10) UNIQUE NOT NULL,
+  resource_type_name varchar(50) NOT NULL,
+  resource_type_description text
+);
+
 CREATE TABLE organization_type (
   organization_type_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   organization_type_name varchar(50) UNIQUE NOT NULL
@@ -72,7 +79,7 @@ CREATE TABLE custom_endpoint_pricing (
 );
 
 CREATE TABLE organization_permission (
-  resource_code varchar(50) NOT NULL,
+  resource_type_id int NOT NULL,
   permission_code varchar(50) NOT NULL,
   organization_id int NOT NULL
 );
@@ -126,3 +133,5 @@ ALTER TABLE billing_history ADD FOREIGN KEY (subscription_id) REFERENCES subscri
 ALTER TABLE api_usage ADD FOREIGN KEY (api_endpoint_id) REFERENCES api_endpoint (api_endpoint_id);
 
 ALTER TABLE api_usage ADD FOREIGN KEY (billing_id) REFERENCES billing_history (billing_id);
+
+ALTER TABLE organization_permission ADD FOREIGN KEY (resource_type_id) REFERENCES resource_type (resource_type_id);
