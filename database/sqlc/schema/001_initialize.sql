@@ -32,15 +32,6 @@ CREATE TABLE organization (
   organization_type_id int NOT NULL
 );
 
-CREATE TABLE api_key (
-  api_key_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  api_key varchar(100) UNIQUE NOT NULL,
-  api_key_status boolean DEFAULT true,
-  created_at datetime NOT NULL,
-  updated_at datetime NOT NULL,
-  organization_id int NOT NULL
-);
-
 CREATE TABLE subscription (
   subscription_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   subscription_name varchar(255) UNIQUE NOT NULL,
@@ -110,8 +101,6 @@ CREATE TABLE api_usage (
 );
 
 ALTER TABLE organization ADD FOREIGN KEY (organization_type_id) REFERENCES organization_type (organization_type_id);
-
-ALTER TABLE api_key ADD FOREIGN KEY (organization_id) REFERENCES organization (organization_id);
 
 ALTER TABLE organization_permission ADD FOREIGN KEY (organization_id) REFERENCES organization (organization_id);
 
