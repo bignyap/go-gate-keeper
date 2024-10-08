@@ -41,9 +41,9 @@ func CreateTierPricingFormValidator(r *http.Request) (*sqlcgen.CreateTierPricing
 		return nil, fmt.Errorf("base_rate_limit must be a positive integer value")
 	}
 
-	baseCost, err := utils.StrToFloat(r.FormValue("base_rate_limit"))
+	baseCost, err := utils.StrToFloat(r.FormValue("base_cost_per_call"))
 	if err != nil {
-		return nil, fmt.Errorf("base_rate_limit must be a positive integer value")
+		return nil, fmt.Errorf("base_cost_per_call must be a positive integer value")
 	}
 
 	input := sqlcgen.CreateTierPricingParams{

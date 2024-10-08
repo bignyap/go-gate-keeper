@@ -48,6 +48,14 @@ type BillingHistory struct {
 	SubscriptionID   int32
 }
 
+type CustomEndpointPricing struct {
+	CustomEndpointPricingID int32
+	CustomCostPerCall       float64
+	CustomRateLimit         int32
+	SubscriptionID          int32
+	TierBasePricingID       int32
+}
+
 type Organization struct {
 	OrganizationID           int32
 	OrganizationName         string
@@ -86,13 +94,6 @@ type Subscription struct {
 	SubscriptionStatus      sql.NullBool
 	OrganizationID          int32
 	SubscriptionTierID      int32
-}
-
-type SubscriptionEndpointPricing struct {
-	CustomCostPerCall sql.NullFloat64
-	CustomRateLimit   sql.NullInt32
-	SubscriptionID    int32
-	TierBasePricingID int32
 }
 
 type SubscriptionTier struct {

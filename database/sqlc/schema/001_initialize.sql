@@ -35,7 +35,7 @@ CREATE TABLE api_key (
 );
 
 CREATE TABLE subscription (
-  subscription_id int PRIMARY KEY NOT NULL,
+  subscription_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   subscription_name varchar(255) UNIQUE NOT NULL,
   subscription_type varchar(255) NOT NULL,
   subscription_created_date datetime NOT NULL,
@@ -50,22 +50,23 @@ CREATE TABLE subscription (
 );
 
 CREATE TABLE api_endpoint (
-  api_endpoint_id int PRIMARY KEY NOT NULL,
+  api_endpoint_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   endpoint_name varchar(255) UNIQUE NOT NULL,
   endpoint_description text
 );
 
 CREATE TABLE tier_base_pricing (
-  tier_base_pricing_id int PRIMARY KEY NOT NULL,
+  tier_base_pricing_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   base_cost_per_call float NOT NULL,
   base_rate_limit int,
   api_endpoint_id int NOT NULL,
   subscription_tier_id int NOT NULL
 );
 
-CREATE TABLE subscription_endpoint_pricing (
-  custom_cost_per_call float,
-  custom_rate_limit int,
+CREATE TABLE custom_endpoint_pricing (
+  custom_endpoint_pricing_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  custom_cost_per_call float NOT NULL,
+  custom_rate_limit int NOT NULL,
   subscription_id int NOT NULL,
   tier_base_pricing_id int NOT NULL
 );
@@ -114,7 +115,9 @@ ALTER TABLE tier_base_pricing ADD FOREIGN KEY (subscription_tier_id) REFERENCES 
 
 ALTER TABLE tier_base_pricing ADD FOREIGN KEY (api_endpoint_id) REFERENCES api_endpoint (api_endpoint_id);
 
-ALTER TABLE subscription_endpoint_pricing ADD FOREIGN KEY (subscription_id) REFERENCES subscription (subscription_id);
+ALTER TABLE custom_endpoint_pricing ADD FOREIGN KEY (subscription_id) REFERENCES subscription (subscription_id);
+
+ALTER TABLE custom_endpoint_pricing ADD FOREIGN KEY (tier_base_pricing_id) REFERENCES tier_base_pricing (tier_base_pricing_id);
 
 ALTER TABLE api_usage ADD FOREIGN KEY (subscription_id) REFERENCES subscription (subscription_id);
 

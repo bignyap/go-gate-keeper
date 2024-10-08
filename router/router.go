@@ -59,6 +59,15 @@ func SubscriptionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 }
 
+func SubscriptionEndpointHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
+
+	mux.HandleFunc("POST /subscriptionEndpoint", apiConfig.CreateCustomPricingHandler)
+	mux.HandleFunc("DELETE /subscriptionEndpoint/{subscription_id}", apiConfig.DeleteCustomPricingHandler)
+	mux.HandleFunc("DELETE /subscriptionEndpoint/{id}", apiConfig.DeleteCustomPricingHandler)
+	mux.HandleFunc("GET /subscriptionEndpoint/{subscription_id}", apiConfig.GetCustomPricingHandler)
+
+}
+
 func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("/", handler.RootHandler)
@@ -66,4 +75,6 @@ func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 	SubTierHandler(mux, apiConfig)
 	EndpointHandler(mux, apiConfig)
 	OrganizationHandler(mux, apiConfig)
+	TierPricingHandler(mux, apiConfig)
+	SubTierHandler(mux, apiConfig)
 }
