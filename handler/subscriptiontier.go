@@ -122,7 +122,7 @@ func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *
 
 func (apiCfg *ApiConfig) DeleteSubscriptionTierHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := converter.StrToInt(r.URL.Query().Get("id"))
+	id, err := converter.StrToInt(r.PathValue("id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return

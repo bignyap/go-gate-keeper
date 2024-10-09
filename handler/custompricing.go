@@ -85,7 +85,7 @@ func (apiCfg *ApiConfig) CreateCustomPricingHandler(w http.ResponseWriter, r *ht
 
 func (apiCfg *ApiConfig) DeleteCustomPricingHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("subscription_id")
+	idStr := r.PathValue("subscription_id")
 	var err error
 
 	if idStr != "" {
@@ -107,7 +107,7 @@ func (apiCfg *ApiConfig) DeleteCustomPricingHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	idStr = r.URL.Query().Get("id")
+	idStr = r.PathValue("id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "Missing subscription_id or id")
 		return
@@ -132,7 +132,7 @@ func (apiCfg *ApiConfig) DeleteCustomPricingHandler(w http.ResponseWriter, r *ht
 
 func (apiCfg *ApiConfig) GetCustomPricingHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := converter.StrToInt(r.URL.Query().Get("subscription_id"))
+	id, err := converter.StrToInt(r.PathValue("subscription_id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return

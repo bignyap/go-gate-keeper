@@ -113,7 +113,7 @@ func (apiCfg *ApiConfig) ListEndpointsHandler(w http.ResponseWriter, r *http.Req
 
 func (apiCfg *ApiConfig) DeleteEndpointsByIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("id")
+	idStr := r.PathValue("id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return

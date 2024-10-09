@@ -147,7 +147,7 @@ func (apiCfg *ApiConfig) ListOrganizationsHandler(w http.ResponseWriter, r *http
 
 func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("id")
+	idStr := r.PathValue("id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return
@@ -185,7 +185,7 @@ func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *ht
 
 func (apiCfg *ApiConfig) DeleteOrganizationByIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("id")
+	idStr := r.PathValue("id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return

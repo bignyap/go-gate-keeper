@@ -105,7 +105,7 @@ func (apiCfg *ApiConfig) ListResourceTypeHandler(w http.ResponseWriter, r *http.
 
 func (apiCfg *ApiConfig) DeleteResourceTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := converter.StrToInt(r.URL.Query().Get("id"))
+	id, err := converter.StrToInt(r.PathValue("id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return

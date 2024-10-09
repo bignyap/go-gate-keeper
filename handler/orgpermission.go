@@ -81,7 +81,7 @@ func (apiCfg *ApiConfig) CreateOrgPermissionHandler(w http.ResponseWriter, r *ht
 
 func (apiCfg *ApiConfig) GetOrgPermissionHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := converter.StrToInt(r.URL.Query().Get("organization_id"))
+	id, err := converter.StrToInt(r.PathValue("organization_id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
@@ -111,7 +111,7 @@ func (apiCfg *ApiConfig) GetOrgPermissionHandler(w http.ResponseWriter, r *http.
 
 func (apiCfg *ApiConfig) DeleteOrgPermissionHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("organization_id")
+	idStr := r.PathValue("organization_id")
 	var err error
 
 	if idStr != "" {
@@ -133,7 +133,7 @@ func (apiCfg *ApiConfig) DeleteOrgPermissionHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	idStr = r.URL.Query().Get("id")
+	idStr = r.PathValue("id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "Missing organization_id or id")
 		return

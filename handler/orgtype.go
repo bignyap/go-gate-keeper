@@ -86,7 +86,7 @@ func (apiCfg *ApiConfig) ListOrgTypeHandler(w http.ResponseWriter, r *http.Reque
 
 func (apiCfg *ApiConfig) DeleteOrgTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := converter.StrToInt(r.URL.Query().Get("id"))
+	id, err := converter.StrToInt(r.PathValue("id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "ID needs to be a positive integer")
 		return

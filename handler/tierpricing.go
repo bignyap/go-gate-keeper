@@ -91,7 +91,7 @@ func (apiCfg *ApiConfig) CreateTierPricingHandler(w http.ResponseWriter, r *http
 
 func (apiCfg *ApiConfig) GetTierPricingByTierIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr, err := converter.StrToInt(r.URL.Query().Get("tier_id"))
+	idStr, err := converter.StrToInt(r.PathValue("tier_id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
@@ -123,7 +123,7 @@ func (apiCfg *ApiConfig) GetTierPricingByTierIdHandler(w http.ResponseWriter, r 
 
 func (apiCfg *ApiConfig) DeleteTierPricingHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("organization_id")
+	idStr := r.PathValue("organization_id")
 	var err error
 
 	if idStr != "" {
@@ -145,7 +145,7 @@ func (apiCfg *ApiConfig) DeleteTierPricingHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	idStr = r.URL.Query().Get("id")
+	idStr = r.PathValue("id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "Missing organization_id or id")
 		return

@@ -53,8 +53,8 @@ func SubscriptionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 	mux.HandleFunc("POST /subscription", apiConfig.CreateSubscriptionHandler)
 	mux.HandleFunc("DELETE /subscription/{id}", apiConfig.DeleteSubscriptionHandler)
 	mux.HandleFunc("DELETE /subscription/{organization_id}", apiConfig.DeleteSubscriptionHandler)
-	mux.HandleFunc("GET /subscription/{id}", apiConfig.GetSubscriptionHandler)
-	mux.HandleFunc("GET /subscription/{organization_id}", apiConfig.GetSubscriptionByrgIdHandler)
+	mux.HandleFunc("GET /subscription/id/{id}", apiConfig.GetSubscriptionHandler)
+	mux.HandleFunc("GET /subscription/orgId/{organization_id}", apiConfig.GetSubscriptionByrgIdHandler)
 	mux.HandleFunc("GET /subscription", apiConfig.ListSubscriptionHandler)
 
 }
@@ -62,8 +62,8 @@ func SubscriptionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func CustomEndpointHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /subscriptionEndpoint", apiConfig.CreateCustomPricingHandler)
-	mux.HandleFunc("DELETE /subscriptionEndpoint/{subscription_id}", apiConfig.DeleteCustomPricingHandler)
-	mux.HandleFunc("DELETE /subscriptionEndpoint/{id}", apiConfig.DeleteCustomPricingHandler)
+	mux.HandleFunc("DELETE /subscriptionEndpoint/subId/{subscription_id}", apiConfig.DeleteCustomPricingHandler)
+	mux.HandleFunc("DELETE /subscriptionEndpoint/id/{id}", apiConfig.DeleteCustomPricingHandler)
 	mux.HandleFunc("GET /subscriptionEndpoint/{subscription_id}", apiConfig.GetCustomPricingHandler)
 
 }

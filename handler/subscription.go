@@ -137,7 +137,7 @@ func (apiCfg *ApiConfig) CreateSubscriptionHandler(w http.ResponseWriter, r *htt
 
 func (apiCfg *ApiConfig) DeleteSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("id")
+	idStr := r.PathValue("id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return
@@ -162,7 +162,7 @@ func (apiCfg *ApiConfig) DeleteSubscriptionHandler(w http.ResponseWriter, r *htt
 
 func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := converter.StrToInt(r.URL.Query().Get("id"))
+	id, err := converter.StrToInt(r.PathValue("id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
@@ -196,7 +196,7 @@ func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.R
 
 func (apiCfg *ApiConfig) GetSubscriptionByrgIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	orgId, err := converter.StrToInt(r.URL.Query().Get("organization_id"))
+	orgId, err := converter.StrToInt(r.PathValue("organization_id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid organization_id format")
 		return
