@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
-	"github.com/bignyap/go-gate-keeper/utils"
+	"github.com/bignyap/go-gate-keeper/utils/converter"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type CreateCustomPricingParams struct {
@@ -21,36 +22,29 @@ type CreateCustomPricingOutput struct {
 }
 
 func CreateCustomPricingFormValidator(r *http.Request) (*sqlcgen.CreateCustomPricingParams, error) {
-	err := r.ParseForm()
+
+	err := formvalidator.ParseFormData(r)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing form data: %s", err)
+		return nil, err
 	}
 
-	tierPricingId, err := utils.StrToInt(r.FormValue("tier_base_pricing_id"))
+	intFields := []string{"tier_base_pricing_id", "subscription_id", "custom_rate_limit"}
+	intParsed, err := formvalidator.ParseIntFromForm(r, intFields)
 	if err != nil {
-		return nil, fmt.Errorf("tier_base_pricing_id must be a positive integer value")
+		return nil, err
 	}
 
-	subId, err := utils.StrToInt(r.FormValue("subscription_id"))
+	floatFields := []string{"custom_cost_per_call"}
+	floatParsed, err := formvalidator.ParseFloatFromForm(r, floatFields)
 	if err != nil {
-		return nil, fmt.Errorf("subscription_id must be a positive integer value")
-	}
-
-	customCost, err := utils.StrToFloat(r.FormValue("custom_cost_per_call"))
-	if err != nil {
-		return nil, fmt.Errorf("custom_cost_per_call must be a positive integer value")
-	}
-
-	customRateLimit, err := utils.StrToInt(r.FormValue("custom_rate_limit"))
-	if err != nil {
-		return nil, fmt.Errorf("custom_rate_limit must be a positive integer value")
+		return nil, err
 	}
 
 	input := sqlcgen.CreateCustomPricingParams{
-		CustomCostPerCall: customCost,
-		CustomRateLimit:   int32(customRateLimit),
-		SubscriptionID:    int32(subId),
-		TierBasePricingID: int32(tierPricingId),
+		CustomCostPerCall: floatParsed["custom_cost_per_call"],
+		CustomRateLimit:   int32(intParsed["custom_rate_limit"]),
+		SubscriptionID:    int32(intParsed["subscription_id"]),
+		TierBasePricingID: int32(intParsed["tier_base_pricing_id"]),
 	}
 
 	return &input, nil
@@ -95,7 +89,7 @@ func (apiCfg *ApiConfig) DeleteCustomPricingHandler(w http.ResponseWriter, r *ht
 	var err error
 
 	if idStr != "" {
-		id32, err := utils.StrToInt(idStr)
+		id32, err := converter.StrToInt(idStr)
 		if err != nil {
 			respondWithError(w, StatusBadRequest, "Invalid subscription_id format")
 			return
@@ -119,7 +113,7 @@ func (apiCfg *ApiConfig) DeleteCustomPricingHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	id32, err := utils.StrToInt(idStr)
+	id32, err := converter.StrToInt(idStr)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid id format")
 		return
@@ -138,7 +132,7 @@ func (apiCfg *ApiConfig) DeleteCustomPricingHandler(w http.ResponseWriter, r *ht
 
 func (apiCfg *ApiConfig) GetCustomPricingHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := utils.StrToInt(r.URL.Query().Get("subscription_id"))
+	id, err := converter.StrToInt(r.URL.Query().Get("subscription_id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return

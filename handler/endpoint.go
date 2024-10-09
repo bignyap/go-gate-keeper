@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type RegisterEndpointParams struct {
@@ -19,30 +19,42 @@ type RegisterEndpointOutputs struct {
 	RegisterEndpointParams
 }
 
-func (apiCfg *ApiConfig) RegisterEndpointHandler(w http.ResponseWriter, r *http.Request) {
+func RegisterEndpointFormValidator(r *http.Request) (*sqlcgen.RegisterApiEndpointParams, error) {
 
-	err := r.ParseForm()
+	err := formvalidator.ParseFormData(r)
 	if err != nil {
-		respondWithError(w, StatusBadRequest,
-			fmt.Sprintf("Error parsing form data: %s", err),
-		)
-		return
+		return nil, err
+	}
+
+	strFields := []string{"name"}
+	strParsed, err := formvalidator.ParseStringFromForm(r, strFields)
+	if err != nil {
+		return nil, err
+	}
+
+	nullStrFields := []string{"description"}
+	nullStrParsed, err := formvalidator.ParseNullStringFromForm(r, nullStrFields)
+	if err != nil {
+		return nil, err
 	}
 
 	input := sqlcgen.RegisterApiEndpointParams{
-		EndpointName: r.FormValue("name"),
-		EndpointDescription: sql.NullString{
-			String: r.FormValue("description"),
-			Valid:  r.FormValue("description") != "",
-		},
+		EndpointName:        strParsed["name"],
+		EndpointDescription: nullStrParsed["description"],
 	}
 
-	if input.EndpointName == "" {
-		respondWithError(w, StatusBadRequest, "Name is required")
+	return &input, nil
+}
+
+func (apiCfg *ApiConfig) RegisterEndpointHandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := RegisterEndpointFormValidator(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
 		return
 	}
 
-	apiEndpoint, err := apiCfg.DB.RegisterApiEndpoint(r.Context(), input)
+	apiEndpoint, err := apiCfg.DB.RegisterApiEndpoint(r.Context(), *input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't register the api endpoint: %s", err))
 		return

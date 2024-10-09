@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
-	"github.com/bignyap/go-gate-keeper/utils"
+	"github.com/bignyap/go-gate-keeper/utils/converter"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type CreateOrgPermissionParams struct {
@@ -21,30 +22,27 @@ type CreateOrgPermissionOutput struct {
 
 func CreateOrgPermissionFormValidator(r *http.Request) (*sqlcgen.CreateOrgPermissionParams, error) {
 
-	err := r.ParseForm()
+	err := formvalidator.ParseFormData(r)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing form data: %s", err)
+		return nil, err
 	}
 
-	resourceTypeId, err := utils.StrToInt(r.FormValue("resource_type_id"))
+	strFields := []string{"permission_code"}
+	strParsed, err := formvalidator.ParseStringFromForm(r, strFields)
 	if err != nil {
-		return nil, fmt.Errorf("resource_type_id must be a positive integer value")
+		return nil, err
 	}
 
-	orgId, err := utils.StrToInt(r.FormValue("organization_id"))
+	intFields := []string{"resource_type_id", "organization_id"}
+	intParsed, err := formvalidator.ParseIntFromForm(r, intFields)
 	if err != nil {
-		return nil, fmt.Errorf("organization_id must be a positive integer value")
-	}
-
-	permissionCode := r.FormValue("permission_code")
-	if permissionCode == "" {
-		return nil, fmt.Errorf("permission_code is required")
+		return nil, err
 	}
 
 	input := sqlcgen.CreateOrgPermissionParams{
-		OrganizationID: int32(orgId),
-		ResourceTypeID: int32(resourceTypeId),
-		PermissionCode: permissionCode,
+		OrganizationID: int32(intParsed["organization_id"]),
+		ResourceTypeID: int32(intParsed["resource_type_id"]),
+		PermissionCode: strParsed["permission_code"],
 	}
 
 	return &input, nil
@@ -83,7 +81,7 @@ func (apiCfg *ApiConfig) CreateOrgPermissionHandler(w http.ResponseWriter, r *ht
 
 func (apiCfg *ApiConfig) GetOrgPermissionHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := utils.StrToInt(r.URL.Query().Get("organization_id"))
+	id, err := converter.StrToInt(r.URL.Query().Get("organization_id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
@@ -117,7 +115,7 @@ func (apiCfg *ApiConfig) DeleteOrgPermissionHandler(w http.ResponseWriter, r *ht
 	var err error
 
 	if idStr != "" {
-		id32, err := utils.StrToInt(idStr)
+		id32, err := converter.StrToInt(idStr)
 		if err != nil {
 			respondWithError(w, StatusBadRequest, "Invalid organization_id format")
 			return
@@ -141,7 +139,7 @@ func (apiCfg *ApiConfig) DeleteOrgPermissionHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	id32, err := utils.StrToInt(idStr)
+	id32, err := converter.StrToInt(idStr)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid id format")
 		return

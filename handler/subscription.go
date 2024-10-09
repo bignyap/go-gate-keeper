@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
-	"github.com/bignyap/go-gate-keeper/utils"
+	"github.com/bignyap/go-gate-keeper/utils/converter"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type CreateSubscriptionParams struct {
@@ -31,60 +31,65 @@ type CreateSubscriptionOutput struct {
 }
 
 func CreateSubscriptionFormValidation(r *http.Request) (*sqlcgen.CreateSubscriptionParams, error) {
-	err := r.ParseForm()
+
+	err := formvalidator.ParseFormData(r)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing form data: %s", err)
+		return nil, err
 	}
 
-	orgId, err := utils.StrToInt(r.FormValue("organization_id"))
+	strFields := []string{"name", "type"}
+	strParsed, err := formvalidator.ParseStringFromForm(r, strFields)
 	if err != nil {
-		return nil, fmt.Errorf("organization_id must be a positive integer value")
+		return nil, err
 	}
 
-	subTierId, err := utils.StrToInt(r.FormValue("subscription_tier_id"))
+	intFields := []string{"organization_id", "subscription_tier_id"}
+	intParsed, err := formvalidator.ParseIntFromForm(r, intFields)
 	if err != nil {
-		return nil, fmt.Errorf("subscription_tier_id must be a positive integer value")
+		return nil, err
 	}
 
-	if r.FormValue("name") == "" {
-		return nil, fmt.Errorf("name is required")
+	nullStrField := []string{"description"}
+	nullStrParsed, err := formvalidator.ParseNullStringFromForm(r, nullStrField)
+	if err != nil {
+		return nil, err
 	}
 
-	if r.FormValue("type") == "" {
-		return nil, fmt.Errorf("type is required")
+	nullBoolFields := []string{"status"}
+	nullBoolPared, err := formvalidator.ParseNullBoolFromForm(r, nullBoolFields)
+	if err != nil {
+		return nil, err
 	}
 
-	startDate, err := utils.StrToDate(r.FormValue("start_date"))
+	dateField := []string{"expiry_date"}
+	dateParsed, err := formvalidator.ParseNullTimeFromForm(r, dateField)
+	if err != nil {
+		return nil, err
+	}
+
+	nullInt32Field := []string{"api_limit"}
+	nullInt32Parsed, err := formvalidator.ParseNullInt32FromForm(r, nullInt32Field)
+	if err != nil {
+		return nil, err
+	}
+
+	startDate, err := converter.StrToDate(r.FormValue("start_date"))
 	if err != nil {
 		startDate = time.Now()
 	}
 
-	expiryDate, err := utils.StrToNullTime(r.FormValue("expiry_date"))
-	if err != nil {
-		return nil, fmt.Errorf("expiry_date must be a date in YYYY-MM-DD format")
-	}
-
-	apiLimit, err := utils.StrToNullInt32(r.FormValue("api_limit"))
-	if err != nil {
-		return nil, fmt.Errorf("api_limit must be a positive integer value")
-	}
-
-	description := utils.StrToNullStr(r.FormValue("description"))
-
-	status, _ := utils.StrToBool(r.FormValue("status"))
-
 	input := sqlcgen.CreateSubscriptionParams{
-		SubscriptionName:        r.FormValue("name"),
-		SubscriptionType:        r.FormValue("type"),
+		SubscriptionName:        strParsed["name"],
+		SubscriptionType:        strParsed["type"],
 		SubscriptionCreatedDate: time.Now(),
 		SubscriptionUpdatedDate: time.Now(),
 		SubscriptionStartDate:   startDate,
-		SubscriptionApiLimit:    apiLimit,
-		SubscriptionExpiryDate:  expiryDate,
-		SubscriptionDescription: description,
-		SubscriptionStatus:      sql.NullBool{Bool: status, Valid: true},
-		OrganizationID:          int32(orgId),
-		SubscriptionTierID:      int32(subTierId),
+		SubscriptionApiLimit:    nullInt32Parsed["api_limit"],
+		SubscriptionExpiryDate:  dateParsed["expiry_date"],
+		SubscriptionDescription: nullStrParsed["description"],
+		SubscriptionStatus:      nullBoolPared["status"],
+		OrganizationID:          int32(intParsed["organization_id"]),
+		SubscriptionTierID:      int32(intParsed["subscription_tier_id"]),
 	}
 
 	return &input, nil
@@ -118,10 +123,10 @@ func (apiCfg *ApiConfig) CreateSubscriptionHandler(w http.ResponseWriter, r *htt
 			CreatedAt:          input.SubscriptionCreatedDate,
 			UpdatedAt:          input.SubscriptionUpdatedDate,
 			StartDate:          input.SubscriptionStartDate,
-			APILimit:           utils.NullInt32ToInt(&input.SubscriptionApiLimit),
+			APILimit:           converter.NullInt32ToInt(&input.SubscriptionApiLimit),
 			ExpiryDate:         &input.SubscriptionCreatedDate,
 			Description:        &input.SubscriptionDescription.String,
-			Status:             utils.NullBoolToBool(&input.SubscriptionStatus),
+			Status:             converter.NullBoolToBool(&input.SubscriptionStatus),
 			OrganizationID:     int(input.OrganizationID),
 			SubscriptionTierID: int(input.SubscriptionTierID),
 		},
@@ -157,7 +162,7 @@ func (apiCfg *ApiConfig) DeleteSubscriptionHandler(w http.ResponseWriter, r *htt
 
 func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := utils.StrToInt(r.URL.Query().Get("id"))
+	id, err := converter.StrToInt(r.URL.Query().Get("id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
@@ -177,10 +182,10 @@ func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.R
 			CreatedAt:          subscription.SubscriptionCreatedDate,
 			UpdatedAt:          subscription.SubscriptionUpdatedDate,
 			StartDate:          subscription.SubscriptionStartDate,
-			APILimit:           utils.NullInt32ToInt(&subscription.SubscriptionApiLimit),
+			APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
 			ExpiryDate:         &subscription.SubscriptionCreatedDate,
 			Description:        &subscription.SubscriptionDescription.String,
-			Status:             utils.NullBoolToBool(&subscription.SubscriptionStatus),
+			Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
 			OrganizationID:     int(subscription.OrganizationID),
 			SubscriptionTierID: int(subscription.SubscriptionTierID),
 		},
@@ -191,7 +196,7 @@ func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.R
 
 func (apiCfg *ApiConfig) GetSubscriptionByrgIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	orgId, err := utils.StrToInt(r.URL.Query().Get("organization_id"))
+	orgId, err := converter.StrToInt(r.URL.Query().Get("organization_id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid organization_id format")
 		return
@@ -215,10 +220,10 @@ func (apiCfg *ApiConfig) GetSubscriptionByrgIdHandler(w http.ResponseWriter, r *
 				CreatedAt:          subscription.SubscriptionCreatedDate,
 				UpdatedAt:          subscription.SubscriptionUpdatedDate,
 				StartDate:          subscription.SubscriptionStartDate,
-				APILimit:           utils.NullInt32ToInt(&subscription.SubscriptionApiLimit),
+				APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
 				ExpiryDate:         &subscription.SubscriptionCreatedDate,
 				Description:        &subscription.SubscriptionDescription.String,
-				Status:             utils.NullBoolToBool(&subscription.SubscriptionStatus),
+				Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
 				OrganizationID:     int(subscription.OrganizationID),
 				SubscriptionTierID: int(subscription.SubscriptionTierID),
 			},
@@ -248,10 +253,10 @@ func (apiCfg *ApiConfig) ListSubscriptionHandler(w http.ResponseWriter, r *http.
 				CreatedAt:          subscription.SubscriptionCreatedDate,
 				UpdatedAt:          subscription.SubscriptionUpdatedDate,
 				StartDate:          subscription.SubscriptionStartDate,
-				APILimit:           utils.NullInt32ToInt(&subscription.SubscriptionApiLimit),
+				APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
 				ExpiryDate:         &subscription.SubscriptionCreatedDate,
 				Description:        &subscription.SubscriptionDescription.String,
-				Status:             utils.NullBoolToBool(&subscription.SubscriptionStatus),
+				Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
 				OrganizationID:     int(subscription.OrganizationID),
 				SubscriptionTierID: int(subscription.SubscriptionTierID),
 			},

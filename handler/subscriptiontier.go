@@ -1,13 +1,13 @@
 package handler
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
+	"github.com/bignyap/go-gate-keeper/utils/converter"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type CreateSubTierParams struct {
@@ -22,32 +22,44 @@ type CreateSubTierOuput struct {
 	CreateSubTierParams
 }
 
-func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *http.Request) {
+func CreateSubcriptionTierFormValidation(r *http.Request) (*sqlcgen.CreateSubscriptionTierParams, error) {
 
-	err := r.ParseForm()
+	err := formvalidator.ParseFormData(r)
 	if err != nil {
-		respondWithError(w, StatusBadRequest,
-			fmt.Sprintf("Error parsing form data: %s", err),
-		)
-		return
+		return nil, err
+	}
+
+	strFields := []string{"name", "type"}
+	strParsed, err := formvalidator.ParseStringFromForm(r, strFields)
+	if err != nil {
+		return nil, err
+	}
+
+	nullStrField := []string{"description"}
+	nullStrParsed, err := formvalidator.ParseNullStringFromForm(r, nullStrField)
+	if err != nil {
+		return nil, err
 	}
 
 	input := sqlcgen.CreateSubscriptionTierParams{
-		TierName: r.FormValue("name"),
-		TierDescription: sql.NullString{
-			String: r.FormValue("description"),
-			Valid:  r.FormValue("description") != "",
-		},
-		TierCreatedAt: time.Now(),
-		TierUpdatedAt: time.Now(),
+		TierName:        strParsed["name"],
+		TierDescription: nullStrParsed["description"],
+		TierCreatedAt:   time.Now(),
+		TierUpdatedAt:   time.Now(),
 	}
 
-	if input.TierName == "" {
-		respondWithError(w, StatusBadRequest, "Name is required")
+	return &input, nil
+}
+
+func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateSubcriptionTierFormValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
 		return
 	}
 
-	subTier, err := apiCfg.DB.CreateSubscriptionTier(r.Context(), input)
+	subTier, err := apiCfg.DB.CreateSubscriptionTier(r.Context(), *input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the subscription tier: %s", err))
 		return
@@ -110,25 +122,19 @@ func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *
 
 func (apiCfg *ApiConfig) DeleteSubscriptionTierHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("id")
-	if idStr == "" {
+	id, err := converter.StrToInt(r.URL.Query().Get("id"))
+	if err != nil {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return
 	}
 
-	id64, err := strconv.ParseInt(idStr, 10, 32)
-	if err != nil {
-		respondWithError(w, StatusBadRequest, "Invalid ID format")
-		return
-	}
-
-	err = apiCfg.DB.DeleteSubscriptionTierById(r.Context(), int32(id64))
+	err = apiCfg.DB.DeleteSubscriptionTierById(r.Context(), int32(id))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the subscription tier: %s", err))
 		return
 	}
 
 	respondWithJSON(w, StatusNoContent, map[string]string{
-		"message": fmt.Sprintf("Subscription tier with ID %d deleted successfully", int32(id64)),
+		"message": fmt.Sprintf("Subscription tier with ID %d deleted successfully", int32(id)),
 	})
 }

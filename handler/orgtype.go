@@ -3,7 +3,9 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strconv"
+
+	"github.com/bignyap/go-gate-keeper/utils/converter"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type CreateOrgTypeInput struct {
@@ -15,29 +17,30 @@ type CreateOrgTypeOutput struct {
 	CreateOrgTypeInput
 }
 
+func CreateOrgTypeFormValidator(r *http.Request) (string, error) {
+
+	err := formvalidator.ParseFormData(r)
+	if err != nil {
+		return "", err
+	}
+
+	strFields := []string{"name"}
+	strParsed, err := formvalidator.ParseStringFromForm(r, strFields)
+	if err != nil {
+		return "", err
+	}
+
+	return strParsed["name"], nil
+}
+
 func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	err := r.ParseForm()
+	name, err := CreateOrgTypeFormValidator(r)
 	if err != nil {
-		respondWithError(w, StatusBadRequest,
-			fmt.Sprintf("Error parsing form data: %s", err),
-		)
-		return
+		respondWithError(w, StatusBadRequest, err.Error())
 	}
 
-	input := CreateOrgTypeInput{
-		Name: r.FormValue("name"),
-	}
-
-	if input.Name == "" {
-		respondWithError(w, StatusBadRequest, "Name is required")
-		return
-	}
-
-	orgType, err := apiCfg.DB.CreateOrgType(
-		r.Context(),
-		input.Name,
-	)
+	orgType, err := apiCfg.DB.CreateOrgType(r.Context(), name)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the organization type: %s", err))
 		return
@@ -50,8 +53,10 @@ func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	output := CreateOrgTypeOutput{
-		ID:                 int(insertedID),
-		CreateOrgTypeInput: input,
+		ID: int(insertedID),
+		CreateOrgTypeInput: CreateOrgTypeInput{
+			Name: name,
+		},
 	}
 
 	respondWithJSON(w, StatusCreated, output)
@@ -81,25 +86,19 @@ func (apiCfg *ApiConfig) ListOrgTypeHandler(w http.ResponseWriter, r *http.Reque
 
 func (apiCfg *ApiConfig) DeleteOrgTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.URL.Query().Get("id")
-	if idStr == "" {
-		respondWithError(w, StatusBadRequest, "ID is required")
-		return
-	}
-
-	id64, err := strconv.ParseInt(idStr, 10, 32)
+	id, err := converter.StrToInt(r.URL.Query().Get("id"))
 	if err != nil {
-		respondWithError(w, StatusBadRequest, "Invalid ID format")
+		respondWithError(w, StatusBadRequest, "ID needs to be a positive integer")
 		return
 	}
 
-	err = apiCfg.DB.DeleteOrgTypeById(r.Context(), int32(id64))
+	err = apiCfg.DB.DeleteOrgTypeById(r.Context(), int32(id))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't delete the organization type: %s", err))
 		return
 	}
 
 	respondWithJSON(w, StatusNoContent, map[string]string{
-		"message": fmt.Sprintf("Organization type with ID %d deleted successfully", int32(id64)),
+		"message": fmt.Sprintf("Organization type with ID %d deleted successfully", int32(id)),
 	})
 }

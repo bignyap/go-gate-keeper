@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
-	"github.com/bignyap/go-gate-keeper/utils"
+	"github.com/bignyap/go-gate-keeper/utils/converter"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type CreateTierPricingParams struct {
@@ -21,36 +22,35 @@ type CreateTierPricingOutput struct {
 }
 
 func CreateTierPricingFormValidator(r *http.Request) (*sqlcgen.CreateTierPricingParams, error) {
-	err := r.ParseForm()
+
+	err := formvalidator.ParseFormData(r)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing form data: %s", err)
+		return nil, err
 	}
 
-	subTierId, err := utils.StrToInt(r.FormValue("subscription_tier_id"))
+	intFields := []string{"subscription_tier_id", "api_endpoint_id"}
+	intParsed, err := formvalidator.ParseIntFromForm(r, intFields)
 	if err != nil {
-		return nil, fmt.Errorf("subscription_tier_id must be a positive integer value")
+		return nil, err
 	}
 
-	apiEPId, err := utils.StrToInt(r.FormValue("api_endpoint_id"))
+	nullInt32Field := []string{"base_rate_limit"}
+	nullInt32Parsed, err := formvalidator.ParseNullInt32FromForm(r, nullInt32Field)
 	if err != nil {
-		return nil, fmt.Errorf("api_endpoint_id must be a positive integer value")
+		return nil, err
 	}
 
-	baseRateLimit, err := utils.StrToNullInt32(r.FormValue("base_rate_limit"))
+	floatField := []string{"base_cost_per_call"}
+	floatParsed, err := formvalidator.ParseFloatFromForm(r, floatField)
 	if err != nil {
-		return nil, fmt.Errorf("base_rate_limit must be a positive integer value")
-	}
-
-	baseCost, err := utils.StrToFloat(r.FormValue("base_cost_per_call"))
-	if err != nil {
-		return nil, fmt.Errorf("base_cost_per_call must be a positive integer value")
+		return nil, err
 	}
 
 	input := sqlcgen.CreateTierPricingParams{
-		SubscriptionTierID: int32(subTierId),
-		ApiEndpointID:      int32(apiEPId),
-		BaseCostPerCall:    baseCost,
-		BaseRateLimit:      baseRateLimit,
+		SubscriptionTierID: int32(intParsed["subscription_tier_id"]),
+		ApiEndpointID:      int32(intParsed["api_endpoint_id"]),
+		BaseCostPerCall:    floatParsed["base_cost_per_call"],
+		BaseRateLimit:      nullInt32Parsed["base_rate_limit"],
 	}
 
 	return &input, nil
@@ -82,7 +82,7 @@ func (apiCfg *ApiConfig) CreateTierPricingHandler(w http.ResponseWriter, r *http
 			SubscriptionTierID: int(input.SubscriptionTierID),
 			ApiEndpointId:      int(input.ApiEndpointID),
 			BaseCostPerCall:    input.BaseCostPerCall,
-			BaseRateLimit:      utils.NullInt32ToInt(&input.BaseRateLimit),
+			BaseRateLimit:      converter.NullInt32ToInt(&input.BaseRateLimit),
 		},
 	}
 
@@ -91,7 +91,7 @@ func (apiCfg *ApiConfig) CreateTierPricingHandler(w http.ResponseWriter, r *http
 
 func (apiCfg *ApiConfig) GetTierPricingByTierIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr, err := utils.StrToInt(r.URL.Query().Get("tier_id"))
+	idStr, err := converter.StrToInt(r.URL.Query().Get("tier_id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
@@ -113,7 +113,7 @@ func (apiCfg *ApiConfig) GetTierPricingByTierIdHandler(w http.ResponseWriter, r 
 				SubscriptionTierID: int(tierPricing.SubscriptionTierID),
 				ApiEndpointId:      int(tierPricing.ApiEndpointID),
 				BaseCostPerCall:    tierPricing.BaseCostPerCall,
-				BaseRateLimit:      utils.NullInt32ToInt(&tierPricing.BaseRateLimit),
+				BaseRateLimit:      converter.NullInt32ToInt(&tierPricing.BaseRateLimit),
 			},
 		})
 	}
@@ -127,7 +127,7 @@ func (apiCfg *ApiConfig) DeleteTierPricingHandler(w http.ResponseWriter, r *http
 	var err error
 
 	if idStr != "" {
-		id32, err := utils.StrToInt(idStr)
+		id32, err := converter.StrToInt(idStr)
 		if err != nil {
 			respondWithError(w, StatusBadRequest, "Invalid organization_id format")
 			return
@@ -151,7 +151,7 @@ func (apiCfg *ApiConfig) DeleteTierPricingHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	id32, err := utils.StrToInt(idStr)
+	id32, err := converter.StrToInt(idStr)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "Invalid id format")
 		return

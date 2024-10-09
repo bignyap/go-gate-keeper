@@ -7,7 +7,8 @@ import (
 	"time"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
-	"github.com/bignyap/go-gate-keeper/utils"
+	"github.com/bignyap/go-gate-keeper/utils/converter"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type CreateOrganizationParams struct {
@@ -29,59 +30,47 @@ type CreateOrganizationOutput struct {
 }
 
 func CreateOrgFormValidation(r *http.Request) (*sqlcgen.CreateOrganizationParams, error) {
-	err := r.ParseForm()
+
+	err := formvalidator.ParseFormData(r)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing form data: %s", err)
+		return nil, err
 	}
 
-	typeIDStr := r.FormValue("type_id")
-	if typeIDStr == "" {
-		return nil, fmt.Errorf("type_id must be a positive integer value")
-	}
-
-	typeID64, err := strconv.ParseInt(typeIDStr, 10, 32)
+	strFields := []string{"name", "realm", "support_email", "type_id"}
+	strParsed, err := formvalidator.ParseStringFromForm(r, strFields)
 	if err != nil {
-		return nil, fmt.Errorf("type_id must be a positive integer value")
-	}
-	typeID := int32(typeID64)
-
-	if r.FormValue("name") == "" {
-		return nil, fmt.Errorf("name is required")
+		return nil, err
 	}
 
-	if r.FormValue("realm") == "" {
-		return nil, fmt.Errorf("realm is required")
-	}
-
-	if r.FormValue("support_email") == "" {
-		return nil, fmt.Errorf("support email is required")
-	}
-
-	country := utils.StrToNullStr(r.FormValue("country"))
-
-	active, err := utils.StrToNullBool(r.FormValue("active"))
+	intFields := []string{"type_id"}
+	intParsed, err := formvalidator.ParseIntFromForm(r, intFields)
 	if err != nil {
-		return nil, fmt.Errorf("active should be a valid boolean")
+		return nil, err
 	}
 
-	reportq, err := utils.StrToNullBool(r.FormValue("reportq"))
+	nullStrField := []string{"country", "config"}
+	nullStrParsed, err := formvalidator.ParseNullStringFromForm(r, nullStrField)
 	if err != nil {
-		return nil, fmt.Errorf("reportq should be a valid boolean")
+		return nil, err
 	}
 
-	config := utils.StrToNullStr(r.FormValue("config"))
+	boolFields := []string{"active", "reportq"}
+	boolParsed, err := formvalidator.ParseNullBoolFromForm(r, boolFields)
+	if err != nil {
+		return nil, err
+	}
 
 	input := sqlcgen.CreateOrganizationParams{
-		OrganizationName:         r.FormValue("name"),
+		OrganizationName:         strParsed["name"],
 		OrganizationCreatedAt:    time.Now(),
 		OrganizationUpdatedAt:    time.Now(),
-		OrganizationRealm:        r.FormValue("realm"),
-		OrganizationSupportEmail: r.FormValue("support_email"), // Corrected field name
-		OrganizationTypeID:       typeID,
-		OrganizationCountry:      country,
-		OrganizationConfig:       config,
-		OrganizationActive:       active,
-		OrganizationReportQ:      reportq,
+		OrganizationRealm:        strParsed["realm"],
+		OrganizationSupportEmail: strParsed["support_email"],
+		OrganizationTypeID:       int32(intParsed["type_id"]),
+		OrganizationCountry:      nullStrParsed["country"],
+		OrganizationConfig:       nullStrParsed["config"],
+		OrganizationActive:       boolParsed["active"],
+		OrganizationReportQ:      boolParsed["reqportq"],
 	}
 
 	return &input, nil
@@ -115,10 +104,10 @@ func (apiCfg *ApiConfig) CreateOrganizationandler(w http.ResponseWriter, r *http
 			CreatedAt:    input.OrganizationCreatedAt,
 			UpdatedAt:    input.OrganizationUpdatedAt,
 			Realm:        input.OrganizationRealm,
-			Active:       utils.NullBoolToBool(&input.OrganizationActive),
-			ReportQ:      utils.NullBoolToBool(&input.OrganizationReportQ),
+			Active:       converter.NullBoolToBool(&input.OrganizationActive),
+			ReportQ:      converter.NullBoolToBool(&input.OrganizationReportQ),
 			TypeID:       int(input.OrganizationTypeID),
-			Config:       utils.NullStrToStr(&input.OrganizationConfig),
+			Config:       converter.NullStrToStr(&input.OrganizationConfig),
 		},
 	}
 
@@ -145,10 +134,10 @@ func (apiCfg *ApiConfig) ListOrganizationsHandler(w http.ResponseWriter, r *http
 				CreatedAt:    organization.OrganizationCreatedAt,
 				UpdatedAt:    organization.OrganizationUpdatedAt,
 				Realm:        organization.OrganizationRealm,
-				Active:       utils.NullBoolToBool(&organization.OrganizationActive),
-				ReportQ:      utils.NullBoolToBool(&organization.OrganizationReportQ),
+				Active:       converter.NullBoolToBool(&organization.OrganizationActive),
+				ReportQ:      converter.NullBoolToBool(&organization.OrganizationReportQ),
 				TypeID:       int(organization.OrganizationTypeID),
-				Config:       utils.NullStrToStr(&organization.OrganizationConfig),
+				Config:       converter.NullStrToStr(&organization.OrganizationConfig),
 			},
 		})
 	}
@@ -184,10 +173,10 @@ func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *ht
 			CreatedAt:    organization.OrganizationCreatedAt,
 			UpdatedAt:    organization.OrganizationUpdatedAt,
 			Realm:        organization.OrganizationRealm,
-			Active:       utils.NullBoolToBool(&organization.OrganizationActive),
-			ReportQ:      utils.NullBoolToBool(&organization.OrganizationReportQ),
+			Active:       converter.NullBoolToBool(&organization.OrganizationActive),
+			ReportQ:      converter.NullBoolToBool(&organization.OrganizationReportQ),
 			TypeID:       int(organization.OrganizationTypeID),
-			Config:       utils.NullStrToStr(&organization.OrganizationConfig),
+			Config:       converter.NullStrToStr(&organization.OrganizationConfig),
 		},
 	}
 

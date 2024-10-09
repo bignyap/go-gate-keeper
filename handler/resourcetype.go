@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
-	"github.com/bignyap/go-gate-keeper/utils"
+	"github.com/bignyap/go-gate-keeper/utils/converter"
+	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
 type CreateResourceTypeParams struct {
@@ -21,27 +22,27 @@ type CreateResourceTypeOutput struct {
 
 func CreateResourceTypeFormValidator(r *http.Request) (*sqlcgen.CreateResourceTypeParams, error) {
 
-	err := r.ParseForm()
+	err := formvalidator.ParseFormData(r)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing form data: %s", err)
+		return nil, err
 	}
 
-	name := r.FormValue("name")
-	if name == "" {
-		return nil, fmt.Errorf("name is required")
+	strFields := []string{"name", "code"}
+	strParsed, err := formvalidator.ParseStringFromForm(r, strFields)
+	if err != nil {
+		return nil, err
 	}
 
-	code := r.FormValue("code")
-	if code == "" {
-		return nil, fmt.Errorf("code is required")
+	nullStrField := []string{"description"}
+	nullStrParsed, err := formvalidator.ParseNullStringFromForm(r, nullStrField)
+	if err != nil {
+		return nil, err
 	}
-
-	description := utils.StrToNullStr(r.FormValue("description"))
 
 	input := sqlcgen.CreateResourceTypeParams{
-		ResourceTypeName:        name,
-		ResourceTypeCode:        code,
-		ResourceTypeDescription: description,
+		ResourceTypeName:        strParsed["name"],
+		ResourceTypeCode:        strParsed["code"],
+		ResourceTypeDescription: nullStrParsed["description"],
 	}
 
 	return &input, nil
@@ -71,7 +72,7 @@ func (apiCfg *ApiConfig) CreateResurceTypeHandler(w http.ResponseWriter, r *http
 		CreateResourceTypeParams: CreateResourceTypeParams{
 			Name:        input.ResourceTypeName,
 			Code:        input.ResourceTypeCode,
-			Description: utils.NullStrToStr(&input.ResourceTypeDescription),
+			Description: converter.NullStrToStr(&input.ResourceTypeDescription),
 		},
 	}
 
@@ -94,7 +95,7 @@ func (apiCfg *ApiConfig) ListResourceTypeHandler(w http.ResponseWriter, r *http.
 			CreateResourceTypeParams: CreateResourceTypeParams{
 				Name:        resourceType.ResourceTypeName,
 				Code:        resourceType.ResourceTypeCode,
-				Description: utils.NullStrToStr(&resourceType.ResourceTypeDescription),
+				Description: converter.NullStrToStr(&resourceType.ResourceTypeDescription),
 			},
 		})
 	}
@@ -104,7 +105,7 @@ func (apiCfg *ApiConfig) ListResourceTypeHandler(w http.ResponseWriter, r *http.
 
 func (apiCfg *ApiConfig) DeleteResourceTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := utils.StrToInt(r.URL.Query().Get("id"))
+	id, err := converter.StrToInt(r.URL.Query().Get("id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return
