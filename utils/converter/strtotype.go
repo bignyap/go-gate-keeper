@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-type Converter interface {
-	Convert(str string) (interface{}, error)
+type Converter[T any] interface {
+	Convert(str string) (T, error)
 }
 
 type IntConverter struct{}
 
-func (c IntConverter) Convert(str string) (interface{}, error) {
+func (c IntConverter) Convert(str string) (int, error) {
 	if str == "" {
 		return 0, fmt.Errorf("empty string cannot be converted to int")
 	}
@@ -26,7 +26,7 @@ func (c IntConverter) Convert(str string) (interface{}, error) {
 
 type FloatConverter struct{}
 
-func (c FloatConverter) Convert(str string) (interface{}, error) {
+func (c FloatConverter) Convert(str string) (float64, error) {
 	if str == "" {
 		return 0.0, fmt.Errorf("empty string cannot be converted to float")
 	}
@@ -37,10 +37,9 @@ func (c FloatConverter) Convert(str string) (interface{}, error) {
 	return floatValue, nil
 }
 
-// BoolConverter implements Converter for bool
 type BoolConverter struct{}
 
-func (c BoolConverter) Convert(str string) (interface{}, error) {
+func (c BoolConverter) Convert(str string) (bool, error) {
 	if str == "" {
 		return false, fmt.Errorf("empty string cannot be converted to boolean")
 	}
@@ -53,7 +52,7 @@ func (c BoolConverter) Convert(str string) (interface{}, error) {
 
 type DateConverter struct{}
 
-func (c DateConverter) Convert(str string) (interface{}, error) {
+func (c DateConverter) Convert(str string) (time.Time, error) {
 	if str == "" {
 		return time.Time{}, fmt.Errorf("empty string cannot be converted to date")
 	}
@@ -66,7 +65,7 @@ func (c DateConverter) Convert(str string) (interface{}, error) {
 
 type NullInt32Converter struct{}
 
-func (c NullInt32Converter) Convert(str string) (interface{}, error) {
+func (c NullInt32Converter) Convert(str string) (sql.NullInt32, error) {
 	if str == "" {
 		return sql.NullInt32{Valid: false}, nil
 	}
@@ -79,7 +78,7 @@ func (c NullInt32Converter) Convert(str string) (interface{}, error) {
 
 type NullInt64Converter struct{}
 
-func (c NullInt64Converter) Convert(str string) (interface{}, error) {
+func (c NullInt64Converter) Convert(str string) (sql.NullInt64, error) {
 	if str == "" {
 		return sql.NullInt64{Valid: false}, nil
 	}
@@ -92,7 +91,7 @@ func (c NullInt64Converter) Convert(str string) (interface{}, error) {
 
 type NullFloat64Converter struct{}
 
-func (c NullFloat64Converter) Convert(str string) (interface{}, error) {
+func (c NullFloat64Converter) Convert(str string) (sql.NullFloat64, error) {
 	if str == "" {
 		return sql.NullFloat64{Valid: false}, nil
 	}
@@ -105,7 +104,7 @@ func (c NullFloat64Converter) Convert(str string) (interface{}, error) {
 
 type NullBoolConverter struct{}
 
-func (c NullBoolConverter) Convert(str string) (interface{}, error) {
+func (c NullBoolConverter) Convert(str string) (sql.NullBool, error) {
 	if str == "" {
 		return sql.NullBool{Valid: false}, nil
 	}
@@ -118,13 +117,13 @@ func (c NullBoolConverter) Convert(str string) (interface{}, error) {
 
 type NullStringConverter struct{}
 
-func (c NullStringConverter) Convert(str string) (interface{}, error) {
+func (c NullStringConverter) Convert(str string) (sql.NullString, error) {
 	return sql.NullString{String: str, Valid: str != ""}, nil
 }
 
 type NullTimeConverter struct{}
 
-func (c NullTimeConverter) Convert(str string) (interface{}, error) {
+func (c NullTimeConverter) Convert(str string) (sql.NullTime, error) {
 	if str == "" {
 		return sql.NullTime{Valid: false}, nil
 	}
@@ -135,6 +134,6 @@ func (c NullTimeConverter) Convert(str string) (interface{}, error) {
 	return sql.NullTime{Time: timeValue, Valid: true}, nil
 }
 
-func ConvertString(str string, converter Converter) (interface{}, error) {
+func ConvertString[T any](str string, converter Converter[T]) (T, error) {
 	return converter.Convert(str)
 }
