@@ -1,0 +1,49 @@
+
+/subTier:
+  post:
+    summary: Create a subscription tier
+    operationId: createSubTier
+    tags:
+      - Subscription Tier
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/SubTier.yaml#/CreateSubTierInput'
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/SubTier.yaml#/CreateSubTierOutput'
+  get:
+    summary: List subscription tiers
+    operationId: listSubTiers
+    tags:
+      - Subscription Tier
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../schemas/SubTier.yaml#/CreateSubTierOutput'
+/subTier/{Id}:
+  delete:
+    summary: Delete a subscription tier
+    operationId: deleteSubTier
+    tags:
+      - Subscription Tier
+    parameters:
+      - name: Id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '204':
+        description: No Content

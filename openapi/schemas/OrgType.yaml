@@ -1,0 +1,18 @@
+CreateOrgTypeInput:
+  type: object
+  properties:
+    name:
+      type: string
+  required:
+    - name
+
+CreateOrgTypeOutput:
+  type: object
+  properties:
+    id:
+      type: integer
+    name:
+      type: string
+  required:
+    - id
+    - name

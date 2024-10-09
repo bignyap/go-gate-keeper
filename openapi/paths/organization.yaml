@@ -1,0 +1,58 @@
+paths:
+  /org:
+    post:
+      summary: Create an organization
+      operationId: createOrganization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/Organization.yaml'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/Organization.yaml'
+    get:
+      summary: List organizations
+      operationId: listOrganizations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/Organization.yaml'
+  /org/{Id}:
+    get:
+      summary: Get an organization by ID
+      operationId: getOrganizationById
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/Organization.yaml'
+    delete:
+      summary: Delete an organization
+      operationId: deleteOrganization
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content

@@ -1,0 +1,401 @@
+openapi: 3.0.0
+info:
+  title: Go Gate Keeper API
+  version: 1.0.0
+paths:
+  /orgType:
+    post:
+      summary: Create an organization type
+      operationId: createOrgType
+      tags:
+        - Organization Type
+      responses:
+        '201':
+          description: Created
+    get:
+      summary: List organization types
+      operationId: listOrgTypes
+      tags:
+        - Organization Type
+      responses:
+        '200':
+          description: OK
+  /orgType/{Id}:
+    delete:
+      summary: Delete an organization type
+      operationId: deleteOrgType
+      tags:
+        - Organization Type
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /subTier:
+    post:
+      summary: Create a subscription tier
+      operationId: createSubTier
+      tags:
+        - Subscription Tier
+      responses:
+        '201':
+          description: Created
+    get:
+      summary: List subscription tiers
+      operationId: listSubTiers
+      tags:
+        - Subscription Tier
+      responses:
+        '200':
+          description: OK
+  /subTier/{Id}:
+    delete:
+      summary: Delete a subscription tier
+      operationId: deleteSubTier
+      tags:
+        - Subscription Tier
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /endpoint:
+    post:
+      summary: Register an endpoint
+      operationId: registerEndpoint
+      tags:
+        - Endpoint
+      responses:
+        '201':
+          description: Created
+    get:
+      summary: List endpoints
+      operationId: listEndpoints
+      tags:
+        - Endpoint
+      responses:
+        '200':
+          description: OK
+  /endpoint/{Id}:
+    delete:
+      summary: Delete an endpoint
+      operationId: deleteEndpoint
+      tags:
+        - Endpoint
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /org:
+    post:
+      summary: Create an organization
+      operationId: createOrganization
+      tags:
+        - Organization
+      responses:
+        '201':
+          description: Created
+    get:
+      summary: List organizations
+      operationId: listOrganizations
+      tags:
+        - Organization
+      responses:
+        '200':
+          description: OK
+  /org/{Id}:
+    delete:
+      summary: Delete an organization
+      operationId: deleteOrganization
+      tags:
+        - Organization
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+    get:
+      summary: Get an organization by ID
+      operationId: getOrganizationById
+      tags:
+        - Organization
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /tierPricing:
+    post:
+      summary: Create tier pricing
+      operationId: createTierPricing
+      tags:
+        - Tier Pricing
+      responses:
+        '201':
+          description: Created
+  /tierPricing/{tier_id}:
+    delete:
+      summary: Delete tier pricing by tier ID
+      operationId: deleteTierPricingByTierId
+      tags:
+        - Tier Pricing
+      parameters:
+        - name: tier_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+    get:
+      summary: Get tier pricing by tier ID
+      operationId: getTierPricingByTierId
+      tags:
+        - Tier Pricing
+      parameters:
+        - name: tier_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /tierPricing/{id}:
+    delete:
+      summary: Delete tier pricing by ID
+      operationId: deleteTierPricingById
+      tags:
+        - Tier Pricing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /subscription:
+    post:
+      summary: Create a subscription
+      operationId: createSubscription
+      tags:
+        - Subscription
+      responses:
+        '201':
+          description: Created
+    get:
+      summary: List subscriptions
+      operationId: listSubscriptions
+      tags:
+        - Subscription
+      responses:
+        '200':
+          description: OK
+  /subscription/id/{id}:
+    get:
+      summary: Get subscription by ID
+      operationId: getSubscriptionById
+      tags:
+        - Subscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /subscription/orgId/{organization_id}:
+    get:
+      summary: Get subscriptions by organization ID
+      operationId: getSubscriptionsByOrgId
+      tags:
+        - Subscription
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /subscription/{id}:
+    delete:
+      summary: Delete subscription by ID
+      operationId: deleteSubscriptionById
+      tags:
+        - Subscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /subscription/{organization_id}:
+    delete:
+      summary: Delete subscription by organization ID
+      operationId: deleteSubscriptionByOrgId
+      tags:
+        - Subscription
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /subscriptionEndpoint:
+    post:
+      summary: Create custom pricing
+      operationId: createCustomPricing
+      tags:
+        - Subscription Endpoint
+      responses:
+        '201':
+          description: Created
+  /subscriptionEndpoint/subId/{subscription_id}:
+    delete:
+      summary: Delete custom pricing by subscription ID
+      operationId: deleteCustomPricingBySubscriptionId
+      tags:
+        - Subscription Endpoint
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /subscriptionEndpoint/id/{id}:
+    delete:
+      summary: Delete custom pricing by ID
+      operationId: deleteCustomPricingById
+      tags:
+        - Subscription Endpoint
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /subscriptionEndpoint/{subscription_id}:
+    get:
+      summary: Get custom pricing by subscription ID
+      operationId: getCustomPricingBySubscriptionId
+      tags:
+        - Subscription Endpoint
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /resourceType:
+    post:
+      summary: Create a resource type
+      operationId: createResourceType
+      tags:
+        - Resource Type
+      responses:
+        '201':
+          description: Created
+    get:
+      summary: List resource types
+      operationId: listResourceTypes
+      tags:
+        - Resource Type
+      responses:
+        '200':
+          description: OK
+  /resourceType/{id}:
+    delete:
+      summary: Delete a resource type
+      operationId: deleteResourceType
+      tags:
+        - Resource Type
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /orgPermission:
+    post:
+      summary: Create an organization permission
+      operationId: createOrgPermission
+      tags:
+        - Organization Permission
+      responses:
+        '201':
+          description: Created
+  /orgPermission/{organization_id}:
+    delete:
+      summary: Delete organization permission by organization ID
+      operationId: deleteOrgPermissionByOrgId
+      tags:
+        - Organization Permission
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+    get:
+      summary: Get organization permission by organization ID
+      operationId: getOrgPermissionByOrgId
+      tags:
+        - Organization Permission
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
