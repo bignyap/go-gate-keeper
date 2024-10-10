@@ -10,6 +10,7 @@ import (
 	"github.com/bignyap/go-gate-keeper/database/dbconn"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/handler"
+	"github.com/bignyap/go-gate-keeper/middlewares"
 	"github.com/bignyap/go-gate-keeper/router"
 	"github.com/joho/godotenv"
 )
@@ -57,13 +58,15 @@ func InitializeWebServer(apiConfig *handler.ApiConfig) error {
 
 	router.RegisterHandlers(mux, apiConfig)
 
+	corsMux := middlewares.CorsMiddleware(mux)
+
 	port := os.Getenv("APPLICATION_PORT")
 	if port == "" {
 		port = "8080"
 	}
 	address := ":" + port
 
-	err := http.ListenAndServe(address, mux)
+	err := http.ListenAndServe(address, corsMux)
 	if err != nil {
 		return fmt.Errorf("error starting web server: %v", err)
 	}
