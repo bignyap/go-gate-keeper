@@ -1,5 +1,11 @@
 # go-gate-keeper
-Generalized application which includes features managing organization, users, subscription for your application.
+A robust multi-tenant application designed to manage organizations, subscriptions, and API usage with fine-grained control over resources and permissions. It supports subscription tiers, custom endpoint pricing, and detailed billing management for different organizations within your platform.
+
+### Key Features:
+- **Multi-tenancy**: Seamlessly manage multiple organizations with unique configurations, including realm, support, and permissions.
+- **Subscription Management**: Supports various subscription tiers, API usage limits, and custom pricing models for API endpoints.
+- **Billing and Usage Tracking**: Automatically track API usage and generate detailed billing reports based on subscription and endpoint-specific pricing.
+- **Resource Permissions**: Fine-grained access control to resources through permission management for organizations.
 
 ### Steps to start the application:
 
