@@ -33,7 +33,7 @@ func EndpointHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func OrganizationHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /org", apiConfig.CreateOrganizationandler)
-	mux.HandleFunc("GET /org", apiConfig.ListOrgTypeHandler)
+	mux.HandleFunc("GET /org", apiConfig.ListOrganizationsHandler)
 	mux.HandleFunc("DELETE /org/{Id}", apiConfig.DeleteOrganizationByIdHandler)
 	mux.HandleFunc("GET /org/{Id}", apiConfig.GetOrganizationByIdHandler)
 
