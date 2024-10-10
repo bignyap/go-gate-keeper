@@ -29,7 +29,7 @@ func CreateSubcriptionTierFormValidation(r *http.Request) (*sqlcgen.CreateSubscr
 		return nil, err
 	}
 
-	strFields := []string{"name", "type"}
+	strFields := []string{"name"}
 	strParsed, err := formvalidator.ParseStringFromForm(r, strFields)
 	if err != nil {
 		return nil, err
