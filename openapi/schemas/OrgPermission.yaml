@@ -1,0 +1,44 @@
+CreateOrgPermissionParams:
+  type: object
+  properties:
+    resource_type_id:
+      type: integer
+      description: ID of the resource type
+    organization_id:
+      type: integer
+      description: ID of the organization
+    permission_code:
+      type: string
+      description: Code representing the permission
+  required:
+    - resource_type_id
+    - organization_id
+    - permission_code
+
+CreateOrgPermissionOutput:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: ID of the created organization permission
+    resource_type_id:
+      type: integer
+      description: ID of the resource type
+    organization_id:
+      type: integer
+      description: ID of the organization
+    permission_code:
+      type: string
+      description: Code representing the permission
+  required:
+    - id
+    - resource_type_id
+    - organization_id
+    - permission_code
+
+Error:
+  type: object
+  properties:
+    message:
+      type: string
+      description: Error message

@@ -1,0 +1,98 @@
+paths:
+  /customPricing:
+    post:
+      summary: Create a custom pricing entry
+      operationId: createCustomPricing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/CustomPricing.yaml#/CreateCustomPricingParams'
+      responses:
+        '201':
+          description: Successfully created custom pricing.
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/CustomPricing.yaml#/CreateCustomPricingOutput'
+        '400':
+          description: Bad request, validation error or database error.
+    delete:
+      summary: Delete custom pricing by subscription ID or pricing ID
+      parameters:
+        - name: subscription_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: Subscription ID to delete custom pricing.
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: Custom pricing ID to delete.
+      responses:
+        '204':
+          description: Custom pricing deleted successfully.
+        '400':
+          description: Invalid ID format or other errors.
+
+  /customPricing/subId/{subscription_id}:
+    delete:
+      summary: Delete custom pricing by subscription ID
+      operationId: deleteCustomPricingBySubscriptionId
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the subscription to delete the custom pricing.
+      responses:
+        '204':
+          description: Custom pricing deleted successfully.
+        '400':
+          description: Invalid subscription ID format or error during deletion.
+
+  /customPricing/id/{id}:
+    delete:
+      summary: Delete custom pricing by pricing ID
+      operationId: deleteCustomPricingById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the custom pricing to delete.
+      responses:
+        '204':
+          description: Custom pricing deleted successfully.
+        '400':
+          description: Invalid pricing ID format or error during deletion.
+
+  /customPricing/{subscription_id}:
+    get:
+      summary: Get custom pricing by subscription ID
+      operationId: getCustomPricing
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the subscription to retrieve custom pricing.
+      responses:
+        '200':
+          description: Successfully retrieved custom pricing details.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/CustomPricing.yaml#/CreateCustomPricingOutput'
+        '400':
+          description: Invalid subscription ID format or error during retrieval.
+    

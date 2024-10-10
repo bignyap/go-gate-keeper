@@ -1,47 +1,48 @@
-/orgType:
-  post:
-    summary: Create an organization type
-    operationId: createOrgType
-    tags:
-      - Organization Type
-    requestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '../schemas/OrgType.yaml#/CreateOrgTypeInput'
-    responses:
-      '201':
-        description: Created
+paths:
+  /orgType:
+    post:
+      summary: Create an organization type
+      operationId: createOrgType
+      tags:
+        - Organization Type
+      requestBody:
         content:
           application/json:
             schema:
-              $ref: '../schemas#/CreateOrgTypeOutput'
-  get:
-    summary: List organization types
-    operationId: listOrgTypes
-    tags:
-      - Organization Type
-    responses:
-      '200':
-        description: OK
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
+              $ref: '../schemas/OrgType.yaml#/CreateOrgTypeInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
                 $ref: '../schemas/OrgType.yaml#/CreateOrgTypeOutput'
-/orgType/{Id}:
-  delete:
-    summary: Delete an organization type
-    operationId: deleteOrgType
-    tags:
-      - Organization Type
-    parameters:
-      - name: Id
-        in: path
-        required: true
-        schema:
-          type: string
-    responses:
-      '204':
-        description: No Content
+    get:
+      summary: List organization types
+      operationId: listOrgTypes
+      tags:
+        - Organization Type
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/OrgType.yaml#/CreateOrgTypeOutput'
+  /orgType/{Id}:
+    delete:
+      summary: Delete an organization type
+      operationId: deleteOrgType
+      tags:
+        - Organization Type
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content

@@ -1,0 +1,109 @@
+paths:
+  /subscription:
+    post:
+      summary: Create a new subscription
+      operationId: createSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/Subscription.yaml#/CreateSubscriptionParams'
+      responses:
+        '201':
+          description: Subscription created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
+        '400':
+          description: Bad request
+    get:
+      summary: List all subscriptions
+      operationId: listSubscriptions
+      responses:
+        '200':
+          description: A list of subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
+        '400':
+          description: Bad request
+
+  /subscription/{id}:
+    delete:
+      summary: Delete a subscription by ID
+      operationId: deleteSubscriptionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Subscription deleted successfully
+        '400':
+          description: Bad request
+
+  /subscription/organization/{organization_id}:
+    delete:
+      summary: Delete subscriptions by organization ID
+      operationId: deleteSubscriptionByOrgId
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Subscriptions deleted successfully
+        '400':
+          description: Bad request
+
+  /subscription/id/{id}:
+    get:
+      summary: Get a subscription by ID
+      operationId: getSubscriptionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A subscription by ID
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
+        '400':
+          description: Bad request
+
+  /subscription/orgId/{organization_id}:
+    get:
+      summary: Get subscriptions by organization ID
+      operationId: getSubscriptionByOrgId
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Subscriptions retrieved by organization ID
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
+        '400':
+          description: Bad request
+    

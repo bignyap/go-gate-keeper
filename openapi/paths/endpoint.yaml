@@ -1,28 +1,28 @@
 paths:
-  /subTier:
+  /endpoint:
     post:
-      summary: Create a subscription tier
-      operationId: createSubTier
+      summary: Register an endpoint
+      operationId: registerEndpoint
       tags:
-        - Subscription Tier
+        - Endpoint
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '../schemas/SubTier.yaml#/CreateSubTierInput'
+              $ref: '../schemas/Endpoint.yaml#/RegisterEndpointParams'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '../schemas/SubTier.yaml#/CreateSubTierOutput'
+                $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutputs'
     get:
-      summary: List subscription tiers
-      operationId: listSubTiers
+      summary: List endpoints
+      operationId: listEndpoints
       tags:
-        - Subscription Tier
+        - Endpoint
       responses:
         '200':
           description: OK
@@ -31,13 +31,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../schemas/SubTier.yaml#/CreateSubTierOutput'
-  /subTier/{Id}:
+                  $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutputs'
+  /endpoint/{Id}:
     delete:
-      summary: Delete a subscription tier
-      operationId: deleteSubTier
+      summary: Delete an endpoint
+      operationId: deleteEndpoint
       tags:
-        - Subscription Tier
+        - Endpoint
       parameters:
         - name: Id
           in: path

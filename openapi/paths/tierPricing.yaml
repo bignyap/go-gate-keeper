@@ -1,0 +1,70 @@
+paths:
+  /tierPricing:
+    post:
+      summary: Create tier pricing
+      operationId: createTierPricing
+      tags:
+        - Tier Pricing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/TierPricing.yaml#/CreateTierPricingParams'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutputs'
+  /tierPricing/{tier_id}:
+    delete:
+      summary: Delete tier pricing by tier ID
+      operationId: deleteTierPricingByTierId
+      tags:
+        - Tier Pricing
+      parameters:
+        - name: tier_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+    get:
+      summary: Get tier pricing by tier ID
+      operationId: getTierPricingByTierId
+      tags:
+        - Tier Pricing
+      parameters:
+        - name: tier_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutputs'
+  /tierPricing/{id}:
+    delete:
+      summary: Delete tier pricing by ID
+      operationId: deleteTierPricingById
+      tags:
+        - Tier Pricing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content

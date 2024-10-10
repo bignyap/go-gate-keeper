@@ -59,12 +59,12 @@ func SubscriptionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 }
 
-func CustomEndpointHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
+func CustomPricingHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
-	mux.HandleFunc("POST /subscriptionEndpoint", apiConfig.CreateCustomPricingHandler)
-	mux.HandleFunc("DELETE /subscriptionEndpoint/subId/{subscription_id}", apiConfig.DeleteCustomPricingHandler)
-	mux.HandleFunc("DELETE /subscriptionEndpoint/id/{id}", apiConfig.DeleteCustomPricingHandler)
-	mux.HandleFunc("GET /subscriptionEndpoint/{subscription_id}", apiConfig.GetCustomPricingHandler)
+	mux.HandleFunc("POST /customPricing", apiConfig.CreateCustomPricingHandler)
+	mux.HandleFunc("DELETE /customPricing/subId/{subscription_id}", apiConfig.DeleteCustomPricingHandler)
+	mux.HandleFunc("DELETE /customPricing/id/{id}", apiConfig.DeleteCustomPricingHandler)
+	mux.HandleFunc("GET /customPricing/{subscription_id}", apiConfig.GetCustomPricingHandler)
 
 }
 
@@ -93,7 +93,7 @@ func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 	OrganizationHandler(mux, apiConfig)
 	TierPricingHandler(mux, apiConfig)
 	SubscriptionHandler(mux, apiConfig)
-	CustomEndpointHandler(mux, apiConfig)
+	CustomPricingHandler(mux, apiConfig)
 	ResourceTypeHandler(mux, apiConfig)
 	OrgPermissionHandler(mux, apiConfig)
 }

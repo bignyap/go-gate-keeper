@@ -1,0 +1,75 @@
+CreateSubscriptionParams:
+  type: object
+  required:
+    - name
+    - type
+    - organization_id
+    - subscription_tier_id
+    - start_date
+  properties:
+    name:
+      type: string
+    type:
+      type: string
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+    start_date:
+      type: string
+      format: date-time
+    api_limit:
+      type: integer
+      nullable: true
+    expiry_date:
+      type: string
+      format: date-time
+      nullable: true
+    description:
+      type: string
+      nullable: true
+    status:
+      type: boolean
+      nullable: true
+    organization_id:
+      type: integer
+    subscription_tier_id:
+      type: integer
+
+CreateSubscriptionOutput:
+  type: object
+  properties:
+    id:
+      type: integer
+    name:
+      type: string
+    type:
+      type: string
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+    start_date:
+      type: string
+      format: date-time
+    api_limit:
+      type: integer
+      nullable: true
+    expiry_date:
+      type: string
+      format: date-time
+      nullable: true
+    description:
+      type: string
+      nullable: true
+    status:
+      type: boolean
+      nullable: true
+    organization_id:
+      type: integer
+    subscription_tier_id:
+      type: integer

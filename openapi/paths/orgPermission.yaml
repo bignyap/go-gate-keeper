@@ -1,0 +1,67 @@
+paths:
+  /orgPermission:
+    post:
+      summary: Create a new organization permission
+      operationId: createOrgPermission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/OrgPermission.yaml#/CreateOrgPermissionParams'
+      responses:
+        '201':
+          description: Organization permission created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/OrgPermission.yaml#/CreateOrgPermissionOutput'
+        '400':
+          description: Bad request (invalid parameters)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/OrgPermission.yaml#/Error'
+  /orgPermission/{organization_id}:
+    get:
+      summary: Get organization permission by organization ID
+      operationId: getOrgPermission
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Organization permission retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/OrgPermission.yaml#/CreateOrgPermissionOutput'
+        '400':
+          description: Bad request (invalid ID format)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/OrgPermission.yaml#/Error'
+    delete:
+      summary: Delete organization permission by organization ID
+      operationId: deleteOrgPermission
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Organization permission deleted successfully
+        '400':
+          description: Bad request (invalid ID format or deletion error)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/OrgPermission.yaml#/Error'

@@ -4,398 +4,50 @@ info:
   version: 1.0.0
 paths:
   /orgType:
-    post:
-      summary: Create an organization type
-      operationId: createOrgType
-      tags:
-        - Organization Type
-      responses:
-        '201':
-          description: Created
-    get:
-      summary: List organization types
-      operationId: listOrgTypes
-      tags:
-        - Organization Type
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/orgType.yaml#/paths/~1orgType'
   /orgType/{Id}:
-    delete:
-      summary: Delete an organization type
-      operationId: deleteOrgType
-      tags:
-        - Organization Type
-      parameters:
-        - name: Id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
+    $ref: './paths/orgType.yaml#/paths/~1orgType~1{Id}'
   /subTier:
-    post:
-      summary: Create a subscription tier
-      operationId: createSubTier
-      tags:
-        - Subscription Tier
-      responses:
-        '201':
-          description: Created
-    get:
-      summary: List subscription tiers
-      operationId: listSubTiers
-      tags:
-        - Subscription Tier
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/subTier.yaml#/paths/~1subTier'
   /subTier/{Id}:
-    delete:
-      summary: Delete a subscription tier
-      operationId: deleteSubTier
-      tags:
-        - Subscription Tier
-      parameters:
-        - name: Id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
+    $ref: './paths/subTier.yaml#/paths/~1subTier~1{Id}'
   /endpoint:
-    post:
-      summary: Register an endpoint
-      operationId: registerEndpoint
-      tags:
-        - Endpoint
-      responses:
-        '201':
-          description: Created
-    get:
-      summary: List endpoints
-      operationId: listEndpoints
-      tags:
-        - Endpoint
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/endpoint.yaml#/paths/~1endpoint'
   /endpoint/{Id}:
-    delete:
-      summary: Delete an endpoint
-      operationId: deleteEndpoint
-      tags:
-        - Endpoint
-      parameters:
-        - name: Id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
+    $ref: './paths/endpoint.yaml#/paths/~1endpoint~1{Id}'
   /org:
-    post:
-      summary: Create an organization
-      operationId: createOrganization
-      tags:
-        - Organization
-      responses:
-        '201':
-          description: Created
-    get:
-      summary: List organizations
-      operationId: listOrganizations
-      tags:
-        - Organization
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/organization.yaml#/paths/~1org'
   /org/{Id}:
-    delete:
-      summary: Delete an organization
-      operationId: deleteOrganization
-      tags:
-        - Organization
-      parameters:
-        - name: Id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
-    get:
-      summary: Get an organization by ID
-      operationId: getOrganizationById
-      tags:
-        - Organization
-      parameters:
-        - name: Id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/organization.yaml#/paths/~1org~1{Id}'
   /tierPricing:
-    post:
-      summary: Create tier pricing
-      operationId: createTierPricing
-      tags:
-        - Tier Pricing
-      responses:
-        '201':
-          description: Created
+    $ref: './paths/tierPricing.yaml#/paths/~1tierPricing'
   /tierPricing/{tier_id}:
-    delete:
-      summary: Delete tier pricing by tier ID
-      operationId: deleteTierPricingByTierId
-      tags:
-        - Tier Pricing
-      parameters:
-        - name: tier_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
-    get:
-      summary: Get tier pricing by tier ID
-      operationId: getTierPricingByTierId
-      tags:
-        - Tier Pricing
-      parameters:
-        - name: tier_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1{tier_id}'
   /tierPricing/{id}:
-    delete:
-      summary: Delete tier pricing by ID
-      operationId: deleteTierPricingById
-      tags:
-        - Tier Pricing
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
+    $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1{id}'
   /subscription:
-    post:
-      summary: Create a subscription
-      operationId: createSubscription
-      tags:
-        - Subscription
-      responses:
-        '201':
-          description: Created
-    get:
-      summary: List subscriptions
-      operationId: listSubscriptions
-      tags:
-        - Subscription
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/subscription.yaml#/paths/~1subscription'
   /subscription/id/{id}:
-    get:
-      summary: Get subscription by ID
-      operationId: getSubscriptionById
-      tags:
-        - Subscription
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/subscription.yaml#/paths/~1subscription~1id~1{id}'
   /subscription/orgId/{organization_id}:
-    get:
-      summary: Get subscriptions by organization ID
-      operationId: getSubscriptionsByOrgId
-      tags:
-        - Subscription
-      parameters:
-        - name: organization_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/subscription.yaml#/paths/~1subscription~1orgId~1{organization_id}'
   /subscription/{id}:
-    delete:
-      summary: Delete subscription by ID
-      operationId: deleteSubscriptionById
-      tags:
-        - Subscription
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
+    $ref: './paths/subscription.yaml#/paths/~1subscription~1{id}'
   /subscription/{organization_id}:
-    delete:
-      summary: Delete subscription by organization ID
-      operationId: deleteSubscriptionByOrgId
-      tags:
-        - Subscription
-      parameters:
-        - name: organization_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
-  /subscriptionEndpoint:
-    post:
-      summary: Create custom pricing
-      operationId: createCustomPricing
-      tags:
-        - Subscription Endpoint
-      responses:
-        '201':
-          description: Created
-  /subscriptionEndpoint/subId/{subscription_id}:
-    delete:
-      summary: Delete custom pricing by subscription ID
-      operationId: deleteCustomPricingBySubscriptionId
-      tags:
-        - Subscription Endpoint
-      parameters:
-        - name: subscription_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
-  /subscriptionEndpoint/id/{id}:
-    delete:
-      summary: Delete custom pricing by ID
-      operationId: deleteCustomPricingById
-      tags:
-        - Subscription Endpoint
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
-  /subscriptionEndpoint/{subscription_id}:
-    get:
-      summary: Get custom pricing by subscription ID
-      operationId: getCustomPricingBySubscriptionId
-      tags:
-        - Subscription Endpoint
-      parameters:
-        - name: subscription_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/subscription.yaml#/paths/~1subscription~1organization~1{organization_id}'
+  /customPricing:
+    $ref: './paths/customPricing.yaml#/paths/~1customPricing'
+  /customPricing/{subscription_id}:
+    $ref: './paths/customPricing.yaml#/paths/~1customPricing~1{subscription_id}'
+  /customPricing/subId/{subscription_id}:
+    $ref: './paths/customPricing.yaml#/paths/~1customPricing~1subId~1{subscription_id}'
+  /customPricing/id/{id}:
+    $ref: './paths/customPricing.yaml#/paths/~1customPricing~1id~1{id}'
   /resourceType:
-    post:
-      summary: Create a resource type
-      operationId: createResourceType
-      tags:
-        - Resource Type
-      responses:
-        '201':
-          description: Created
-    get:
-      summary: List resource types
-      operationId: listResourceTypes
-      tags:
-        - Resource Type
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/resourceType.yaml#/paths/~1resourceType'
   /resourceType/{id}:
-    delete:
-      summary: Delete a resource type
-      operationId: deleteResourceType
-      tags:
-        - Resource Type
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
+    $ref: './paths/resourceType.yaml#/paths/~1resourceType~1{id}'
   /orgPermission:
-    post:
-      summary: Create an organization permission
-      operationId: createOrgPermission
-      tags:
-        - Organization Permission
-      responses:
-        '201':
-          description: Created
+    $ref: './paths/orgPermission.yaml#/paths/~1orgPermission'
   /orgPermission/{organization_id}:
-    delete:
-      summary: Delete organization permission by organization ID
-      operationId: deleteOrgPermissionByOrgId
-      tags:
-        - Organization Permission
-      parameters:
-        - name: organization_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
-    get:
-      summary: Get organization permission by organization ID
-      operationId: getOrgPermissionByOrgId
-      tags:
-        - Organization Permission
-      parameters:
-        - name: organization_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
+    $ref: './paths/orgPermission.yaml#/paths/~1orgPermission~1{organization_id}'

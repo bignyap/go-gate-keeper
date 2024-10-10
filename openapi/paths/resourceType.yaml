@@ -1,0 +1,63 @@
+paths:
+  /resourceType:
+    post:
+      summary: Create a new resource type
+      operationId: createResourceType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/ResourceType.yaml#/CreateResourceTypeParams'
+      responses:
+        "201":
+          description: Resource type created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/ResourceType.yaml#/CreteResourceTypeOutputs'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/ResourceType.yaml#/Error'
+    get:
+      summary: List all resource types
+      operationId: listResourceTypes
+      responses:
+        "200":
+          description: A list of resource types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/ResourceType.yaml#/CreteResourceTypeOutputs'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/ResourceType.yaml#/Error'
+  /resourceType/{id}:
+    delete:
+      summary: Delete a resource type by ID
+      operationId: deleteResourceType
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "204":
+          description: Resource type deleted successfully
+        "400":
+          description: Bad request or invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/ResourceType.yaml#/Error'
+    

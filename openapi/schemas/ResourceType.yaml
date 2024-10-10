@@ -1,0 +1,40 @@
+CreateResourceTypeParams:
+  type: object
+  properties:
+    name:
+      type: string
+      example: "Admin"
+    code:
+      type: string
+      example: "ADMIN"
+    description:
+      type: string
+      nullable: true
+      example: "Administrative resource type"
+  required:
+    - name
+    - code
+
+CreteResourceTypeOutputs:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    name:
+      type: string
+      example: "Admin"
+    code:
+      type: string
+      example: "ADMIN"
+    description:
+      type: string
+      nullable: true
+      example: "Administrative resource type"
+
+Error:
+  type: object
+  properties:
+    error:
+      type: string
+      example: "Invalid request"

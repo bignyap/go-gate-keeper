@@ -1,0 +1,37 @@
+CreateTierPricingParams:
+  type: object
+  properties:
+    base_cost_per_call:
+      type: string
+    base_rate_limit:
+      type: string
+      nullable: true
+    api_endpoint_id:
+      type: int
+    subscription_tier_id:
+      type: int
+  required:
+    - base_cost_per_call
+    - api_endpoint_id
+    - subscription_tier_id
+
+CreateTierPricingOutputs:
+  type: object
+  properties:
+    id:
+      type: integer
+    base_cost_per_call:
+      type: string
+    base_rate_limit:
+      type: string
+      nullable: true
+    api_endpoint_id:
+      type: int
+    subscription_tier_id:
+      type: int
+  required:
+    - id
+    - base_cost_per_call
+    - base_rate_limit
+    - api_endpoint_id
+    - subscription_tier_id

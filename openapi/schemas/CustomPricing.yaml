@@ -1,0 +1,41 @@
+CreateCustomPricingParams:
+  type: object
+  properties:
+    custom_cost_per_call:
+      type: number
+      format: float
+      description: Custom cost per API call.
+    custom_rate_limit:
+      type: integer
+      description: Custom rate limit.
+    subscription_id:
+      type: integer
+      description: Subscription ID for the pricing.
+    tier_base_pricing_id:
+      type: integer
+      description: Base pricing tier ID.
+  required:
+    - custom_cost_per_call
+    - custom_rate_limit
+    - subscription_id
+    - tier_base_pricing_id
+
+CreateCustomPricingOutput:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: ID of the created custom pricing.
+    custom_cost_per_call:
+      type: number
+      format: float
+      description: Custom cost per API call.
+    custom_rate_limit:
+      type: integer
+      description: Custom rate limit.
+    subscription_id:
+      type: integer
+      description: Subscription ID for the pricing.
+    tier_base_pricing_id:
+      type: integer
+      description: Base pricing tier ID.
