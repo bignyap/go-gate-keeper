@@ -40,7 +40,7 @@ func DBConn(
 
 	driverName := config.Driver
 	dataSourceName := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s",
+		"%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		config.User, config.Password,
 		config.Host, config.Port,
 		config.DBName,
