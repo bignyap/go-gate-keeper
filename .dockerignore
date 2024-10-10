@@ -1,0 +1,51 @@
+# Ignore Go build artifacts
+bin/
+*.exe
+*.out
+*.test
+*.o
+
+# Ignore the air config and pid files
+.air/
+air.toml
+air.conf
+tmp/
+
+# Ignore the vendor directory if using go mod
+vendor/
+
+# Ignore Go module download caches
+pkg/
+*.a
+
+# Ignore compiled files
+*.so
+*.dll
+*.dylib
+
+# Ignore IDE-specific files and directories
+.idea/
+*.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore Git files
+.git/
+.gitignore
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+*~
+
+# Ignore the Go environment files
+go.env
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml

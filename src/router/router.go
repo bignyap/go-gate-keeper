@@ -42,8 +42,8 @@ func OrganizationHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func TierPricingHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /tierPricing", apiConfig.CreateTierPricingHandler)
-	mux.HandleFunc("DELETE /tierPricing/{tier_id}", apiConfig.DeleteTierPricingHandler)
-	mux.HandleFunc("DELETE /tierPricing/{id}", apiConfig.DeleteTierPricingHandler)
+	mux.HandleFunc("DELETE /tierPricing/tierId/{tier_id}", apiConfig.DeleteTierPricingHandler)
+	mux.HandleFunc("DELETE /tierPricing/id/{id}", apiConfig.DeleteTierPricingHandler)
 	mux.HandleFunc("GET /tierPricing/{tier_id}", apiConfig.GetTierPricingByTierIdHandler)
 
 }
@@ -51,8 +51,8 @@ func TierPricingHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func SubscriptionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /subscription", apiConfig.CreateSubscriptionHandler)
-	mux.HandleFunc("DELETE /subscription/{id}", apiConfig.DeleteSubscriptionHandler)
-	mux.HandleFunc("DELETE /subscription/{organization_id}", apiConfig.DeleteSubscriptionHandler)
+	mux.HandleFunc("DELETE /subscription/id/{id}", apiConfig.DeleteSubscriptionHandler)
+	mux.HandleFunc("DELETE /subscription/orgId/{organization_id}", apiConfig.DeleteSubscriptionHandler)
 	mux.HandleFunc("GET /subscription/id/{id}", apiConfig.GetSubscriptionHandler)
 	mux.HandleFunc("GET /subscription/orgId/{organization_id}", apiConfig.GetSubscriptionByrgIdHandler)
 	mux.HandleFunc("GET /subscription", apiConfig.ListSubscriptionHandler)

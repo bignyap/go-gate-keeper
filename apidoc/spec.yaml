@@ -2,6 +2,9 @@ openapi: 3.0.0
 info:
   title: Go Gate Keeper API
   version: 1.0.0
+servers:
+  - url: 'https://localhost/api'
+    description: "localhost"
 paths:
   /orgType:
     $ref: './paths/orgType.yaml#/paths/~1orgType'

@@ -15,21 +15,30 @@ import (
 )
 
 func GetEnvVals() error {
+	// Check if .env file exists
+	if _, err := os.Stat(".env"); os.IsNotExist(err) {
+		fmt.Println(".env file not found, skipping loading environment variables from file")
+		return nil
+	}
+
+	// Load the .env file
 	err := godotenv.Load()
 	if err != nil {
 		return fmt.Errorf("error loading .env file: %v", err)
 	}
+
 	return nil
 }
 
 func LoadDBConn() (*sql.DB, error) {
 	dbConfig := dbconn.DBConfig{
-		Driver:   os.Getenv("Driver"),
-		Host:     os.Getenv("Host"),
-		Port:     os.Getenv("Port"),
-		User:     os.Getenv("User"),
-		Password: os.Getenv("Password"),
-		DBName:   os.Getenv("DBName"),
+		Driver: "mysql",
+		// Driver:   os.Getenv("Driver"),
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		DBName:   os.Getenv("DB_NAME"),
 	}
 
 	poolProperties := dbconn.DefaultDBPoolProperties()
@@ -48,7 +57,7 @@ func InitializeWebServer(apiConfig *handler.ApiConfig) error {
 
 	router.RegisterHandlers(mux, apiConfig)
 
-	port := os.Getenv("PORT")
+	port := os.Getenv("APPLICATION_PORT")
 	if port == "" {
 		port = "8080"
 	}
@@ -76,8 +85,6 @@ func InitializeApp() {
 	apiCfg := &handler.ApiConfig{
 		DB: sqlcgen.New(conn),
 	}
-
-	fmt.Printf("Here is my %v", conn)
 
 	if err := InitializeWebServer(apiCfg); err != nil {
 		log.Fatalf("Failed to start web server: %v", err)
