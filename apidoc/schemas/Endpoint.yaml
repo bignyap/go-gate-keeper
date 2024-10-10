@@ -1,4 +1,4 @@
-RegisterEndpointParams:
+RegisterEndpointInput:
   type: object
   properties:
     name:
@@ -9,7 +9,7 @@ RegisterEndpointParams:
   required:
     - name
 
-RegisterEndpointOutputs:
+RegisterEndpointOutput:
   type: object
   properties:
     id:

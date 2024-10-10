@@ -13,7 +13,7 @@ type CreateOrgTypeInput struct {
 }
 
 type CreateOrgTypeOutput struct {
-	ID int `json:"name"`
+	ID int `json:"id"`
 	CreateOrgTypeInput
 }
 

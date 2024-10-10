@@ -1,4 +1,4 @@
-CreateTierPricingParams:
+CreateTierPricingInput:
   type: object
   properties:
     base_cost_per_call:
@@ -15,7 +15,7 @@ CreateTierPricingParams:
     - api_endpoint_id
     - subscription_tier_id
 
-CreateTierPricingOutputs:
+CreateTierPricingOutput:
   type: object
   properties:
     id:

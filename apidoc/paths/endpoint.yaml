@@ -10,14 +10,14 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '../schemas/Endpoint.yaml#/RegisterEndpointParams'
+              $ref: '../schemas/Endpoint.yaml#/RegisterEndpointInput'
       responses:
         '201':
           description: Created
           content:
             application/x-www-form-urlencoded:
               schema:
-                $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutputs'
+                $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutput'
     get:
       summary: List endpoints
       operationId: listEndpoints
@@ -31,7 +31,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutputs'
+                  $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutput'
   /endpoint/{Id}:
     delete:
       summary: Delete an endpoint

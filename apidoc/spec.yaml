@@ -3,7 +3,7 @@ info:
   title: Go Gate Keeper API
   version: 1.0.0
 servers:
-  - url: 'https://localhost/api'
+  - url: 'http://localhost:8080'
     description: "localhost"
 paths:
   /endpoint:
@@ -54,3 +54,37 @@ paths:
     $ref: './paths/customPricing.yaml#/paths/~1customPricing~1subId~1{subscription_id}'
   /customPricing/id/{id}:
     $ref: './paths/customPricing.yaml#/paths/~1customPricing~1id~1{id}'
+components:
+  schemas:
+    CreateCustomPricingInput:
+      $ref: './schemas/CustomPricing.yaml#/CreateCustomPricingInput'
+    CreateCustomPricingOutputs:
+      $ref: './schemas/CustomPricing.yaml#/CreateCustomPricingOutput'
+    RegisterEndpointInput:
+      $ref: './schemas/CustomPricing.yaml#/CreateCustomPricingInput'
+    RegisterEndpointOutput:
+      $ref: './schemas/CustomPricing.yaml#/CreateCustomPricingOutput'
+    CreateOrganizationInput:
+      $ref: './schemas/Organization.yaml#/CreateOrganizationInput'
+    CreateOrganizationOutput:
+      $ref: './schemas/Organization.yaml#/CreateOrganizationOutput'
+    CreateOrgPermissionInput:
+      $ref: './schemas/OrgPermission.yaml#/CreateOrgPermissionInput'
+    CreateOrgPermissionOutput:
+      $ref: './schemas/OrgPermission.yaml#/CreateOrgPermissionOutput'
+    CreateOrgTypeInput:
+      $ref: './schemas/OrgType.yaml#/CreateOrgTypeInput'
+    CreateOrgTypeOutput:
+      $ref: './schemas/OrgType.yaml#/CreateOrgTypeOutput'
+    CreateResourceTypeInput:
+      $ref: './schemas/ResourceType.yaml#/CreateResourceTypeInput'
+    CreteResourceTypeOutput:
+      $ref: './schemas/ResourceType.yaml#/CreteResourceTypeOutput'
+    CreateSubscriptionInput:
+      $ref: './schemas/Subscription.yaml#/CreateSubscriptionInput'
+    CreateSubscriptionOutput:
+      $ref: './schemas/Subscription.yaml#/CreateSubscriptionOutput'
+    CreateTierPricingInput:
+      $ref: './schemas/TierPricing.yaml#/CreateTierPricingInput'
+    CreateTierPricingOutput:
+      $ref: './schemas/TierPricing.yaml#/CreateTierPricingOutput'

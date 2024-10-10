@@ -10,14 +10,14 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '../schemas/ResourceType.yaml#/CreateResourceTypeParams'
+              $ref: '../schemas/ResourceType.yaml#/CreateResourceTypeInput'
       responses:
         "201":
           description: Resource type created successfully
           content:
             application/x-www-form-urlencoded:
               schema:
-                $ref: '../schemas/ResourceType.yaml#/CreteResourceTypeOutputs'
+                $ref: '../schemas/ResourceType.yaml#/CreteResourceTypeOutput'
         "400":
           description: Bad request
           content:
@@ -37,7 +37,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../schemas/ResourceType.yaml#/CreteResourceTypeOutputs'
+                  $ref: '../schemas/ResourceType.yaml#/CreteResourceTypeOutput'
         "400":
           description: Bad request
           content:

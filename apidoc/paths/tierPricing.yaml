@@ -10,14 +10,14 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '../schemas/TierPricing.yaml#/CreateTierPricingParams'
+              $ref: '../schemas/TierPricing.yaml#/CreateTierPricingInput'
       responses:
         '201':
           description: Created
           content:
             application/x-www-form-urlencoded:
               schema:
-                $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutputs'
+                $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutput'
   /tierPricing/{tier_id}:
     delete:
       summary: Delete tier pricing by tier ID
@@ -52,7 +52,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutputs'
+                  $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutput'
   /tierPricing/{id}:
     delete:
       summary: Delete tier pricing by ID

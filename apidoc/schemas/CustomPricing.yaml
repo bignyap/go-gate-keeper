@@ -1,4 +1,4 @@
-CreateCustomPricingParams:
+CreateCustomPricingInput:
   type: object
   properties:
     custom_cost_per_call:

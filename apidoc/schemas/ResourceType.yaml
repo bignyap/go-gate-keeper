@@ -1,4 +1,4 @@
-CreateResourceTypeParams:
+CreateResourceTypeInput:
   type: object
   properties:
     name:
@@ -15,7 +15,7 @@ CreateResourceTypeParams:
     - name
     - code
 
-CreteResourceTypeOutputs:
+CreteResourceTypeOutput:
   type: object
   properties:
     id:

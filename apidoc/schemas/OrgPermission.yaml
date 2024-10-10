@@ -1,4 +1,4 @@
-CreateOrgPermissionParams:
+CreateOrgPermissionInput:
   type: object
   properties:
     resource_type_id:

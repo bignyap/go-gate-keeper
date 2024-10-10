@@ -1,4 +1,4 @@
-CreateSubscriptionParams:
+CreateSubscriptionInput:
   type: object
   required:
     - name
