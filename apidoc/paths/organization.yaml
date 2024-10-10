@@ -3,26 +3,30 @@ paths:
     post:
       summary: Create an organization
       operationId: createOrganization
+      tags:
+        - Organization
       requestBody:
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '../schemas/Organization.yaml'
       responses:
         '201':
           description: Created
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/Organization.yaml'
     get:
       summary: List organizations
       operationId: listOrganizations
+      tags:
+        - Organization
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:
@@ -31,6 +35,8 @@ paths:
     get:
       summary: Get an organization by ID
       operationId: getOrganizationById
+      tags:
+        - Organization
       parameters:
         - name: Id
           in: path
@@ -41,12 +47,14 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/Organization.yaml'
     delete:
       summary: Delete an organization
       operationId: deleteOrganization
+      tags:
+        - Organization
       parameters:
         - name: Id
           in: path

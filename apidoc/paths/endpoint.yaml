@@ -4,30 +4,30 @@ paths:
       summary: Register an endpoint
       operationId: registerEndpoint
       tags:
-        - Endpoint
+        - Register Endpoint
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '../schemas/Endpoint.yaml#/RegisterEndpointParams'
       responses:
         '201':
           description: Created
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutputs'
     get:
       summary: List endpoints
       operationId: listEndpoints
       tags:
-        - Endpoint
+        - Register Endpoint
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:
@@ -37,7 +37,7 @@ paths:
       summary: Delete an endpoint
       operationId: deleteEndpoint
       tags:
-        - Endpoint
+        - Register Endpoint
       parameters:
         - name: Id
           in: path

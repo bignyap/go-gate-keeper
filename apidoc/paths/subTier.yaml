@@ -8,14 +8,14 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '../schemas/SubTier.yaml#/CreateSubTierInput'
       responses:
         '201':
           description: Created
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/SubTier.yaml#/CreateSubTierOutput'
     get:
@@ -27,7 +27,7 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:

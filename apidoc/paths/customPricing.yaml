@@ -3,23 +3,27 @@ paths:
     post:
       summary: Create a custom pricing entry
       operationId: createCustomPricing
+      tags:
+        - Custom Pricing
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '../schemas/CustomPricing.yaml#/CreateCustomPricingParams'
       responses:
         '201':
           description: Successfully created custom pricing.
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/CustomPricing.yaml#/CreateCustomPricingOutput'
         '400':
           description: Bad request, validation error or database error.
     delete:
       summary: Delete custom pricing by subscription ID or pricing ID
+      tags:
+        - Custom Pricing
       parameters:
         - name: subscription_id
           in: query
@@ -43,6 +47,8 @@ paths:
     delete:
       summary: Delete custom pricing by subscription ID
       operationId: deleteCustomPricingBySubscriptionId
+      tags:
+        - Custom Pricing
       parameters:
         - name: subscription_id
           in: path
@@ -59,6 +65,8 @@ paths:
   /customPricing/id/{id}:
     delete:
       summary: Delete custom pricing by pricing ID
+      tags:
+        - Custom Pricing
       operationId: deleteCustomPricingById
       parameters:
         - name: id
@@ -76,6 +84,8 @@ paths:
   /customPricing/{subscription_id}:
     get:
       summary: Get custom pricing by subscription ID
+      tags:
+        - Custom Pricing
       operationId: getCustomPricing
       parameters:
         - name: subscription_id
@@ -88,7 +98,7 @@ paths:
         '200':
           description: Successfully retrieved custom pricing details.
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:

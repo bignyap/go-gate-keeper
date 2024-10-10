@@ -7,14 +7,14 @@ paths:
         - Organization Type
       requestBody:
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '../schemas/OrgType.yaml#/CreateOrgTypeInput'
       responses:
         '201':
           description: Created
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/OrgType.yaml#/CreateOrgTypeOutput'
     get:
@@ -26,7 +26,7 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:

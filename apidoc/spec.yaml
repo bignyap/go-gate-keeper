@@ -6,6 +6,14 @@ servers:
   - url: 'https://localhost/api'
     description: "localhost"
 paths:
+  /endpoint:
+    $ref: './paths/endpoint.yaml#/paths/~1endpoint'
+  /endpoint/{Id}:
+    $ref: './paths/endpoint.yaml#/paths/~1endpoint~1{Id}'
+  /resourceType:
+    $ref: './paths/resourceType.yaml#/paths/~1resourceType'
+  /resourceType/{id}:
+    $ref: './paths/resourceType.yaml#/paths/~1resourceType~1{id}'
   /orgType:
     $ref: './paths/orgType.yaml#/paths/~1orgType'
   /orgType/{Id}:
@@ -14,20 +22,20 @@ paths:
     $ref: './paths/subTier.yaml#/paths/~1subTier'
   /subTier/{Id}:
     $ref: './paths/subTier.yaml#/paths/~1subTier~1{Id}'
-  /endpoint:
-    $ref: './paths/endpoint.yaml#/paths/~1endpoint'
-  /endpoint/{Id}:
-    $ref: './paths/endpoint.yaml#/paths/~1endpoint~1{Id}'
-  /org:
-    $ref: './paths/organization.yaml#/paths/~1org'
-  /org/{Id}:
-    $ref: './paths/organization.yaml#/paths/~1org~1{Id}'
   /tierPricing:
     $ref: './paths/tierPricing.yaml#/paths/~1tierPricing'
   /tierPricing/{tier_id}:
     $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1{tier_id}'
   /tierPricing/{id}:
     $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1{id}'
+  /org:
+    $ref: './paths/organization.yaml#/paths/~1org'
+  /org/{Id}:
+    $ref: './paths/organization.yaml#/paths/~1org~1{Id}'
+  /orgPermission:
+    $ref: './paths/orgPermission.yaml#/paths/~1orgPermission'
+  /orgPermission/{organization_id}:
+    $ref: './paths/orgPermission.yaml#/paths/~1orgPermission~1{organization_id}'
   /subscription:
     $ref: './paths/subscription.yaml#/paths/~1subscription'
   /subscription/id/{id}:
@@ -46,11 +54,3 @@ paths:
     $ref: './paths/customPricing.yaml#/paths/~1customPricing~1subId~1{subscription_id}'
   /customPricing/id/{id}:
     $ref: './paths/customPricing.yaml#/paths/~1customPricing~1id~1{id}'
-  /resourceType:
-    $ref: './paths/resourceType.yaml#/paths/~1resourceType'
-  /resourceType/{id}:
-    $ref: './paths/resourceType.yaml#/paths/~1resourceType~1{id}'
-  /orgPermission:
-    $ref: './paths/orgPermission.yaml#/paths/~1orgPermission'
-  /orgPermission/{organization_id}:
-    $ref: './paths/orgPermission.yaml#/paths/~1orgPermission~1{organization_id}'

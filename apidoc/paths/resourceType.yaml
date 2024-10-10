@@ -3,33 +3,37 @@ paths:
     post:
       summary: Create a new resource type
       operationId: createResourceType
+      tags:
+        - Resource Type
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '../schemas/ResourceType.yaml#/CreateResourceTypeParams'
       responses:
         "201":
           description: Resource type created successfully
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/ResourceType.yaml#/CreteResourceTypeOutputs'
         "400":
           description: Bad request
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/ResourceType.yaml#/Error'
     get:
       summary: List all resource types
       operationId: listResourceTypes
+      tags:
+        - Resource Type
       responses:
         "200":
           description: A list of resource types
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:
@@ -37,13 +41,15 @@ paths:
         "400":
           description: Bad request
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/ResourceType.yaml#/Error'
   /resourceType/{id}:
     delete:
       summary: Delete a resource type by ID
       operationId: deleteResourceType
+      tags:
+        - Resource Type
       parameters:
         - name: id
           in: path
@@ -57,7 +63,7 @@ paths:
         "400":
           description: Bad request or invalid ID
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/ResourceType.yaml#/Error'
     

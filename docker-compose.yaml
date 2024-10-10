@@ -55,6 +55,10 @@ services:
     restart: always
     environment:
       SWAGGER_JSON: /api/spec.yaml
+    ports:
+        - '8081:8080'
+    expose:
+     - '8081'
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

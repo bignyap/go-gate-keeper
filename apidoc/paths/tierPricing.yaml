@@ -8,14 +8,14 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '../schemas/TierPricing.yaml#/CreateTierPricingParams'
       responses:
         '201':
           description: Created
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutputs'
   /tierPricing/{tier_id}:
@@ -48,7 +48,7 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:

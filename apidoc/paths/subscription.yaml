@@ -3,17 +3,19 @@ paths:
     post:
       summary: Create a new subscription
       operationId: createSubscription
+      tags:
+        - Subscription
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               $ref: '../schemas/Subscription.yaml#/CreateSubscriptionParams'
       responses:
         '201':
           description: Subscription created successfully
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
         '400':
@@ -21,11 +23,13 @@ paths:
     get:
       summary: List all subscriptions
       operationId: listSubscriptions
+      tags:
+        - Subscription
       responses:
         '200':
           description: A list of subscriptions
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:
@@ -37,6 +41,8 @@ paths:
     delete:
       summary: Delete a subscription by ID
       operationId: deleteSubscriptionById
+      tags:
+        - Subscription
       parameters:
         - name: id
           in: path
@@ -53,6 +59,8 @@ paths:
     delete:
       summary: Delete subscriptions by organization ID
       operationId: deleteSubscriptionByOrgId
+      tags:
+        - Subscription
       parameters:
         - name: organization_id
           in: path
@@ -69,6 +77,8 @@ paths:
     get:
       summary: Get a subscription by ID
       operationId: getSubscriptionById
+      tags:
+        - Subscription
       parameters:
         - name: id
           in: path
@@ -79,7 +89,7 @@ paths:
         '200':
           description: A subscription by ID
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
         '400':
@@ -89,6 +99,8 @@ paths:
     get:
       summary: Get subscriptions by organization ID
       operationId: getSubscriptionByOrgId
+      tags:
+        - Subscription
       parameters:
         - name: organization_id
           in: path
@@ -99,7 +111,7 @@ paths:
         '200':
           description: Subscriptions retrieved by organization ID
           content:
-            application/json:
+            application/x-www-form-urlencoded:
               schema:
                 type: array
                 items:
