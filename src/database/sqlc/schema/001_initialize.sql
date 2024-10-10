@@ -100,6 +100,8 @@ CREATE TABLE api_usage (
   api_endpoint_id int NOT NULL
 );
 
+ALTER TABLE tier_base_pricing ADD CONSTRAINT unique_api_tier UNIQUE (api_endpoint_id, subscription_tier_id);
+
 ALTER TABLE organization ADD FOREIGN KEY (organization_type_id) REFERENCES organization_type (organization_type_id);
 
 ALTER TABLE organization_permission ADD FOREIGN KEY (organization_id) REFERENCES organization (organization_id);
