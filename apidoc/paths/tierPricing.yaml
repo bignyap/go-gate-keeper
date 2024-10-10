@@ -19,20 +19,6 @@ paths:
               schema:
                 $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutput'
   /tierPricing/{tier_id}:
-    delete:
-      summary: Delete tier pricing by tier ID
-      operationId: deleteTierPricingByTierId
-      tags:
-        - Tier Pricing
-      parameters:
-        - name: tier_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: No Content
     get:
       summary: Get tier pricing by tier ID
       operationId: getTierPricingByTierId
@@ -53,7 +39,23 @@ paths:
                 type: array
                 items:
                   $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutput'
-  /tierPricing/{id}:
+                  
+  /tierPricing/tierId/{tier_id}:
+    delete:
+      summary: Delete tier pricing by tier ID
+      operationId: deleteTierPricingByTierId
+      tags:
+        - Tier Pricing
+      parameters:
+        - name: tier_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /tierPricing/id/{id}:
     delete:
       summary: Delete tier pricing by ID
       operationId: deleteTierPricingById

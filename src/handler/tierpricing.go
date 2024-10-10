@@ -46,6 +46,8 @@ func CreateTierPricingFormValidator(r *http.Request) (*sqlcgen.CreateTierPricing
 		return nil, err
 	}
 
+	fmt.Println(nullInt32Parsed)
+
 	input := sqlcgen.CreateTierPricingParams{
 		SubscriptionTierID: int32(intParsed["subscription_tier_id"]),
 		ApiEndpointID:      int32(intParsed["api_endpoint_id"]),
@@ -75,6 +77,8 @@ func (apiCfg *ApiConfig) CreateTierPricingHandler(w http.ResponseWriter, r *http
 		respondWithError(w, StatusInternalServerError, fmt.Sprintf("couldn't retrieve last insert ID: %s", err))
 		return
 	}
+
+	fmt.Println(input.BaseRateLimit)
 
 	output := CreateTierPricingOutput{
 		ID: int(insertedID),

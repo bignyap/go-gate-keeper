@@ -26,8 +26,10 @@ paths:
     $ref: './paths/tierPricing.yaml#/paths/~1tierPricing'
   /tierPricing/{tier_id}:
     $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1{tier_id}'
-  /tierPricing/{id}:
-    $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1{id}'
+  /tierPricing/id/{id}:
+    $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1id~1{id}'
+  /tierPricing/tierId/{tier_id}:
+    $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1tierId~1{tier_id}'
   /org:
     $ref: './paths/organization.yaml#/paths/~1org'
   /org/{Id}:
