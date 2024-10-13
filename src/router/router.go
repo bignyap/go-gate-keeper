@@ -84,6 +84,13 @@ func OrgPermissionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 }
 
+func BillingHistoryHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
+
+	mux.HandleFunc("POST /billingHistory", apiConfig.CreateBillingHistoryHandler)
+	mux.HandleFunc("DELETE /billingHistory/{id}", apiConfig.GetBillingHistoryHandler)
+
+}
+
 func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("/", handler.RootHandler)
@@ -96,4 +103,5 @@ func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 	CustomPricingHandler(mux, apiConfig)
 	ResourceTypeHandler(mux, apiConfig)
 	OrgPermissionHandler(mux, apiConfig)
+	BillingHistoryHandler(mux, apiConfig)
 }

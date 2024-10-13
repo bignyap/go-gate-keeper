@@ -82,6 +82,10 @@ type MyNullInt64 struct {
 	sql.NullInt64
 }
 
+type MyNullTime struct {
+	sql.NullTime
+}
+
 func (n MyNullString) IsValid() bool {
 	return n.Valid
 }
@@ -95,6 +99,10 @@ func (n MyNullInt32) IsValid() bool {
 }
 
 func (n MyNullInt64) IsValid() bool {
+	return n.Valid
+}
+
+func (n MyNullTime) IsValid() bool {
 	return n.Valid
 }
 
@@ -122,6 +130,10 @@ func FromNullInt64(input *MyNullInt64) int {
 	return int(input.Int64)
 }
 
+func FromNullTime(input *MyNullTime) time.Time {
+	return time.Time(input.Time)
+}
+
 func NullStrToStr(input *sql.NullString) *string {
 	val := MyNullString{NullString: *input}
 	return NullToPointer(&val, FromNullString)
@@ -140,4 +152,9 @@ func NullInt32ToInt(input *sql.NullInt32) *int {
 func NullInt64ToInt(input *sql.NullInt64) *int {
 	val := MyNullInt64{NullInt64: *input}
 	return NullToPointer(&val, FromNullInt64)
+}
+
+func NullTimeToTime(input *sql.NullTime) *time.Time {
+	val := MyNullTime{NullTime: *input}
+	return NullToPointer(&val, FromNullTime)
 }
