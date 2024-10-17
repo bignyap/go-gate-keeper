@@ -25,6 +25,17 @@ func (q *Queries) CreateOrgPermission(ctx context.Context, arg CreateOrgPermissi
 	return q.db.ExecContext(ctx, createOrgPermission, arg.ResourceTypeID, arg.PermissionCode, arg.OrganizationID)
 }
 
+const createOrgPermissions = `-- name: CreateOrgPermissions :copyfrom
+INSERT INTO organization_permission (resource_type_id, permission_code, organization_id) 
+VALUES (?, ?, ?)
+`
+
+type CreateOrgPermissionsParams struct {
+	ResourceTypeID int32
+	PermissionCode string
+	OrganizationID int32
+}
+
 const deleteOrgPermissionById = `-- name: DeleteOrgPermissionById :exec
 DELETE FROM organization_permission
 WHERE organization_permission_id = ?
@@ -56,7 +67,7 @@ func (q *Queries) GetOrgPermission(ctx context.Context, organizationID int32) ([
 		return nil, err
 	}
 	defer rows.Close()
-	var items []OrganizationPermission
+	items := []OrganizationPermission{}
 	for rows.Next() {
 		var i OrganizationPermission
 		if err := rows.Scan(

@@ -31,6 +31,18 @@ func (q *Queries) CreateTierPricing(ctx context.Context, arg CreateTierPricingPa
 	)
 }
 
+const createTierPricings = `-- name: CreateTierPricings :copyfrom
+INSERT INTO tier_base_pricing (subscription_tier_id, api_endpoint_id, base_cost_per_call, base_rate_limit) 
+VALUES (?, ?, ?, ?)
+`
+
+type CreateTierPricingsParams struct {
+	SubscriptionTierID int32
+	ApiEndpointID      int32
+	BaseCostPerCall    float64
+	BaseRateLimit      sql.NullInt32
+}
+
 const deleteTierPricingById = `-- name: DeleteTierPricingById :exec
 DELETE FROM tier_base_pricing
 WHERE tier_base_pricing_id = ?
@@ -66,7 +78,7 @@ func (q *Queries) GetTierPricingByTierId(ctx context.Context, subscriptionTierID
 		return nil, err
 	}
 	defer rows.Close()
-	var items []TierBasePricing
+	items := []TierBasePricing{}
 	for rows.Next() {
 		var i TierBasePricing
 		if err := rows.Scan(

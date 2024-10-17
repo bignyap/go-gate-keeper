@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+
+	"github.com/bignyap/go-gate-keeper/utils/misc"
 )
 
 type Converter[T any] interface {
@@ -61,6 +63,18 @@ func (c DateConverter) Convert(str string) (time.Time, error) {
 		return time.Time{}, fmt.Errorf("not a valid date: %v", err)
 	}
 	return dateValue, nil
+}
+
+type UnixTimeConverter struct{}
+
+func (c UnixTimeConverter) Convert(str string) (int, error) {
+
+	dateVal, err := ConvertString(str, DateConverter{})
+	if err != nil {
+		return -1, fmt.Errorf("not a valid integer: %v", err)
+	}
+
+	return int(misc.ToUnixTime(dateVal)), nil
 }
 
 type NullInt32Converter struct{}
@@ -132,6 +146,18 @@ func (c NullTimeConverter) Convert(str string) (sql.NullTime, error) {
 		return sql.NullTime{}, fmt.Errorf("not a valid date: %v", err)
 	}
 	return sql.NullTime{Time: timeValue, Valid: true}, nil
+}
+
+type NullUnixTime64Converter struct{}
+
+func (c NullUnixTime64Converter) Convert(str string) (sql.NullInt64, error) {
+
+	dateVal, err := ConvertString(str, NullTimeConverter{})
+	if err != nil {
+		return sql.NullInt64{}, fmt.Errorf("not a valid integer: %v", err)
+	}
+
+	return sql.NullInt64{Int64: misc.ToUnixTime(dateVal.Time), Valid: true}, nil
 }
 
 func ConvertString[T any](str string, converter Converter[T]) (T, error) {

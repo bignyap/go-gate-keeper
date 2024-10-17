@@ -19,6 +19,15 @@ INSERT INTO subscription (
 ) 
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+-- name: CreateSubscriptions :copyfrom
+INSERT INTO subscription (
+    subscription_name, subscription_type, subscription_created_date,
+    subscription_updated_date, subscription_start_date, subscription_api_limit, 
+    subscription_expiry_date, subscription_description, subscription_status, 
+    organization_id, subscription_tier_id
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 -- name: UpdateSubscription :execresult
 UPDATE subscription
 SET 

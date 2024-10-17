@@ -6,6 +6,10 @@ ORDER BY resource_type_name;
 INSERT INTO resource_type (resource_type_name, resource_type_code, resource_type_description) 
 VALUES (?, ?, ?);
 
+-- name: CreateResourceTypes :copyfrom
+INSERT INTO resource_type (resource_type_name, resource_type_code, resource_type_description) 
+VALUES (?, ?, ?);
+
 -- name: DeleteResourceTypeById :exec
 DELETE FROM resource_type
 WHERE resource_type_id = ?;

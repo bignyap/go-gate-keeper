@@ -10,6 +10,10 @@ WHERE subscription_tier_id = ?;
 INSERT INTO tier_base_pricing (subscription_tier_id, api_endpoint_id, base_cost_per_call, base_rate_limit) 
 VALUES (?, ?, ?, ?);
 
+-- name: CreateTierPricings :copyfrom
+INSERT INTO tier_base_pricing (subscription_tier_id, api_endpoint_id, base_cost_per_call, base_rate_limit) 
+VALUES (?, ?, ?, ?);
+
 -- name: UpdateTierPricingByTierId :execresult
 UPDATE tier_base_pricing
 SET 

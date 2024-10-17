@@ -9,6 +9,7 @@ import (
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
+	"github.com/bignyap/go-gate-keeper/utils/misc"
 )
 
 type CreateOrganizationParams struct {
@@ -62,8 +63,8 @@ func CreateOrgFormValidation(r *http.Request) (*sqlcgen.CreateOrganizationParams
 
 	input := sqlcgen.CreateOrganizationParams{
 		OrganizationName:         strParsed["name"],
-		OrganizationCreatedAt:    time.Now(),
-		OrganizationUpdatedAt:    time.Now(),
+		OrganizationCreatedAt:    int32(misc.ToUnixTime()),
+		OrganizationUpdatedAt:    int32(misc.ToUnixTime()),
 		OrganizationRealm:        strParsed["realm"],
 		OrganizationSupportEmail: strParsed["support_email"],
 		OrganizationTypeID:       int32(intParsed["type_id"]),
@@ -101,8 +102,8 @@ func (apiCfg *ApiConfig) CreateOrganizationandler(w http.ResponseWriter, r *http
 		CreateOrganizationParams: CreateOrganizationParams{
 			Name:         input.OrganizationName,
 			SupportEmail: input.OrganizationSupportEmail,
-			CreatedAt:    input.OrganizationCreatedAt,
-			UpdatedAt:    input.OrganizationUpdatedAt,
+			CreatedAt:    misc.FromUnixTime32(input.OrganizationCreatedAt),
+			UpdatedAt:    misc.FromUnixTime32(input.OrganizationUpdatedAt),
 			Realm:        input.OrganizationRealm,
 			Active:       converter.NullBoolToBool(&input.OrganizationActive),
 			ReportQ:      converter.NullBoolToBool(&input.OrganizationReportQ),
@@ -131,8 +132,8 @@ func (apiCfg *ApiConfig) ListOrganizationsHandler(w http.ResponseWriter, r *http
 			CreateOrganizationParams: CreateOrganizationParams{
 				Name:         organization.OrganizationName,
 				SupportEmail: organization.OrganizationSupportEmail,
-				CreatedAt:    organization.OrganizationCreatedAt,
-				UpdatedAt:    organization.OrganizationUpdatedAt,
+				CreatedAt:    misc.FromUnixTime32(organization.OrganizationCreatedAt),
+				UpdatedAt:    misc.FromUnixTime32(organization.OrganizationUpdatedAt),
 				Realm:        organization.OrganizationRealm,
 				Active:       converter.NullBoolToBool(&organization.OrganizationActive),
 				ReportQ:      converter.NullBoolToBool(&organization.OrganizationReportQ),
@@ -170,8 +171,8 @@ func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *ht
 		CreateOrganizationParams: CreateOrganizationParams{
 			Name:         organization.OrganizationName,
 			SupportEmail: organization.OrganizationSupportEmail,
-			CreatedAt:    organization.OrganizationCreatedAt,
-			UpdatedAt:    organization.OrganizationUpdatedAt,
+			CreatedAt:    misc.FromUnixTime32(organization.OrganizationCreatedAt),
+			UpdatedAt:    misc.FromUnixTime32(organization.OrganizationUpdatedAt),
 			Realm:        organization.OrganizationRealm,
 			Active:       converter.NullBoolToBool(&organization.OrganizationActive),
 			ReportQ:      converter.NullBoolToBool(&organization.OrganizationReportQ),

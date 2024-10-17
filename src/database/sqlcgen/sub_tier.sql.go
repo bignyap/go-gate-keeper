@@ -8,7 +8,6 @@ package sqlcgen
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const createSubscriptionTier = `-- name: CreateSubscriptionTier :execresult
@@ -19,8 +18,8 @@ VALUES (?, ?, ?, ?)
 type CreateSubscriptionTierParams struct {
 	TierName        string
 	TierDescription sql.NullString
-	TierCreatedAt   time.Time
-	TierUpdatedAt   time.Time
+	TierCreatedAt   int32
+	TierUpdatedAt   int32
 }
 
 func (q *Queries) CreateSubscriptionTier(ctx context.Context, arg CreateSubscriptionTierParams) (sql.Result, error) {
@@ -30,6 +29,18 @@ func (q *Queries) CreateSubscriptionTier(ctx context.Context, arg CreateSubscrip
 		arg.TierCreatedAt,
 		arg.TierUpdatedAt,
 	)
+}
+
+const createSubscriptionTiers = `-- name: CreateSubscriptionTiers :copyfrom
+INSERT INTO subscription_tier (tier_name, tier_description, tier_created_at, tier_updated_at) 
+VALUES (?, ?, ?, ?)
+`
+
+type CreateSubscriptionTiersParams struct {
+	TierName        string
+	TierDescription sql.NullString
+	TierCreatedAt   int32
+	TierUpdatedAt   int32
 }
 
 const deleteSubscriptionTierById = `-- name: DeleteSubscriptionTierById :exec
@@ -53,7 +64,7 @@ func (q *Queries) ListSubscriptionTier(ctx context.Context) ([]SubscriptionTier,
 		return nil, err
 	}
 	defer rows.Close()
-	var items []SubscriptionTier
+	items := []SubscriptionTier{}
 	for rows.Next() {
 		var i SubscriptionTier
 		if err := rows.Scan(

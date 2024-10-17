@@ -8,8 +8,27 @@ package sqlcgen
 import (
 	"context"
 	"database/sql"
-	"time"
 )
+
+const createBillingHistories = `-- name: CreateBillingHistories :copyfrom
+INSERT INTO billing_history (
+    billing_start_date, billing_end_date, total_amount_due,
+    total_calls, payment_status, payment_date, 
+    billing_created_at, subscription_id
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+`
+
+type CreateBillingHistoriesParams struct {
+	BillingStartDate int32
+	BillingEndDate   int32
+	TotalAmountDue   float64
+	TotalCalls       int32
+	PaymentStatus    string
+	PaymentDate      sql.NullInt32
+	BillingCreatedAt int32
+	SubscriptionID   int32
+}
 
 const createBillingHistory = `-- name: CreateBillingHistory :execresult
 INSERT INTO billing_history (
@@ -21,13 +40,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateBillingHistoryParams struct {
-	BillingStartDate time.Time
-	BillingEndDate   time.Time
+	BillingStartDate int32
+	BillingEndDate   int32
 	TotalAmountDue   float64
 	TotalCalls       int32
 	PaymentStatus    string
-	PaymentDate      sql.NullTime
-	BillingCreatedAt time.Time
+	PaymentDate      sql.NullInt32
+	BillingCreatedAt int32
 	SubscriptionID   int32
 }
 
@@ -55,7 +74,7 @@ func (q *Queries) GetBillingHistoryById(ctx context.Context, billingID int32) ([
 		return nil, err
 	}
 	defer rows.Close()
-	var items []BillingHistory
+	items := []BillingHistory{}
 	for rows.Next() {
 		var i BillingHistory
 		if err := rows.Scan(
@@ -96,7 +115,7 @@ func (q *Queries) GetBillingHistoryByOrgId(ctx context.Context, organizationID i
 		return nil, err
 	}
 	defer rows.Close()
-	var items []BillingHistory
+	items := []BillingHistory{}
 	for rows.Next() {
 		var i BillingHistory
 		if err := rows.Scan(
@@ -134,7 +153,7 @@ func (q *Queries) GetBillingHistoryBySubId(ctx context.Context, subscriptionID i
 		return nil, err
 	}
 	defer rows.Close()
-	var items []BillingHistory
+	items := []BillingHistory{}
 	for rows.Next() {
 		var i BillingHistory
 		if err := rows.Scan(

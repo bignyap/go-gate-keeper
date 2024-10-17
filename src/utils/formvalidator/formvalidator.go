@@ -76,6 +76,10 @@ func ParseDateFormForm(r *http.Request, fields []string) (map[string]time.Time, 
 	return ParseFromForm[time.Time](r, fields, DateFormField{})
 }
 
+func ParseUnixTimeFromForm(r *http.Request, fields []string) (map[string]int, error) {
+	return ParseFromForm[int](r, fields, UnixTimeFormField{})
+}
+
 func ParseNullInt32FromForm(r *http.Request, fields []string) (map[string]sql.NullInt32, error) {
 	return ParseFromForm[sql.NullInt32](r, fields, NullInt32FormField{})
 }
@@ -98,4 +102,8 @@ func ParseNullStringFromForm(r *http.Request, fields []string) (map[string]sql.N
 
 func ParseNullTimeFromForm(r *http.Request, fields []string) (map[string]sql.NullTime, error) {
 	return ParseFromForm[sql.NullTime](r, fields, NullTimeFormField{})
+}
+
+func ParseNullUnixTimeFromForm(r *http.Request, fields []string) (map[string]sql.NullInt32, error) {
+	return ParseFromForm[sql.NullInt32](r, fields, NullUnixTimeFormField{})
 }

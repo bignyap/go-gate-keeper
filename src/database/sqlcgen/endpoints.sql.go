@@ -31,7 +31,7 @@ func (q *Queries) ListApiEndpoint(ctx context.Context) ([]ApiEndpoint, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ApiEndpoint
+	items := []ApiEndpoint{}
 	for rows.Next() {
 		var i ApiEndpoint
 		if err := rows.Scan(&i.ApiEndpointID, &i.EndpointName, &i.EndpointDescription); err != nil {
@@ -60,4 +60,14 @@ type RegisterApiEndpointParams struct {
 
 func (q *Queries) RegisterApiEndpoint(ctx context.Context, arg RegisterApiEndpointParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, registerApiEndpoint, arg.EndpointName, arg.EndpointDescription)
+}
+
+const registerApiEndpoints = `-- name: RegisterApiEndpoints :copyfrom
+INSERT INTO api_endpoint (endpoint_name, endpoint_description) 
+VALUES (?, ?)
+`
+
+type RegisterApiEndpointsParams struct {
+	EndpointName        string
+	EndpointDescription sql.NullString
 }

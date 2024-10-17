@@ -3,6 +3,8 @@ package converter
 import (
 	"database/sql"
 	"time"
+
+	"github.com/bignyap/go-gate-keeper/utils/misc"
 )
 
 func StrTo[T any](str string, converter Converter[T]) (T, error) {
@@ -31,6 +33,10 @@ func StrToDate(str string) (time.Time, error) {
 	return StrTo[time.Time](str, DateConverter{})
 }
 
+func StrToUnixTime(str string) (int, error) {
+	return StrTo[int](str, UnixTimeConverter{})
+}
+
 func StrToNullInt32(str string) (sql.NullInt32, error) {
 	return StrTo[sql.NullInt32](str, NullInt32Converter{})
 }
@@ -54,6 +60,10 @@ func StrToNullStr(str string) sql.NullString {
 
 func StrToNullTime(str string) (sql.NullTime, error) {
 	return StrTo[sql.NullTime](str, NullTimeConverter{})
+}
+
+func StrToUnixNullTime(str string) (sql.NullInt64, error) {
+	return StrTo[sql.NullInt64](str, NullUnixTime64Converter{})
 }
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -134,6 +144,10 @@ func FromNullTime(input *MyNullTime) time.Time {
 	return time.Time(input.Time)
 }
 
+func FromNullInt32ToTime(input *MyNullInt32) time.Time {
+	return misc.FromUnixTime32(input.Int32)
+}
+
 func NullStrToStr(input *sql.NullString) *string {
 	val := MyNullString{NullString: *input}
 	return NullToPointer(&val, FromNullString)
@@ -157,4 +171,9 @@ func NullInt64ToInt(input *sql.NullInt64) *int {
 func NullTimeToTime(input *sql.NullTime) *time.Time {
 	val := MyNullTime{NullTime: *input}
 	return NullToPointer(&val, FromNullTime)
+}
+
+func NullInt32ToTime(input *sql.NullInt32) *time.Time {
+	val := MyNullInt32{NullInt32: *input}
+	return NullToPointer(&val, FromNullInt32ToTime)
 }

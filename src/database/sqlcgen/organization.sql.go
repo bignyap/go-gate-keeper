@@ -8,7 +8,6 @@ package sqlcgen
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const createOrganization = `-- name: CreateOrganization :execresult
@@ -23,8 +22,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
 type CreateOrganizationParams struct {
 	OrganizationName         string
-	OrganizationCreatedAt    time.Time
-	OrganizationUpdatedAt    time.Time
+	OrganizationCreatedAt    int32
+	OrganizationUpdatedAt    int32
 	OrganizationRealm        string
 	OrganizationCountry      sql.NullString
 	OrganizationSupportEmail string
@@ -47,6 +46,29 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 		arg.OrganizationConfig,
 		arg.OrganizationTypeID,
 	)
+}
+
+const createOrganizations = `-- name: CreateOrganizations :copyfrom
+INSERT INTO organization (
+    organization_name, organization_created_at, organization_updated_at, 
+    organization_realm, organization_country, organization_support_email,
+    organization_active, organization_report_q, organization_config,
+    organization_type_id
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`
+
+type CreateOrganizationsParams struct {
+	OrganizationName         string
+	OrganizationCreatedAt    int32
+	OrganizationUpdatedAt    int32
+	OrganizationRealm        string
+	OrganizationCountry      sql.NullString
+	OrganizationSupportEmail string
+	OrganizationActive       sql.NullBool
+	OrganizationReportQ      sql.NullBool
+	OrganizationConfig       sql.NullString
+	OrganizationTypeID       int32
 }
 
 const deleteOrganizationById = `-- name: DeleteOrganizationById :exec
@@ -94,7 +116,7 @@ func (q *Queries) ListOrganization(ctx context.Context) ([]Organization, error) 
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Organization
+	items := []Organization{}
 	for rows.Next() {
 		var i Organization
 		if err := rows.Scan(
@@ -140,7 +162,7 @@ WHERE organization_id = ?
 
 type UpdateOrganizationParams struct {
 	OrganizationName         string
-	OrganizationUpdatedAt    time.Time
+	OrganizationUpdatedAt    int32
 	OrganizationRealm        string
 	OrganizationCountry      sql.NullString
 	OrganizationSupportEmail string

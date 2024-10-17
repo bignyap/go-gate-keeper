@@ -8,7 +8,6 @@ package sqlcgen
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const createSubscription = `-- name: CreateSubscription :execresult
@@ -24,11 +23,11 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 type CreateSubscriptionParams struct {
 	SubscriptionName        string
 	SubscriptionType        string
-	SubscriptionCreatedDate time.Time
-	SubscriptionUpdatedDate time.Time
-	SubscriptionStartDate   time.Time
+	SubscriptionCreatedDate int32
+	SubscriptionUpdatedDate int32
+	SubscriptionStartDate   int32
 	SubscriptionApiLimit    sql.NullInt32
-	SubscriptionExpiryDate  sql.NullTime
+	SubscriptionExpiryDate  sql.NullInt32
 	SubscriptionDescription sql.NullString
 	SubscriptionStatus      sql.NullBool
 	OrganizationID          int32
@@ -49,6 +48,30 @@ func (q *Queries) CreateSubscription(ctx context.Context, arg CreateSubscription
 		arg.OrganizationID,
 		arg.SubscriptionTierID,
 	)
+}
+
+const createSubscriptions = `-- name: CreateSubscriptions :copyfrom
+INSERT INTO subscription (
+    subscription_name, subscription_type, subscription_created_date,
+    subscription_updated_date, subscription_start_date, subscription_api_limit, 
+    subscription_expiry_date, subscription_description, subscription_status, 
+    organization_id, subscription_tier_id
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`
+
+type CreateSubscriptionsParams struct {
+	SubscriptionName        string
+	SubscriptionType        string
+	SubscriptionCreatedDate int32
+	SubscriptionUpdatedDate int32
+	SubscriptionStartDate   int32
+	SubscriptionApiLimit    sql.NullInt32
+	SubscriptionExpiryDate  sql.NullInt32
+	SubscriptionDescription sql.NullString
+	SubscriptionStatus      sql.NullBool
+	OrganizationID          int32
+	SubscriptionTierID      int32
 }
 
 const deleteSubscriptionById = `-- name: DeleteSubscriptionById :exec
@@ -107,7 +130,7 @@ func (q *Queries) GetSubscriptionByOrgId(ctx context.Context, organizationID int
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Subscription
+	items := []Subscription{}
 	for rows.Next() {
 		var i Subscription
 		if err := rows.Scan(
@@ -148,7 +171,7 @@ func (q *Queries) ListSubscription(ctx context.Context) ([]Subscription, error) 
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Subscription
+	items := []Subscription{}
 	for rows.Next() {
 		var i Subscription
 		if err := rows.Scan(
@@ -194,9 +217,9 @@ WHERE subscription_id = ?
 
 type UpdateSubscriptionParams struct {
 	SubscriptionName        string
-	SubscriptionStartDate   time.Time
+	SubscriptionStartDate   int32
 	SubscriptionApiLimit    sql.NullInt32
-	SubscriptionExpiryDate  sql.NullTime
+	SubscriptionExpiryDate  sql.NullInt32
 	SubscriptionDescription sql.NullString
 	SubscriptionStatus      sql.NullBool
 	OrganizationID          int32

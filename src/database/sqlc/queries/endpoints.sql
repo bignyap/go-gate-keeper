@@ -6,6 +6,10 @@ ORDER BY endpoint_name;
 INSERT INTO api_endpoint (endpoint_name, endpoint_description) 
 VALUES (?, ?);
 
+-- name: RegisterApiEndpoints :copyfrom
+INSERT INTO api_endpoint (endpoint_name, endpoint_description) 
+VALUES (?, ?);
+
 -- name: DeleteApiEndpointById :exec
 DELETE FROM api_endpoint
 WHERE api_endpoint_id = ?;

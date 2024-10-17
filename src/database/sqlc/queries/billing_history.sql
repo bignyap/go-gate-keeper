@@ -20,3 +20,11 @@ INSERT INTO billing_history (
     billing_created_at, subscription_id
 ) 
 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+-- name: CreateBillingHistories :copyfrom
+INSERT INTO billing_history (
+    billing_start_date, billing_end_date, total_amount_due,
+    total_calls, payment_status, payment_date, 
+    billing_created_at, subscription_id
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);

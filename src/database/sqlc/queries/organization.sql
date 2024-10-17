@@ -15,6 +15,15 @@ INSERT INTO organization (
 ) 
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+-- name: CreateOrganizations :copyfrom
+INSERT INTO organization (
+    organization_name, organization_created_at, organization_updated_at, 
+    organization_realm, organization_country, organization_support_email,
+    organization_active, organization_report_q, organization_config,
+    organization_type_id
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 -- name: UpdateOrganization :execresult
 UPDATE organization
 SET 

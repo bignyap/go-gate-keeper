@@ -8,6 +8,7 @@ import (
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
+	"github.com/bignyap/go-gate-keeper/utils/misc"
 )
 
 type CreateBillingHistoryParams struct {
@@ -47,13 +48,13 @@ func CreateBillingHistoryFormValidation(r *http.Request) (*sqlcgen.CreateBilling
 	}
 
 	dateFields := []string{"start_date", "end_date"}
-	dateParsed, err := formvalidator.ParseDateFormForm(r, dateFields)
+	dateParsed, err := formvalidator.ParseUnixTimeFromForm(r, dateFields)
 	if err != nil {
 		return nil, err
 	}
 
 	nullDateFields := []string{"payment_date"}
-	nullDateParsed, err := formvalidator.ParseNullTimeFromForm(r, nullDateFields)
+	nullDateParsed, err := formvalidator.ParseNullUnixTimeFromForm(r, nullDateFields)
 	if err != nil {
 		return nil, err
 	}
@@ -65,9 +66,9 @@ func CreateBillingHistoryFormValidation(r *http.Request) (*sqlcgen.CreateBilling
 	}
 
 	input := sqlcgen.CreateBillingHistoryParams{
-		BillingStartDate: dateParsed["start_date"],
-		BillingEndDate:   dateParsed["end_date"],
-		BillingCreatedAt: time.Now(),
+		BillingStartDate: int32(dateParsed["start_date"]),
+		BillingEndDate:   int32(dateParsed["end_date"]),
+		BillingCreatedAt: int32(misc.ToUnixTime()),
 		TotalAmountDue:   floatParsed["total_amount_due"],
 		TotalCalls:       int32(intParsed["total_calls"]),
 		PaymentStatus:    strParsed["payment_status"],
@@ -101,11 +102,11 @@ func (apiCfg *ApiConfig) CreateBillingHistoryHandler(w http.ResponseWriter, r *h
 	output := CreateBillingHistoryOutput{
 		ID: int(insertedID),
 		CreateBillingHistoryParams: CreateBillingHistoryParams{
-			StartDate:      input.BillingStartDate,
-			EndDate:        input.BillingEndDate,
-			CreatedAt:      input.BillingCreatedAt,
+			StartDate:      misc.FromUnixTime32(input.BillingStartDate),
+			EndDate:        misc.FromUnixTime32(input.BillingEndDate),
+			CreatedAt:      misc.FromUnixTime32(input.BillingCreatedAt),
 			PaymentStatus:  input.PaymentStatus,
-			PaymentDate:    converter.NullTimeToTime(&input.PaymentDate),
+			PaymentDate:    converter.NullInt32ToTime(&input.PaymentDate),
 			SubscriptionID: int(input.SubscriptionID),
 		},
 	}
@@ -154,11 +155,11 @@ func toCreateBillingHistoryOutput(billingHistories []sqlcgen.BillingHistory) []C
 		output = append(output, CreateBillingHistoryOutput{
 			ID: int(billingHistory.BillingID),
 			CreateBillingHistoryParams: CreateBillingHistoryParams{
-				StartDate:      billingHistory.BillingStartDate,
-				EndDate:        billingHistory.BillingEndDate,
-				CreatedAt:      billingHistory.BillingCreatedAt,
+				StartDate:      misc.FromUnixTime32(billingHistory.BillingStartDate),
+				EndDate:        misc.FromUnixTime32(billingHistory.BillingEndDate),
+				CreatedAt:      misc.FromUnixTime32(billingHistory.BillingCreatedAt),
 				PaymentStatus:  billingHistory.PaymentStatus,
-				PaymentDate:    converter.NullTimeToTime(&billingHistory.PaymentDate),
+				PaymentDate:    converter.NullInt32ToTime(&billingHistory.PaymentDate),
 				SubscriptionID: int(billingHistory.SubscriptionID),
 			},
 		})

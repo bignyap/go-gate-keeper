@@ -6,7 +6,6 @@ package sqlcgen
 
 import (
 	"database/sql"
-	"time"
 )
 
 type ApiEndpoint struct {
@@ -17,7 +16,7 @@ type ApiEndpoint struct {
 
 type ApiUsage struct {
 	UsageID        int32
-	CallTimestamp  time.Time
+	CallTimestamp  int32
 	UnixTimestamp  int32
 	NumberOfCalls  int32
 	CostPerCall    float64
@@ -29,13 +28,13 @@ type ApiUsage struct {
 
 type BillingHistory struct {
 	BillingID        int32
-	BillingStartDate time.Time
-	BillingEndDate   time.Time
+	BillingStartDate int32
+	BillingEndDate   int32
 	TotalAmountDue   float64
 	TotalCalls       int32
 	PaymentStatus    string
-	PaymentDate      sql.NullTime
-	BillingCreatedAt time.Time
+	PaymentDate      sql.NullInt32
+	BillingCreatedAt int32
 	SubscriptionID   int32
 }
 
@@ -50,8 +49,8 @@ type CustomEndpointPricing struct {
 type Organization struct {
 	OrganizationID           int32
 	OrganizationName         string
-	OrganizationCreatedAt    time.Time
-	OrganizationUpdatedAt    time.Time
+	OrganizationCreatedAt    int32
+	OrganizationUpdatedAt    int32
 	OrganizationRealm        string
 	OrganizationCountry      sql.NullString
 	OrganizationSupportEmail string
@@ -84,11 +83,11 @@ type Subscription struct {
 	SubscriptionID          int32
 	SubscriptionName        string
 	SubscriptionType        string
-	SubscriptionCreatedDate time.Time
-	SubscriptionUpdatedDate time.Time
-	SubscriptionStartDate   time.Time
+	SubscriptionCreatedDate int32
+	SubscriptionUpdatedDate int32
+	SubscriptionStartDate   int32
 	SubscriptionApiLimit    sql.NullInt32
-	SubscriptionExpiryDate  sql.NullTime
+	SubscriptionExpiryDate  sql.NullInt32
 	SubscriptionDescription sql.NullString
 	SubscriptionStatus      sql.NullBool
 	OrganizationID          int32
@@ -99,8 +98,8 @@ type SubscriptionTier struct {
 	SubscriptionTierID int32
 	TierName           string
 	TierDescription    sql.NullString
-	TierCreatedAt      time.Time
-	TierUpdatedAt      time.Time
+	TierCreatedAt      int32
+	TierUpdatedAt      int32
 }
 
 type TierBasePricing struct {

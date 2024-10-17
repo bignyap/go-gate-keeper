@@ -6,6 +6,10 @@ ORDER BY organization_type_name;
 INSERT INTO organization_type (organization_type_name) 
 VALUES (?);
 
+-- name: CreateOrgTypes :copyfrom
+INSERT INTO organization_type (organization_type_name) 
+VALUES (?);
+
 -- name: DeleteOrgTypeById :exec
 DELETE FROM organization_type
 WHERE organization_type_id = ?;

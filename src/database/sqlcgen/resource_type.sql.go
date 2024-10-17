@@ -25,6 +25,17 @@ func (q *Queries) CreateResourceType(ctx context.Context, arg CreateResourceType
 	return q.db.ExecContext(ctx, createResourceType, arg.ResourceTypeName, arg.ResourceTypeCode, arg.ResourceTypeDescription)
 }
 
+const createResourceTypes = `-- name: CreateResourceTypes :copyfrom
+INSERT INTO resource_type (resource_type_name, resource_type_code, resource_type_description) 
+VALUES (?, ?, ?)
+`
+
+type CreateResourceTypesParams struct {
+	ResourceTypeName        string
+	ResourceTypeCode        string
+	ResourceTypeDescription sql.NullString
+}
+
 const deleteResourceTypeById = `-- name: DeleteResourceTypeById :exec
 DELETE FROM resource_type
 WHERE resource_type_id = ?
@@ -46,7 +57,7 @@ func (q *Queries) ListResourceType(ctx context.Context) ([]ResourceType, error) 
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ResourceType
+	items := []ResourceType{}
 	for rows.Next() {
 		var i ResourceType
 		if err := rows.Scan(

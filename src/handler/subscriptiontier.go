@@ -8,6 +8,7 @@ import (
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
+	"github.com/bignyap/go-gate-keeper/utils/misc"
 )
 
 type CreateSubTierParams struct {
@@ -44,8 +45,8 @@ func CreateSubcriptionTierFormValidation(r *http.Request) (*sqlcgen.CreateSubscr
 	input := sqlcgen.CreateSubscriptionTierParams{
 		TierName:        strParsed["name"],
 		TierDescription: nullStrParsed["description"],
-		TierCreatedAt:   time.Now(),
-		TierUpdatedAt:   time.Now(),
+		TierCreatedAt:   int32(misc.ToUnixTime()),
+		TierUpdatedAt:   int32(misc.ToUnixTime()),
 	}
 
 	return &input, nil
@@ -81,8 +82,8 @@ func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *
 		CreateSubTierParams: CreateSubTierParams{
 			Name:        input.TierName,
 			Description: description,
-			CreatedAt:   input.TierCreatedAt,
-			UpdatedAt:   input.TierUpdatedAt,
+			CreatedAt:   misc.FromUnixTime32(input.TierCreatedAt),
+			UpdatedAt:   misc.FromUnixTime32(input.TierUpdatedAt),
 		},
 	}
 
@@ -111,8 +112,8 @@ func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *
 			CreateSubTierParams: CreateSubTierParams{
 				Name:        subTier.TierName,
 				Description: description,
-				CreatedAt:   subTier.TierCreatedAt,
-				UpdatedAt:   subTier.TierUpdatedAt,
+				CreatedAt:   misc.FromUnixTime32(subTier.TierCreatedAt),
+				UpdatedAt:   misc.FromUnixTime32(subTier.TierUpdatedAt),
 			},
 		})
 	}

@@ -34,6 +34,12 @@ func (DateFormField) Validator(str string) (interface{}, error) {
 	return converter.StrToDate(str)
 }
 
+type UnixTimeFormField struct{}
+
+func (UnixTimeFormField) Validator(str string) (interface{}, error) {
+	return converter.StrToUnixTime(str)
+}
+
 type NullInt32FormField struct{}
 
 func (c NullInt32FormField) Validator(str string) (interface{}, error) {
@@ -68,4 +74,10 @@ type NullTimeFormField struct{}
 
 func (c NullTimeFormField) Validator(str string) (interface{}, error) {
 	return converter.StrToNullTime(str)
+}
+
+type NullUnixTimeFormField struct{}
+
+func (c NullUnixTimeFormField) Validator(str string) (interface{}, error) {
+	return converter.StrToUnixNullTime(str)
 }

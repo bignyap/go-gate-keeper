@@ -19,6 +19,11 @@ func (q *Queries) CreateOrgType(ctx context.Context, organizationTypeName string
 	return q.db.ExecContext(ctx, createOrgType, organizationTypeName)
 }
 
+const createOrgTypes = `-- name: CreateOrgTypes :copyfrom
+INSERT INTO organization_type (organization_type_name) 
+VALUES (?)
+`
+
 const deleteOrgTypeById = `-- name: DeleteOrgTypeById :exec
 DELETE FROM organization_type
 WHERE organization_type_id = ?
@@ -40,7 +45,7 @@ func (q *Queries) ListOrgType(ctx context.Context) ([]OrganizationType, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []OrganizationType
+	items := []OrganizationType{}
 	for rows.Next() {
 		var i OrganizationType
 		if err := rows.Scan(&i.OrganizationTypeID, &i.OrganizationTypeName); err != nil {

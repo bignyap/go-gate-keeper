@@ -9,6 +9,13 @@ INSERT INTO custom_endpoint_pricing (
 ) 
 VALUES (?, ?, ?, ?);
 
+-- name: CreateCustomPricings :copyfrom
+INSERT INTO custom_endpoint_pricing (
+    custom_cost_per_call, custom_rate_limit,
+    subscription_id, tier_base_pricing_id
+) 
+VALUES (?, ?, ?, ?);
+
 -- name: DeleteCustomPricingById :exec
 DELETE FROM custom_endpoint_pricing
 WHERE custom_endpoint_pricing_id = ?;

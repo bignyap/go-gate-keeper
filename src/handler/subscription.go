@@ -9,6 +9,7 @@ import (
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
+	"github.com/bignyap/go-gate-keeper/utils/misc"
 )
 
 type CreateSubscriptionParams struct {
@@ -62,7 +63,7 @@ func CreateSubscriptionFormValidation(r *http.Request) (*sqlcgen.CreateSubscript
 	}
 
 	dateField := []string{"expiry_date"}
-	dateParsed, err := formvalidator.ParseNullTimeFromForm(r, dateField)
+	dateParsed, err := formvalidator.ParseNullUnixTimeFromForm(r, dateField)
 	if err != nil {
 		return nil, err
 	}
@@ -73,17 +74,17 @@ func CreateSubscriptionFormValidation(r *http.Request) (*sqlcgen.CreateSubscript
 		return nil, err
 	}
 
-	startDate, err := converter.StrToDate(r.FormValue("start_date"))
+	startDate, err := converter.StrToUnixTime(r.FormValue("start_date"))
 	if err != nil {
-		startDate = time.Now()
+		startDate = int(misc.ToUnixTime())
 	}
 
 	input := sqlcgen.CreateSubscriptionParams{
 		SubscriptionName:        strParsed["name"],
 		SubscriptionType:        strParsed["type"],
-		SubscriptionCreatedDate: time.Now(),
-		SubscriptionUpdatedDate: time.Now(),
-		SubscriptionStartDate:   startDate,
+		SubscriptionCreatedDate: int32(misc.ToUnixTime()),
+		SubscriptionUpdatedDate: int32(misc.ToUnixTime()),
+		SubscriptionStartDate:   int32(startDate),
 		SubscriptionApiLimit:    nullInt32Parsed["api_limit"],
 		SubscriptionExpiryDate:  dateParsed["expiry_date"],
 		SubscriptionDescription: nullStrParsed["description"],
@@ -120,11 +121,11 @@ func (apiCfg *ApiConfig) CreateSubscriptionHandler(w http.ResponseWriter, r *htt
 		CreateSubscriptionParams: CreateSubscriptionParams{
 			Name:               input.SubscriptionName,
 			Type:               input.SubscriptionType,
-			CreatedAt:          input.SubscriptionCreatedDate,
-			UpdatedAt:          input.SubscriptionUpdatedDate,
-			StartDate:          input.SubscriptionStartDate,
+			CreatedAt:          misc.FromUnixTime32(input.SubscriptionCreatedDate),
+			UpdatedAt:          misc.FromUnixTime32(input.SubscriptionUpdatedDate),
+			StartDate:          misc.FromUnixTime32(input.SubscriptionStartDate),
 			APILimit:           converter.NullInt32ToInt(&input.SubscriptionApiLimit),
-			ExpiryDate:         &input.SubscriptionCreatedDate,
+			ExpiryDate:         converter.NullInt32ToTime(&input.SubscriptionExpiryDate),
 			Description:        &input.SubscriptionDescription.String,
 			Status:             converter.NullBoolToBool(&input.SubscriptionStatus),
 			OrganizationID:     int(input.OrganizationID),
@@ -179,11 +180,11 @@ func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.R
 		CreateSubscriptionParams: CreateSubscriptionParams{
 			Name:               subscription.SubscriptionName,
 			Type:               subscription.SubscriptionType,
-			CreatedAt:          subscription.SubscriptionCreatedDate,
-			UpdatedAt:          subscription.SubscriptionUpdatedDate,
-			StartDate:          subscription.SubscriptionStartDate,
+			CreatedAt:          misc.FromUnixTime32(subscription.SubscriptionCreatedDate),
+			UpdatedAt:          misc.FromUnixTime32(subscription.SubscriptionUpdatedDate),
+			StartDate:          misc.FromUnixTime32(subscription.SubscriptionStartDate),
 			APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
-			ExpiryDate:         &subscription.SubscriptionCreatedDate,
+			ExpiryDate:         converter.NullInt32ToTime(&subscription.SubscriptionExpiryDate),
 			Description:        &subscription.SubscriptionDescription.String,
 			Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
 			OrganizationID:     int(subscription.OrganizationID),
@@ -217,11 +218,11 @@ func (apiCfg *ApiConfig) GetSubscriptionByrgIdHandler(w http.ResponseWriter, r *
 			CreateSubscriptionParams: CreateSubscriptionParams{
 				Name:               subscription.SubscriptionName,
 				Type:               subscription.SubscriptionType,
-				CreatedAt:          subscription.SubscriptionCreatedDate,
-				UpdatedAt:          subscription.SubscriptionUpdatedDate,
-				StartDate:          subscription.SubscriptionStartDate,
+				CreatedAt:          misc.FromUnixTime32(subscription.SubscriptionCreatedDate),
+				UpdatedAt:          misc.FromUnixTime32(subscription.SubscriptionUpdatedDate),
+				StartDate:          misc.FromUnixTime32(subscription.SubscriptionStartDate),
 				APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
-				ExpiryDate:         &subscription.SubscriptionCreatedDate,
+				ExpiryDate:         converter.NullInt32ToTime(&subscription.SubscriptionExpiryDate),
 				Description:        &subscription.SubscriptionDescription.String,
 				Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
 				OrganizationID:     int(subscription.OrganizationID),
@@ -250,11 +251,11 @@ func (apiCfg *ApiConfig) ListSubscriptionHandler(w http.ResponseWriter, r *http.
 			CreateSubscriptionParams: CreateSubscriptionParams{
 				Name:               subscription.SubscriptionName,
 				Type:               subscription.SubscriptionType,
-				CreatedAt:          subscription.SubscriptionCreatedDate,
-				UpdatedAt:          subscription.SubscriptionUpdatedDate,
-				StartDate:          subscription.SubscriptionStartDate,
+				CreatedAt:          misc.FromUnixTime32(subscription.SubscriptionCreatedDate),
+				UpdatedAt:          misc.FromUnixTime32(subscription.SubscriptionUpdatedDate),
+				StartDate:          misc.FromUnixTime32(subscription.SubscriptionStartDate),
 				APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
-				ExpiryDate:         &subscription.SubscriptionCreatedDate,
+				ExpiryDate:         converter.NullInt32ToTime(&subscription.SubscriptionExpiryDate),
 				Description:        &subscription.SubscriptionDescription.String,
 				Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
 				OrganizationID:     int(subscription.OrganizationID),

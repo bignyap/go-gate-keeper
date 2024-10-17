@@ -34,6 +34,21 @@ func (q *Queries) CreateCustomPricing(ctx context.Context, arg CreateCustomPrici
 	)
 }
 
+const createCustomPricings = `-- name: CreateCustomPricings :copyfrom
+INSERT INTO custom_endpoint_pricing (
+    custom_cost_per_call, custom_rate_limit,
+    subscription_id, tier_base_pricing_id
+) 
+VALUES (?, ?, ?, ?)
+`
+
+type CreateCustomPricingsParams struct {
+	CustomCostPerCall float64
+	CustomRateLimit   int32
+	SubscriptionID    int32
+	TierBasePricingID int32
+}
+
 const deleteCustomPricingById = `-- name: DeleteCustomPricingById :exec
 DELETE FROM custom_endpoint_pricing
 WHERE custom_endpoint_pricing_id = ?
@@ -65,7 +80,7 @@ func (q *Queries) GetCustomPricing(ctx context.Context, subscriptionID int32) ([
 		return nil, err
 	}
 	defer rows.Close()
-	var items []CustomEndpointPricing
+	items := []CustomEndpointPricing{}
 	for rows.Next() {
 		var i CustomEndpointPricing
 		if err := rows.Scan(

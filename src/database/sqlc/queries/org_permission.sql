@@ -6,6 +6,10 @@ WHERE organization_id = ?;
 INSERT INTO organization_permission (resource_type_id, permission_code, organization_id) 
 VALUES (?, ?, ?);
 
+-- name: CreateOrgPermissions :copyfrom
+INSERT INTO organization_permission (resource_type_id, permission_code, organization_id) 
+VALUES (?, ?, ?);
+
 -- name: DeleteOrgPermissionById :exec
 DELETE FROM organization_permission
 WHERE organization_permission_id = ?;

@@ -56,6 +56,17 @@ func (c NullInt64ToPointerConverter) ConvertToPointer() interface{} {
 	return &intValue
 }
 
+type NullUnixTimeToPointerConverter struct {
+	Input *sql.NullInt64
+}
+
+func (c NullUnixTimeToPointerConverter) ConvertToPointer() interface{} {
+	if !(c.Input.Valid) {
+		return nil
+	}
+	return &c.Input.Int64
+}
+
 func ConvertNullToPointer(converter NullConverter) interface{} {
 	return converter.ConvertToPointer()
 }
