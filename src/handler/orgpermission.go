@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
@@ -46,6 +50,67 @@ func CreateOrgPermissionFormValidator(r *http.Request) (*sqlcgen.CreateOrgPermis
 	}
 
 	return &input, nil
+}
+
+func CreateOrgPermissionJSONValidation(r *http.Request) ([]sqlcgen.CreateOrgPermissionsParams, error) {
+
+	var inputs []sqlcgen.CreateOrgPermissionParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs []sqlcgen.CreateOrgPermissionsParams
+
+	for _, input := range inputs {
+		batchInput := sqlcgen.CreateOrgPermissionsParams{
+			OrganizationID: input.OrganizationID,
+			ResourceTypeID: input.ResourceTypeID,
+			PermissionCode: input.PermissionCode,
+		}
+		outputs = append(outputs, batchInput)
+	}
+
+	return outputs, nil
+}
+
+type BulkCreateOrgPermissionInserter struct {
+	OrgPermissions []sqlcgen.CreateOrgPermissionsParams
+	ApiConfig      *ApiConfig
+}
+
+func (input BulkCreateOrgPermissionInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.CreateOrgPermissions(ctx, input.OrgPermissions)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) CreateOrgPermissionInBatchHandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateOrgPermissionJSONValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkCreateOrgPermissionInserter{
+		OrgPermissions: input,
+		ApiConfig:      apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the organization permissions: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) CreateOrgPermissionHandler(w http.ResponseWriter, r *http.Request) {

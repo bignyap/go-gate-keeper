@@ -106,7 +106,7 @@ func (apiCfg *ApiConfig) CreateResurceTypeInBatchHandler(w http.ResponseWriter, 
 
 	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
 	if err != nil {
-		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the endpoints: %s", err))
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the resource types: %s", err))
 		return
 	}
 
