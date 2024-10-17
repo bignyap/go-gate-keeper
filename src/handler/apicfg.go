@@ -1,9 +1,14 @@
 package handler
 
-import "github.com/bignyap/go-gate-keeper/database/sqlcgen"
+import (
+	"database/sql"
+
+	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
+)
 
 type ApiConfig struct {
-	DB *sqlcgen.Queries
+	DB   *sqlcgen.Queries
+	Conn *sql.DB
 }
 
 const (

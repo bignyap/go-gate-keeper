@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
@@ -122,6 +126,75 @@ func CreateOrgFormValidation(r *http.Request) (*sqlcgen.CreateOrganizationParams
 	}
 
 	return &input, nil
+}
+
+func CreateOrgJSONValidation(r *http.Request) ([]sqlcgen.CreateOrganizationsParams, error) {
+
+	var inputs []sqlcgen.CreateOrganizationParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs []sqlcgen.CreateOrganizationsParams
+
+	currentTime := int32(misc.ToUnixTime())
+
+	for _, input := range inputs {
+		batchInput := sqlcgen.CreateOrganizationsParams{
+			OrganizationName:         input.OrganizationName,
+			OrganizationSupportEmail: input.OrganizationSupportEmail,
+			OrganizationRealm:        input.OrganizationRealm,
+			OrganizationActive:       input.OrganizationActive,
+			OrganizationReportQ:      input.OrganizationReportQ,
+			OrganizationTypeID:       input.OrganizationTypeID,
+			OrganizationConfig:       input.OrganizationConfig,
+			OrganizationCreatedAt:    currentTime,
+			OrganizationUpdatedAt:    currentTime,
+		}
+		outputs = append(outputs, batchInput)
+	}
+
+	return outputs, nil
+}
+
+type BulkOrganizationInserter struct {
+	Organizations []sqlcgen.CreateOrganizationsParams
+	ApiConfig     *ApiConfig
+}
+
+func (input BulkOrganizationInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.CreateOrganizations(ctx, input.Organizations)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) CreateOrganizationInBatchandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateOrgJSONValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkOrganizationInserter{
+		Organizations: input,
+		ApiConfig:     apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the organizations: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) CreateOrganizationandler(w http.ResponseWriter, r *http.Request) {

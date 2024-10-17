@@ -13,7 +13,7 @@ type BulkInserter interface {
 
 func InsertWithTransaction(ctx context.Context, db *sql.DB, inserter BulkInserter) (int64, error) {
 
-	tx, err := db.BeginTx(ctx, nil)
+	tx, err := db.Begin()
 	if err != nil {
 		return 0, err
 	}

@@ -86,7 +86,8 @@ func InitializeApp() {
 	defer conn.Close()
 
 	apiCfg := &handler.ApiConfig{
-		DB: sqlcgen.New(conn),
+		DB:   sqlcgen.New(conn),
+		Conn: conn,
 	}
 
 	if err := InitializeWebServer(apiCfg); err != nil {
