@@ -1,10 +1,14 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
@@ -44,6 +48,66 @@ func RegisterEndpointFormValidator(r *http.Request) (*sqlcgen.RegisterApiEndpoin
 	}
 
 	return &input, nil
+}
+
+func RegisterEndpointJSONValidation(r *http.Request) ([]sqlcgen.RegisterApiEndpointsParams, error) {
+
+	var inputs []sqlcgen.RegisterApiEndpointParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs []sqlcgen.RegisterApiEndpointsParams
+
+	for _, input := range inputs {
+		batchInput := sqlcgen.RegisterApiEndpointsParams{
+			EndpointName:        input.EndpointName,
+			EndpointDescription: input.EndpointDescription,
+		}
+		outputs = append(outputs, batchInput)
+	}
+
+	return outputs, nil
+}
+
+type BulkRegisterEndpointInserter struct {
+	Endpoints []sqlcgen.RegisterApiEndpointsParams
+	ApiConfig *ApiConfig
+}
+
+func (input BulkRegisterEndpointInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.RegisterApiEndpoints(ctx, input.Endpoints)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) RegisterEndpointInBatchHandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := RegisterEndpointJSONValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkRegisterEndpointInserter{
+		Endpoints: input,
+		ApiConfig: apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the endpoints: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) RegisterEndpointHandler(w http.ResponseWriter, r *http.Request) {
