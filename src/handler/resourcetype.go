@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
@@ -46,6 +50,67 @@ func CreateResourceTypeFormValidator(r *http.Request) (*sqlcgen.CreateResourceTy
 	}
 
 	return &input, nil
+}
+
+func CreateResourceTypeJSONValidation(r *http.Request) ([]sqlcgen.CreateResourceTypesParams, error) {
+
+	var inputs []sqlcgen.CreateResourceTypeParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs []sqlcgen.CreateResourceTypesParams
+
+	for _, input := range inputs {
+		batchInput := sqlcgen.CreateResourceTypesParams{
+			ResourceTypeName:        input.ResourceTypeName,
+			ResourceTypeCode:        input.ResourceTypeCode,
+			ResourceTypeDescription: input.ResourceTypeDescription,
+		}
+		outputs = append(outputs, batchInput)
+	}
+
+	return outputs, nil
+}
+
+type BulkCreateResourceTypeInserter struct {
+	ResourceType []sqlcgen.CreateResourceTypesParams
+	ApiConfig    *ApiConfig
+}
+
+func (input BulkCreateResourceTypeInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.CreateResourceTypes(ctx, input.ResourceType)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) CreateResurceTypeInBatchHandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateResourceTypeJSONValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkCreateResourceTypeInserter{
+		ResourceType: input,
+		ApiConfig:    apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the endpoints: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) CreateResurceTypeHandler(w http.ResponseWriter, r *http.Request) {
