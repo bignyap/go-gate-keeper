@@ -1,10 +1,14 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
@@ -50,6 +54,70 @@ func CreateSubcriptionTierFormValidation(r *http.Request) (*sqlcgen.CreateSubscr
 	}
 
 	return &input, nil
+}
+
+func CreateSubscriptionTierJSONValidation(r *http.Request) ([]sqlcgen.CreateSubscriptionTiersParams, error) {
+
+	var inputs []sqlcgen.CreateSubscriptionTierParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs []sqlcgen.CreateSubscriptionTiersParams
+
+	currentTime := int32(misc.ToUnixTime())
+
+	for _, input := range inputs {
+		batchInput := sqlcgen.CreateSubscriptionTiersParams{
+			TierName:        input.TierName,
+			TierDescription: input.TierDescription,
+			TierCreatedAt:   currentTime,
+			TierUpdatedAt:   currentTime,
+		}
+		outputs = append(outputs, batchInput)
+	}
+
+	return outputs, nil
+}
+
+type BulkCreateSubscriptionTierInserter struct {
+	SubscriptionTiers []sqlcgen.CreateSubscriptionTiersParams
+	ApiConfig         *ApiConfig
+}
+
+func (input BulkCreateSubscriptionTierInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.CreateSubscriptionTiers(ctx, input.SubscriptionTiers)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) CreateSubscriptionTierInBatchHandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateSubscriptionTierJSONValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkCreateSubscriptionTierInserter{
+		SubscriptionTiers: input,
+		ApiConfig:         apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the subscription tiers: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *http.Request) {

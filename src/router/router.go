@@ -9,6 +9,7 @@ import (
 func OrgTypeHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /orgType", apiConfig.CreateOrgTypeHandler)
+	mux.HandleFunc("POST /orgType/batch", apiConfig.CreateOrgTypeInBatchHandler)
 	mux.HandleFunc("GET /orgType", apiConfig.ListOrgTypeHandler)
 	mux.HandleFunc("DELETE /orgType/{Id}", apiConfig.DeleteOrgTypeHandler)
 
@@ -17,6 +18,7 @@ func OrgTypeHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func SubTierHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /subTier", apiConfig.CreateSubcriptionTierHandler)
+	mux.HandleFunc("POST /subTier/batch", apiConfig.CreateSubscriptionTierInBatchHandler)
 	mux.HandleFunc("GET /subTier", apiConfig.ListSubscriptionTiersHandler)
 	mux.HandleFunc("DELETE /subTier/{Id}", apiConfig.DeleteSubscriptionTierHandler)
 
@@ -25,6 +27,7 @@ func SubTierHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func EndpointHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /endpoint", apiConfig.RegisterEndpointHandler)
+	mux.HandleFunc("POST /endpoint/batch", apiConfig.RegisterEndpointInBatchHandler)
 	mux.HandleFunc("GET /endpoint", apiConfig.ListEndpointsHandler)
 	mux.HandleFunc("DELETE /endpoint/{Id}", apiConfig.DeleteEndpointsByIdHandler)
 
@@ -33,6 +36,7 @@ func EndpointHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func OrganizationHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /org", apiConfig.CreateOrganizationandler)
+	mux.HandleFunc("POST /org/batch", apiConfig.CreateOrganizationInBatchandler)
 	mux.HandleFunc("GET /org", apiConfig.ListOrganizationsHandler)
 	mux.HandleFunc("DELETE /org/{Id}", apiConfig.DeleteOrganizationByIdHandler)
 	mux.HandleFunc("GET /org/{Id}", apiConfig.GetOrganizationByIdHandler)
@@ -71,6 +75,7 @@ func CustomPricingHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func ResourceTypeHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /resourceType", apiConfig.CreateResurceTypeHandler)
+	mux.HandleFunc("POST /resourceType/batch", apiConfig.CreateResurceTypeInBatchHandler)
 	mux.HandleFunc("DELETE /resourceType/{id}", apiConfig.DeleteResourceTypeHandler)
 	mux.HandleFunc("GET /resourceType", apiConfig.ListResourceTypeHandler)
 
@@ -79,6 +84,7 @@ func ResourceTypeHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func OrgPermissionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /orgPermission", apiConfig.CreateOrgPermissionHandler)
+	mux.HandleFunc("POST /orgPermission/batch", apiConfig.CreateOrgPermissionInBatchHandler)
 	mux.HandleFunc("DELETE /orgPermission/{organization_id}", apiConfig.DeleteOrgPermissionHandler)
 	mux.HandleFunc("GET /orgPermission/{organization_id}", apiConfig.GetOrgPermissionHandler)
 

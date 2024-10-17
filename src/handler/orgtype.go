@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
@@ -31,6 +35,60 @@ func CreateOrgTypeFormValidator(r *http.Request) (string, error) {
 	}
 
 	return strParsed["name"], nil
+}
+
+type CreateOrgTypeParams struct {
+	Names []string `json:"name"`
+}
+
+func CreateOrgTypeJSONValidation(r *http.Request) (CreateOrgTypeParams, error) {
+
+	var inputs CreateOrgTypeParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return CreateOrgTypeParams{}, err
+	}
+
+	return inputs, nil
+}
+
+type BulkCreateOrgTypeInserter struct {
+	OrgTypes  CreateOrgTypeParams
+	ApiConfig *ApiConfig
+}
+
+func (input BulkCreateOrgTypeInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.CreateOrgTypes(ctx, input.OrgTypes.Names)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) CreateOrgTypeInBatchHandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateOrgTypeJSONValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkCreateOrgTypeInserter{
+		OrgTypes:  input,
+		ApiConfig: apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the organization types: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Request) {
