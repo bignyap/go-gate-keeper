@@ -31,6 +31,57 @@ type CreateSubscriptionOutput struct {
 	CreateSubscriptionParams
 }
 
+type CreateSubscriptionInputs interface {
+	ToCreateSubscriptionParams() CreateSubscriptionParams
+}
+
+type LocalSubscription struct {
+	sqlcgen.Subscription
+}
+
+type LocalCreateSubscriptionParams struct {
+	sqlcgen.CreateSubscriptionParams
+}
+
+func (input LocalSubscription) ToCreateSubscriptionParams() CreateSubscriptionParams {
+	return CreateSubscriptionParams{
+		Name:               input.SubscriptionName,
+		Type:               input.SubscriptionType,
+		CreatedAt:          misc.FromUnixTime32(input.SubscriptionCreatedDate),
+		UpdatedAt:          misc.FromUnixTime32(input.SubscriptionUpdatedDate),
+		StartDate:          misc.FromUnixTime32(input.SubscriptionStartDate),
+		APILimit:           converter.NullInt32ToInt(&input.SubscriptionApiLimit),
+		ExpiryDate:         converter.NullInt32ToTime(&input.SubscriptionExpiryDate),
+		Description:        &input.SubscriptionDescription.String,
+		Status:             converter.NullBoolToBool(&input.SubscriptionStatus),
+		OrganizationID:     int(input.OrganizationID),
+		SubscriptionTierID: int(input.SubscriptionTierID),
+	}
+}
+
+func (input LocalCreateSubscriptionParams) ToCreateSubscriptionParams() CreateSubscriptionParams {
+	return CreateSubscriptionParams{
+		Name:               input.SubscriptionName,
+		Type:               input.SubscriptionType,
+		CreatedAt:          misc.FromUnixTime32(input.SubscriptionCreatedDate),
+		UpdatedAt:          misc.FromUnixTime32(input.SubscriptionUpdatedDate),
+		StartDate:          misc.FromUnixTime32(input.SubscriptionStartDate),
+		APILimit:           converter.NullInt32ToInt(&input.SubscriptionApiLimit),
+		ExpiryDate:         converter.NullInt32ToTime(&input.SubscriptionExpiryDate),
+		Description:        &input.SubscriptionDescription.String,
+		Status:             converter.NullBoolToBool(&input.SubscriptionStatus),
+		OrganizationID:     int(input.OrganizationID),
+		SubscriptionTierID: int(input.SubscriptionTierID),
+	}
+}
+
+func ToCreateSubscriptionOutput(input sqlcgen.Subscription) CreateSubscriptionOutput {
+	return CreateSubscriptionOutput{
+		ID:                       int(input.SubscriptionID),
+		CreateSubscriptionParams: LocalSubscription{input}.ToCreateSubscriptionParams(),
+	}
+}
+
 func CreateSubscriptionFormValidation(r *http.Request) (*sqlcgen.CreateSubscriptionParams, error) {
 
 	err := formvalidator.ParseFormData(r)
@@ -116,21 +167,11 @@ func (apiCfg *ApiConfig) CreateSubscriptionHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
+	subscriptionParams := LocalCreateSubscriptionParams{*input}.ToCreateSubscriptionParams()
+
 	output := CreateSubscriptionOutput{
-		ID: int(insertedID),
-		CreateSubscriptionParams: CreateSubscriptionParams{
-			Name:               input.SubscriptionName,
-			Type:               input.SubscriptionType,
-			CreatedAt:          misc.FromUnixTime32(input.SubscriptionCreatedDate),
-			UpdatedAt:          misc.FromUnixTime32(input.SubscriptionUpdatedDate),
-			StartDate:          misc.FromUnixTime32(input.SubscriptionStartDate),
-			APILimit:           converter.NullInt32ToInt(&input.SubscriptionApiLimit),
-			ExpiryDate:         converter.NullInt32ToTime(&input.SubscriptionExpiryDate),
-			Description:        &input.SubscriptionDescription.String,
-			Status:             converter.NullBoolToBool(&input.SubscriptionStatus),
-			OrganizationID:     int(input.OrganizationID),
-			SubscriptionTierID: int(input.SubscriptionTierID),
-		},
+		ID:                       int(insertedID),
+		CreateSubscriptionParams: subscriptionParams,
 	}
 
 	respondWithJSON(w, StatusCreated, output)
@@ -175,22 +216,7 @@ func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	output := CreateSubscriptionOutput{
-		ID: int(subscription.SubscriptionID),
-		CreateSubscriptionParams: CreateSubscriptionParams{
-			Name:               subscription.SubscriptionName,
-			Type:               subscription.SubscriptionType,
-			CreatedAt:          misc.FromUnixTime32(subscription.SubscriptionCreatedDate),
-			UpdatedAt:          misc.FromUnixTime32(subscription.SubscriptionUpdatedDate),
-			StartDate:          misc.FromUnixTime32(subscription.SubscriptionStartDate),
-			APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
-			ExpiryDate:         converter.NullInt32ToTime(&subscription.SubscriptionExpiryDate),
-			Description:        &subscription.SubscriptionDescription.String,
-			Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
-			OrganizationID:     int(subscription.OrganizationID),
-			SubscriptionTierID: int(subscription.SubscriptionTierID),
-		},
-	}
+	output := ToCreateSubscriptionOutput(subscription)
 
 	respondWithJSON(w, StatusOK, output)
 }
@@ -213,22 +239,7 @@ func (apiCfg *ApiConfig) GetSubscriptionByrgIdHandler(w http.ResponseWriter, r *
 
 	for _, subscription := range subscriptions {
 
-		output = append(output, CreateSubscriptionOutput{
-			ID: int(subscription.SubscriptionID),
-			CreateSubscriptionParams: CreateSubscriptionParams{
-				Name:               subscription.SubscriptionName,
-				Type:               subscription.SubscriptionType,
-				CreatedAt:          misc.FromUnixTime32(subscription.SubscriptionCreatedDate),
-				UpdatedAt:          misc.FromUnixTime32(subscription.SubscriptionUpdatedDate),
-				StartDate:          misc.FromUnixTime32(subscription.SubscriptionStartDate),
-				APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
-				ExpiryDate:         converter.NullInt32ToTime(&subscription.SubscriptionExpiryDate),
-				Description:        &subscription.SubscriptionDescription.String,
-				Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
-				OrganizationID:     int(subscription.OrganizationID),
-				SubscriptionTierID: int(subscription.SubscriptionTierID),
-			},
-		})
+		output = append(output, ToCreateSubscriptionOutput(subscription))
 	}
 
 	respondWithJSON(w, StatusOK, output)
@@ -246,22 +257,7 @@ func (apiCfg *ApiConfig) ListSubscriptionHandler(w http.ResponseWriter, r *http.
 
 	for _, subscription := range subscriptions {
 
-		output = append(output, CreateSubscriptionOutput{
-			ID: int(subscription.SubscriptionID),
-			CreateSubscriptionParams: CreateSubscriptionParams{
-				Name:               subscription.SubscriptionName,
-				Type:               subscription.SubscriptionType,
-				CreatedAt:          misc.FromUnixTime32(subscription.SubscriptionCreatedDate),
-				UpdatedAt:          misc.FromUnixTime32(subscription.SubscriptionUpdatedDate),
-				StartDate:          misc.FromUnixTime32(subscription.SubscriptionStartDate),
-				APILimit:           converter.NullInt32ToInt(&subscription.SubscriptionApiLimit),
-				ExpiryDate:         converter.NullInt32ToTime(&subscription.SubscriptionExpiryDate),
-				Description:        &subscription.SubscriptionDescription.String,
-				Status:             converter.NullBoolToBool(&subscription.SubscriptionStatus),
-				OrganizationID:     int(subscription.OrganizationID),
-				SubscriptionTierID: int(subscription.SubscriptionTierID),
-			},
-		})
+		output = append(output, ToCreateSubscriptionOutput(subscription))
 	}
 
 	respondWithJSON(w, StatusOK, output)
