@@ -30,6 +30,53 @@ type CreateOrganizationOutput struct {
 	CreateOrganizationParams
 }
 
+type CreateOrganizationInputs interface {
+	ToCreateOrganizationParams() CreateOrganizationParams
+}
+
+type LocalOrganization struct {
+	sqlcgen.Organization
+}
+
+type LocalCreateCreateOrganizationParams struct {
+	sqlcgen.CreateOrganizationParams
+}
+
+func (organization LocalOrganization) ToCreateOrganizationParams() CreateOrganizationParams {
+	return CreateOrganizationParams{
+		Name:         organization.OrganizationName,
+		SupportEmail: organization.OrganizationSupportEmail,
+		CreatedAt:    misc.FromUnixTime32(organization.OrganizationCreatedAt),
+		UpdatedAt:    misc.FromUnixTime32(organization.OrganizationUpdatedAt),
+		Realm:        organization.OrganizationRealm,
+		Active:       converter.NullBoolToBool(&organization.OrganizationActive),
+		ReportQ:      converter.NullBoolToBool(&organization.OrganizationReportQ),
+		TypeID:       int(organization.OrganizationTypeID),
+		Config:       converter.NullStrToStr(&organization.OrganizationConfig),
+	}
+}
+
+func (organization LocalCreateCreateOrganizationParams) ToCreateOrganizationParams() CreateOrganizationParams {
+	return CreateOrganizationParams{
+		Name:         organization.OrganizationName,
+		SupportEmail: organization.OrganizationSupportEmail,
+		CreatedAt:    misc.FromUnixTime32(organization.OrganizationCreatedAt),
+		UpdatedAt:    misc.FromUnixTime32(organization.OrganizationUpdatedAt),
+		Realm:        organization.OrganizationRealm,
+		Active:       converter.NullBoolToBool(&organization.OrganizationActive),
+		ReportQ:      converter.NullBoolToBool(&organization.OrganizationReportQ),
+		TypeID:       int(organization.OrganizationTypeID),
+		Config:       converter.NullStrToStr(&organization.OrganizationConfig),
+	}
+}
+
+func ToCreateOrganizationOutput(input sqlcgen.Organization) CreateOrganizationOutput {
+	return CreateOrganizationOutput{
+		ID:                       int(input.OrganizationID),
+		CreateOrganizationParams: LocalOrganization{input}.ToCreateOrganizationParams(),
+	}
+}
+
 func CreateOrgFormValidation(r *http.Request) (*sqlcgen.CreateOrganizationParams, error) {
 
 	err := formvalidator.ParseFormData(r)
@@ -97,19 +144,11 @@ func (apiCfg *ApiConfig) CreateOrganizationandler(w http.ResponseWriter, r *http
 		return
 	}
 
+	organizationParams := LocalCreateCreateOrganizationParams{*input}.ToCreateOrganizationParams()
+
 	output := CreateOrganizationOutput{
-		ID: int(insertedID),
-		CreateOrganizationParams: CreateOrganizationParams{
-			Name:         input.OrganizationName,
-			SupportEmail: input.OrganizationSupportEmail,
-			CreatedAt:    misc.FromUnixTime32(input.OrganizationCreatedAt),
-			UpdatedAt:    misc.FromUnixTime32(input.OrganizationUpdatedAt),
-			Realm:        input.OrganizationRealm,
-			Active:       converter.NullBoolToBool(&input.OrganizationActive),
-			ReportQ:      converter.NullBoolToBool(&input.OrganizationReportQ),
-			TypeID:       int(input.OrganizationTypeID),
-			Config:       converter.NullStrToStr(&input.OrganizationConfig),
-		},
+		ID:                       int(insertedID),
+		CreateOrganizationParams: organizationParams,
 	}
 
 	respondWithJSON(w, StatusCreated, output)
@@ -127,20 +166,7 @@ func (apiCfg *ApiConfig) ListOrganizationsHandler(w http.ResponseWriter, r *http
 
 	for _, organization := range organizations {
 
-		output = append(output, CreateOrganizationOutput{
-			ID: int(organization.OrganizationID),
-			CreateOrganizationParams: CreateOrganizationParams{
-				Name:         organization.OrganizationName,
-				SupportEmail: organization.OrganizationSupportEmail,
-				CreatedAt:    misc.FromUnixTime32(organization.OrganizationCreatedAt),
-				UpdatedAt:    misc.FromUnixTime32(organization.OrganizationUpdatedAt),
-				Realm:        organization.OrganizationRealm,
-				Active:       converter.NullBoolToBool(&organization.OrganizationActive),
-				ReportQ:      converter.NullBoolToBool(&organization.OrganizationReportQ),
-				TypeID:       int(organization.OrganizationTypeID),
-				Config:       converter.NullStrToStr(&organization.OrganizationConfig),
-			},
-		})
+		output = append(output, ToCreateOrganizationOutput(organization))
 	}
 
 	respondWithJSON(w, StatusOK, output)
@@ -166,20 +192,7 @@ func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	output := CreateOrganizationOutput{
-		ID: int(organization.OrganizationID),
-		CreateOrganizationParams: CreateOrganizationParams{
-			Name:         organization.OrganizationName,
-			SupportEmail: organization.OrganizationSupportEmail,
-			CreatedAt:    misc.FromUnixTime32(organization.OrganizationCreatedAt),
-			UpdatedAt:    misc.FromUnixTime32(organization.OrganizationUpdatedAt),
-			Realm:        organization.OrganizationRealm,
-			Active:       converter.NullBoolToBool(&organization.OrganizationActive),
-			ReportQ:      converter.NullBoolToBool(&organization.OrganizationReportQ),
-			TypeID:       int(organization.OrganizationTypeID),
-			Config:       converter.NullStrToStr(&organization.OrganizationConfig),
-		},
-	}
+	output := ToCreateOrganizationOutput(organization)
 
 	respondWithJSON(w, StatusOK, output)
 }
