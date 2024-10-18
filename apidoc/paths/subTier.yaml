@@ -15,7 +15,7 @@ paths:
         '201':
           description: Created
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/SubTier.yaml#/CreateSubTierOutput'
     get:
@@ -27,11 +27,29 @@ paths:
         '200':
           description: OK
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: '../schemas/SubTier.yaml#/CreateSubTierOutput'
+  /subTier/batch:
+    post:
+      summary: Create subscription tier in bulk
+      operationId: createSubTierInBulk
+      tags:
+        - Subscription Tier
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              array:
+                $ref: '../schemas/SubTier.yaml#/CreateSubTierInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
   /subTier/{Id}:
     delete:
       summary: Delete a subscription tier

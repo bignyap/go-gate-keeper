@@ -15,15 +15,33 @@ paths:
         '201':
           description: Organization permission created successfully
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/OrgPermission.yaml#/CreateOrgPermissionOutput'
         '400':
           description: Bad request (invalid parameters)
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/OrgPermission.yaml#/Error'
+  /orgPermission/batch:
+    post:
+      summary: Create organization permission in bulk
+      operationId: createOrgPermissionInBulk
+      tags:
+        - Organization Permission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              array:
+                $ref: '../schemas/OrgPermission.yaml#/CreateOrgPermissionInput'
+      responses:
+        '201':
+          description: Organization permission created successfully
+          content:
+            application/json:
   /orgPermission/{organization_id}:
     get:
       summary: Get organization permission by organization ID
@@ -40,7 +58,7 @@ paths:
         '200':
           description: Organization permission retrieved successfully
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 type: array
                 items:
@@ -48,7 +66,7 @@ paths:
         '400':
           description: Bad request (invalid ID format)
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/OrgPermission.yaml#/Error'
     delete:
@@ -68,6 +86,6 @@ paths:
         '400':
           description: Bad request (invalid ID format or deletion error)
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/OrgPermission.yaml#/Error'

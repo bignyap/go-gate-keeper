@@ -15,7 +15,7 @@ paths:
         '201':
           description: Created
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutput'
     get:
@@ -32,6 +32,24 @@ paths:
                 type: array
                 items:
                   $ref: '../schemas/Endpoint.yaml#/RegisterEndpointOutput'
+  /endpoint/batch:
+    post:
+      summary: Register endpoints in bulk
+      operationId: registerEndpointInBulk
+      tags:
+        - Register Endpoint
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              array:
+                $ref: '../schemas/Endpoint.yaml#/RegisterEndpointInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
   /endpoint/{Id}:
     delete:
       summary: Delete an endpoint

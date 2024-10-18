@@ -15,7 +15,7 @@ paths:
         '201':
           description: Subscription created successfully
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
         '400':
@@ -29,14 +29,33 @@ paths:
         '200':
           description: A list of subscriptions
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
         '400':
           description: Bad request
-
+  /subscription/batch:
+    post:
+      summary: Create subscription in bulk
+      operationId: createSubscriptionInBulk
+      tags:
+        - Subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              array:
+                $ref: '../schemas/Subscription.yaml#/CreateSubscriptionInput'
+      responses:
+        '201':
+          description: Subscription created successfully
+          content:
+            application/json:
+        '400':
+          description: Bad request
   /subscription/{id}:
     delete:
       summary: Delete a subscription by ID
@@ -89,7 +108,7 @@ paths:
         '200':
           description: A subscription by ID
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/Subscription.yaml#/CreateSubscriptionOutput'
         '400':
@@ -111,7 +130,7 @@ paths:
         '200':
           description: Subscriptions retrieved by organization ID
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 type: array
                 items:

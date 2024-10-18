@@ -15,7 +15,7 @@ paths:
         '201':
           description: Successfully created custom pricing.
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/CustomPricing.yaml#/CreateCustomPricingOutput'
         '400':
@@ -98,7 +98,7 @@ paths:
         '200':
           description: Successfully retrieved custom pricing details.
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 type: array
                 items:

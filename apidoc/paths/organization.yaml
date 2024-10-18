@@ -14,7 +14,7 @@ paths:
         '201':
           description: Created
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/Organization.yaml#/CreateOrganizationOutput'
     get:
@@ -26,11 +26,28 @@ paths:
         '200':
           description: OK
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: '../schemas/Organization.yaml#/CreateOrganizationOutput'
+  /org/batch:
+    post:
+      summary: Create organization in bulk
+      operationId: createOrganizationInBulk
+      tags:
+        - Organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              array:
+                $ref: '../schemas/Organization.yaml#/CreateOrganizationInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
   /org/{Id}:
     get:
       summary: Get an organization by ID
@@ -47,7 +64,7 @@ paths:
         '200':
           description: OK
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/Organization.yaml#/CreateOrganizationOutput'
     delete:

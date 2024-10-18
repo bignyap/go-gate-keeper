@@ -15,7 +15,7 @@ paths:
         '201':
           description: Created
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutput'
   /tierPricing/{tier_id}:
@@ -34,12 +34,29 @@ paths:
         '200':
           description: OK
           content:
-            application/x-www-form-urlencoded:
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutput'
-                  
+  /tierPricing/batch:
+    post:
+      summary: Create tier pricing
+      operationId: createTierPricing
+      tags:
+        - Tier Pricing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              array:
+                $ref: '../schemas/TierPricing.yaml#/CreateTierPricingInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:               
   /tierPricing/tierId/{tier_id}:
     delete:
       summary: Delete tier pricing by tier ID
