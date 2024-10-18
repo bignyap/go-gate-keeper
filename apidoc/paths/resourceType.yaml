@@ -55,12 +55,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../schemas/ResourceType.yaml#/CreateResourceTypeInput'
+              type: array
+              items:
+                $ref: '../schemas/ResourceType.yaml#/CreateResourceTypeInput'
       responses:
         "201":
           description: Resource type created successfully
-          content:
-            application/json:
   /resourceType/{id}:
     delete:
       summary: Delete a resource type by ID

@@ -35,13 +35,12 @@ paths:
         content:
           application/json:
             schema:
-              array:
+              type: array
+              items:
                 $ref: '../schemas/OrgPermission.yaml#/CreateOrgPermissionInput'
       responses:
         '201':
           description: Organization permission created successfully
-          content:
-            application/json:
   /orgPermission/{organization_id}:
     get:
       summary: Get organization permission by organization ID

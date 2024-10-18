@@ -8,22 +8,32 @@ servers:
 paths:
   /endpoint:
     $ref: './paths/endpoint.yaml#/paths/~1endpoint'
+  /endpoint/batch:
+    $ref: './paths/endpoint.yaml#/paths/~1endpoint~1batch'
   /endpoint/{Id}:
     $ref: './paths/endpoint.yaml#/paths/~1endpoint~1{Id}'
   /resourceType:
     $ref: './paths/resourceType.yaml#/paths/~1resourceType'
+  /resourceType/batch:
+    $ref: './paths/resourceType.yaml#/paths/~1resourceType~1batch'
   /resourceType/{id}:
     $ref: './paths/resourceType.yaml#/paths/~1resourceType~1{id}'
   /orgType:
     $ref: './paths/orgType.yaml#/paths/~1orgType'
+  /orgType/batch:
+    $ref: './paths/orgType.yaml#/paths/~1orgType~1batch'
   /orgType/{Id}:
     $ref: './paths/orgType.yaml#/paths/~1orgType~1{Id}'
   /subTier:
     $ref: './paths/subTier.yaml#/paths/~1subTier'
+  /subTier/batch:
+    $ref: './paths/subTier.yaml#/paths/~1subTier~1batch'
   /subTier/{Id}:
     $ref: './paths/subTier.yaml#/paths/~1subTier~1{Id}'
   /tierPricing:
     $ref: './paths/tierPricing.yaml#/paths/~1tierPricing'
+  /tierPricing/batch:
+    $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1batch'
   /tierPricing/{tier_id}:
     $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1{tier_id}'
   /tierPricing/id/{id}:
@@ -32,14 +42,20 @@ paths:
     $ref: './paths/tierPricing.yaml#/paths/~1tierPricing~1tierId~1{tier_id}'
   /org:
     $ref: './paths/organization.yaml#/paths/~1org'
+  /org/batch:
+    $ref: './paths/organization.yaml#/paths/~1org~1batch'
   /org/{Id}:
     $ref: './paths/organization.yaml#/paths/~1org~1{Id}'
   /orgPermission:
     $ref: './paths/orgPermission.yaml#/paths/~1orgPermission'
+  /orgPermission/batch:
+    $ref: './paths/orgPermission.yaml#/paths/~1orgPermission~1batch'
   /orgPermission/{organization_id}:
     $ref: './paths/orgPermission.yaml#/paths/~1orgPermission~1{organization_id}'
   /subscription:
     $ref: './paths/subscription.yaml#/paths/~1subscription'
+  /subscription/batch:
+    $ref: './paths/subscription.yaml#/paths/~1subscription~1batch'
   /subscription/id/{id}:
     $ref: './paths/subscription.yaml#/paths/~1subscription~1id~1{id}'
   /subscription/orgId/{organization_id}:
@@ -50,6 +66,8 @@ paths:
     $ref: './paths/subscription.yaml#/paths/~1subscription~1organization~1{organization_id}'
   /customPricing:
     $ref: './paths/customPricing.yaml#/paths/~1customPricing'
+  /customPricing/batch:
+    $ref: './paths/customPricing.yaml#/paths/~1customPricing~1batch'
   /customPricing/{subscription_id}:
     $ref: './paths/customPricing.yaml#/paths/~1customPricing~1{subscription_id}'
   /customPricing/subId/{subscription_id}:

@@ -41,8 +41,8 @@ paths:
                   $ref: '../schemas/TierPricing.yaml#/CreateTierPricingOutput'
   /tierPricing/batch:
     post:
-      summary: Create tier pricing
-      operationId: createTierPricing
+      summary: Create tier pricing in bulk
+      operationId: createTierPricingInBulk
       tags:
         - Tier Pricing
       requestBody:
@@ -50,13 +50,12 @@ paths:
         content:
           application/json:
             schema:
-              array:
+              type: array
+              items:
                 $ref: '../schemas/TierPricing.yaml#/CreateTierPricingInput'
       responses:
         '201':
-          description: Created
-          content:
-            application/json:               
+          description: Created           
   /tierPricing/tierId/{tier_id}:
     delete:
       summary: Delete tier pricing by tier ID

@@ -18,8 +18,6 @@ paths:
             application/json:
               schema:
                 $ref: '../schemas/CustomPricing.yaml#/CreateCustomPricingOutput'
-        '400':
-          description: Bad request, validation error or database error.
     delete:
       summary: Delete custom pricing by subscription ID or pricing ID
       tags:
@@ -40,9 +38,23 @@ paths:
       responses:
         '204':
           description: Custom pricing deleted successfully.
-        '400':
-          description: Invalid ID format or other errors.
-
+  /customPricing/batch:
+    post:
+      summary: Create custom pricing in bulk
+      operationId: createCustomPricingInBulk
+      tags:
+        - Custom Pricing
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '../schemas/CustomPricing.yaml#/CreateCustomPricingInput'
+      responses:
+        '201':
+          description: Successfully created custom pricing.
   /customPricing/subId/{subscription_id}:
     delete:
       summary: Delete custom pricing by subscription ID

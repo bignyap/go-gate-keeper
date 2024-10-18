@@ -41,15 +41,14 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
-              array:
+              type: array
+              items:
                 $ref: '../schemas/SubTier.yaml#/CreateSubTierInput'
       responses:
         '201':
           description: Created
-          content:
-            application/json:
   /subTier/{Id}:
     delete:
       summary: Delete a subscription tier

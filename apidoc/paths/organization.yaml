@@ -41,13 +41,12 @@ paths:
         content:
           application/json:
             schema:
-              array:
+              type: array
+              items:
                 $ref: '../schemas/Organization.yaml#/CreateOrganizationInput'
       responses:
         '201':
           description: Created
-          content:
-            application/json:
   /org/{Id}:
     get:
       summary: Get an organization by ID
