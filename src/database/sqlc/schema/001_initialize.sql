@@ -127,3 +127,5 @@ ALTER TABLE api_usage ADD FOREIGN KEY (api_endpoint_id) REFERENCES api_endpoint 
 ALTER TABLE api_usage ADD FOREIGN KEY (billing_id) REFERENCES billing_history (billing_id);
 
 ALTER TABLE organization_permission ADD FOREIGN KEY (resource_type_id) REFERENCES resource_type (resource_type_id);
+
+SET GLOBAL local_infile=1;

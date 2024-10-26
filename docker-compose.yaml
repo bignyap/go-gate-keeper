@@ -32,7 +32,7 @@ services:
 
   mysql:
    image: mysql:8.0.32
-   command: --default-authentication-plugin=mysql_native_password
+   command: --default-authentication-plugin=mysql_native_password --local-infile=ON
    restart: always
    environment:
      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

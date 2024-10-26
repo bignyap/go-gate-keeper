@@ -58,7 +58,7 @@ func CreateSubcriptionTierFormValidation(r *http.Request) (*sqlcgen.CreateSubscr
 
 func CreateSubscriptionTierJSONValidation(r *http.Request) ([]sqlcgen.CreateSubscriptionTiersParams, error) {
 
-	var inputs []sqlcgen.CreateSubscriptionTierParams
+	var inputs []CreateSubTierParams
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&inputs)
@@ -72,8 +72,8 @@ func CreateSubscriptionTierJSONValidation(r *http.Request) ([]sqlcgen.CreateSubs
 
 	for _, input := range inputs {
 		batchInput := sqlcgen.CreateSubscriptionTiersParams{
-			TierName:        input.TierName,
-			TierDescription: input.TierDescription,
+			TierName:        input.Name,
+			TierDescription: converter.StrToNullStr(*input.Description),
 			TierCreatedAt:   currentTime,
 			TierUpdatedAt:   currentTime,
 		}

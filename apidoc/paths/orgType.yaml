@@ -39,7 +39,7 @@ paths:
         - Organization Type
       requestBody:
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: array
               items:

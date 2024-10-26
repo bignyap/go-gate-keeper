@@ -10,6 +10,7 @@ import (
 
 	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
+	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
 
@@ -52,7 +53,7 @@ func RegisterEndpointFormValidator(r *http.Request) (*sqlcgen.RegisterApiEndpoin
 
 func RegisterEndpointJSONValidation(r *http.Request) ([]sqlcgen.RegisterApiEndpointsParams, error) {
 
-	var inputs []sqlcgen.RegisterApiEndpointParams
+	var inputs []RegisterEndpointParams
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&inputs)
@@ -64,8 +65,8 @@ func RegisterEndpointJSONValidation(r *http.Request) ([]sqlcgen.RegisterApiEndpo
 
 	for _, input := range inputs {
 		batchInput := sqlcgen.RegisterApiEndpointsParams{
-			EndpointName:        input.EndpointName,
-			EndpointDescription: input.EndpointDescription,
+			EndpointName:        input.Name,
+			EndpointDescription: converter.StrToNullStr(*input.Description),
 		}
 		outputs = append(outputs, batchInput)
 	}
@@ -95,6 +96,8 @@ func (apiCfg *ApiConfig) RegisterEndpointInBatchHandler(w http.ResponseWriter, r
 		respondWithError(w, StatusBadRequest, err.Error())
 		return
 	}
+
+	fmt.Println(input)
 
 	inserter := BulkRegisterEndpointInserter{
 		Endpoints: input,

@@ -177,3 +177,17 @@ func NullInt32ToTime(input *sql.NullInt32) *time.Time {
 	val := MyNullInt32{NullInt32: *input}
 	return NullToPointer(&val, FromNullInt32ToTime)
 }
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//										Pointer to SQLNull Types
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+// IntPtrToNullInt32 converts a pointer to int to sql.NullInt32
+func IntPtrToNullInt32(ptr *int) sql.NullInt32 {
+	if ptr != nil {
+		return sql.NullInt32{Int32: int32(*ptr), Valid: true}
+	}
+	return sql.NullInt32{Valid: false}
+}

@@ -43,7 +43,7 @@ type CreateOrgTypeParams struct {
 
 func CreateOrgTypeJSONValidation(r *http.Request) (CreateOrgTypeParams, error) {
 
-	var inputs CreateOrgTypeParams
+	var inputs []CreateOrgTypeInput
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&inputs)
@@ -51,7 +51,16 @@ func CreateOrgTypeJSONValidation(r *http.Request) (CreateOrgTypeParams, error) {
 		return CreateOrgTypeParams{}, err
 	}
 
-	return inputs, nil
+	var names []string
+	for _, val := range inputs {
+		names = append(names, val.Name)
+	}
+
+	output := CreateOrgTypeParams{
+		Names: names,
+	}
+
+	return output, nil
 }
 
 type BulkCreateOrgTypeInserter struct {

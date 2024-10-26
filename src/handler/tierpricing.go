@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
@@ -54,6 +58,68 @@ func CreateTierPricingFormValidator(r *http.Request) (*sqlcgen.CreateTierPricing
 	}
 
 	return &input, nil
+}
+
+func CreateTierPricingJSONValidation(r *http.Request) ([]sqlcgen.CreateTierPricingsParams, error) {
+
+	var inputs []CreateTierPricingParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs []sqlcgen.CreateTierPricingsParams
+
+	for _, input := range inputs {
+		batchInput := sqlcgen.CreateTierPricingsParams{
+			SubscriptionTierID: int32(input.SubscriptionTierID),
+			ApiEndpointID:      int32(input.ApiEndpointId),
+			BaseCostPerCall:    input.BaseCostPerCall,
+			BaseRateLimit:      converter.IntPtrToNullInt32(input.BaseRateLimit),
+		}
+		outputs = append(outputs, batchInput)
+	}
+
+	return outputs, nil
+}
+
+type BulkCreateTierPricingsInserter struct {
+	TierPricings []sqlcgen.CreateTierPricingsParams
+	ApiConfig    *ApiConfig
+}
+
+func (input BulkCreateTierPricingsInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.CreateTierPricings(ctx, input.TierPricings)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) CreateTierPricingInBatchandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateTierPricingJSONValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkCreateTierPricingsInserter{
+		TierPricings: input,
+		ApiConfig:    apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the tier pricings: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) CreateTierPricingHandler(w http.ResponseWriter, r *http.Request) {

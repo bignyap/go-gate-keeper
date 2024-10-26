@@ -54,7 +54,7 @@ func CreateResourceTypeFormValidator(r *http.Request) (*sqlcgen.CreateResourceTy
 
 func CreateResourceTypeJSONValidation(r *http.Request) ([]sqlcgen.CreateResourceTypesParams, error) {
 
-	var inputs []sqlcgen.CreateResourceTypeParams
+	var inputs []CreateResourceTypeParams
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&inputs)
@@ -66,9 +66,9 @@ func CreateResourceTypeJSONValidation(r *http.Request) ([]sqlcgen.CreateResource
 
 	for _, input := range inputs {
 		batchInput := sqlcgen.CreateResourceTypesParams{
-			ResourceTypeName:        input.ResourceTypeName,
-			ResourceTypeCode:        input.ResourceTypeCode,
-			ResourceTypeDescription: input.ResourceTypeDescription,
+			ResourceTypeName:        input.Name,
+			ResourceTypeCode:        input.Code,
+			ResourceTypeDescription: converter.StrToNullStr(*input.Description),
 		}
 		outputs = append(outputs, batchInput)
 	}
