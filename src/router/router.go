@@ -56,6 +56,7 @@ func TierPricingHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func SubscriptionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /subscription", apiConfig.CreateSubscriptionHandler)
+	mux.HandleFunc("POST /subscription/batch", apiConfig.CreateSubscriptionInBatchandler)
 	mux.HandleFunc("DELETE /subscription/id/{id}", apiConfig.DeleteSubscriptionHandler)
 	mux.HandleFunc("DELETE /subscription/orgId/{organization_id}", apiConfig.DeleteSubscriptionHandler)
 	mux.HandleFunc("GET /subscription/id/{id}", apiConfig.GetSubscriptionHandler)
@@ -67,6 +68,7 @@ func SubscriptionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func CustomPricingHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /customPricing", apiConfig.CreateCustomPricingHandler)
+	mux.HandleFunc("POST /customPricing/batch", apiConfig.CreateCustomPricingInBatchandler)
 	mux.HandleFunc("DELETE /customPricing/subId/{subscription_id}", apiConfig.DeleteCustomPricingHandler)
 	mux.HandleFunc("DELETE /customPricing/id/{id}", apiConfig.DeleteCustomPricingHandler)
 	mux.HandleFunc("GET /customPricing/{subscription_id}", apiConfig.GetCustomPricingHandler)

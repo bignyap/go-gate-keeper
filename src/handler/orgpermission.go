@@ -54,7 +54,7 @@ func CreateOrgPermissionFormValidator(r *http.Request) (*sqlcgen.CreateOrgPermis
 
 func CreateOrgPermissionJSONValidation(r *http.Request) ([]sqlcgen.CreateOrgPermissionsParams, error) {
 
-	var inputs []sqlcgen.CreateOrgPermissionParams
+	var inputs []CreateOrgPermissionParams
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&inputs)
@@ -66,8 +66,8 @@ func CreateOrgPermissionJSONValidation(r *http.Request) ([]sqlcgen.CreateOrgPerm
 
 	for _, input := range inputs {
 		batchInput := sqlcgen.CreateOrgPermissionsParams{
-			OrganizationID: input.OrganizationID,
-			ResourceTypeID: input.ResourceTypeID,
+			OrganizationID: int32(input.OrganizationID),
+			ResourceTypeID: int32(input.ResourceTypeID),
 			PermissionCode: input.PermissionCode,
 		}
 		outputs = append(outputs, batchInput)

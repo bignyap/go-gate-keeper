@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
@@ -48,6 +52,68 @@ func CreateCustomPricingFormValidator(r *http.Request) (*sqlcgen.CreateCustomPri
 	}
 
 	return &input, nil
+}
+
+func CreateCustomPricingJSONValidation(r *http.Request) ([]sqlcgen.CreateCustomPricingsParams, error) {
+
+	var inputs []CreateCustomPricingParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs []sqlcgen.CreateCustomPricingsParams
+
+	for _, input := range inputs {
+		batchInput := sqlcgen.CreateCustomPricingsParams{
+			CustomCostPerCall: input.CustomCostPerCall,
+			CustomRateLimit:   int32(input.CustomRateLimit),
+			SubscriptionID:    int32(input.SubscriptionID),
+			TierBasePricingID: int32(input.TierBasePricingID),
+		}
+		outputs = append(outputs, batchInput)
+	}
+
+	return outputs, nil
+}
+
+type BulkCreateCustomPricingsInserter struct {
+	CustomPricings []sqlcgen.CreateCustomPricingsParams
+	ApiConfig      *ApiConfig
+}
+
+func (input BulkCreateCustomPricingsInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.CreateCustomPricings(ctx, input.CustomPricings)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) CreateCustomPricingInBatchandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateCustomPricingJSONValidation(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkCreateCustomPricingsInserter{
+		CustomPricings: input,
+		ApiConfig:      apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the tier pricings: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) CreateCustomPricingHandler(w http.ResponseWriter, r *http.Request) {

@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/bignyap/go-gate-keeper/database/dbutils"
 	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
@@ -145,6 +149,77 @@ func CreateSubscriptionFormValidation(r *http.Request) (*sqlcgen.CreateSubscript
 	}
 
 	return &input, nil
+}
+
+func CreateSubscriptionJSONValidator(r *http.Request) ([]sqlcgen.CreateSubscriptionsParams, error) {
+
+	var inputs []CreateSubscriptionParams
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&inputs)
+	if err != nil {
+		return nil, err
+	}
+
+	var outputs []sqlcgen.CreateSubscriptionsParams
+
+	currentTime := int32(misc.ToUnixTime())
+
+	for _, input := range inputs {
+		batchInput := sqlcgen.CreateSubscriptionsParams{
+			SubscriptionName:        input.Name,
+			SubscriptionType:        input.Type,
+			SubscriptionCreatedDate: currentTime,
+			SubscriptionUpdatedDate: currentTime,
+			SubscriptionStartDate:   currentTime,
+			SubscriptionApiLimit:    converter.IntPtrToNullInt32(input.APILimit),
+			SubscriptionExpiryDate:  converter.IntPtrToNullInt32(converter.TimePtrToUnixInt(input.ExpiryDate)),
+			SubscriptionDescription: converter.StrToNullStr(*input.Description),
+			SubscriptionStatus:      converter.BoolPtrToNullBool(input.Status),
+			OrganizationID:          int32(input.OrganizationID),
+			SubscriptionTierID:      int32(input.SubscriptionTierID),
+		}
+		outputs = append(outputs, batchInput)
+	}
+
+	return outputs, nil
+}
+
+type BulkSubscriptionInserter struct {
+	Subscriptions []sqlcgen.CreateSubscriptionsParams
+	ApiConfig     *ApiConfig
+}
+
+func (input BulkSubscriptionInserter) InsertRows(ctx context.Context, tx *sql.Tx) (int64, error) {
+
+	affectedRows, err := input.ApiConfig.DB.CreateSubscriptions(ctx, input.Subscriptions)
+	if err != nil {
+		return 0, err
+	}
+
+	return affectedRows, nil
+}
+
+func (apiCfg *ApiConfig) CreateSubscriptionInBatchandler(w http.ResponseWriter, r *http.Request) {
+
+	input, err := CreateSubscriptionJSONValidator(r)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
+	inserter := BulkSubscriptionInserter{
+		Subscriptions: input,
+		ApiConfig:     apiCfg,
+	}
+
+	affectedRows, err := dbutils.InsertWithTransaction(r.Context(), apiCfg.Conn, inserter)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the subscriptions: %s", err))
+		return
+	}
+
+	respondWithJSON(w, StatusCreated, map[string]int64{"affected_rows": affectedRows})
 }
 
 func (apiCfg *ApiConfig) CreateSubscriptionHandler(w http.ResponseWriter, r *http.Request) {

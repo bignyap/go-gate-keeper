@@ -130,7 +130,7 @@ func CreateOrgFormValidation(r *http.Request) (*sqlcgen.CreateOrganizationParams
 
 func CreateOrgJSONValidation(r *http.Request) ([]sqlcgen.CreateOrganizationsParams, error) {
 
-	var inputs []sqlcgen.CreateOrganizationParams
+	var inputs []CreateOrganizationParams
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&inputs)
@@ -144,13 +144,13 @@ func CreateOrgJSONValidation(r *http.Request) ([]sqlcgen.CreateOrganizationsPara
 
 	for _, input := range inputs {
 		batchInput := sqlcgen.CreateOrganizationsParams{
-			OrganizationName:         input.OrganizationName,
-			OrganizationSupportEmail: input.OrganizationSupportEmail,
-			OrganizationRealm:        input.OrganizationRealm,
-			OrganizationActive:       input.OrganizationActive,
-			OrganizationReportQ:      input.OrganizationReportQ,
-			OrganizationTypeID:       input.OrganizationTypeID,
-			OrganizationConfig:       input.OrganizationConfig,
+			OrganizationName:         input.Name,
+			OrganizationSupportEmail: input.SupportEmail,
+			OrganizationRealm:        input.Realm,
+			OrganizationActive:       converter.BoolPtrToNullBool(input.Active),
+			OrganizationReportQ:      converter.BoolPtrToNullBool(input.ReportQ),
+			OrganizationTypeID:       int32(input.TypeID),
+			OrganizationConfig:       converter.StrToNullStr(*input.Config),
 			OrganizationCreatedAt:    currentTime,
 			OrganizationUpdatedAt:    currentTime,
 		}

@@ -184,10 +184,24 @@ func NullInt32ToTime(input *sql.NullInt32) *time.Time {
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-// IntPtrToNullInt32 converts a pointer to int to sql.NullInt32
 func IntPtrToNullInt32(ptr *int) sql.NullInt32 {
 	if ptr != nil {
 		return sql.NullInt32{Int32: int32(*ptr), Valid: true}
 	}
 	return sql.NullInt32{Valid: false}
+}
+
+func TimePtrToUnixInt(t *time.Time) *int {
+	if t == nil {
+		return nil
+	}
+	unixTime := int(t.Unix())
+	return &unixTime
+}
+
+func BoolPtrToNullBool(b *bool) sql.NullBool {
+	if b != nil {
+		return sql.NullBool{Bool: *b, Valid: true}
+	}
+	return sql.NullBool{Valid: false}
 }
