@@ -96,8 +96,20 @@ func OrgPermissionHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 func BillingHistoryHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 
 	mux.HandleFunc("POST /billingHistory", apiConfig.CreateBillingHistoryHandler)
-	mux.HandleFunc("DELETE /billingHistory/{id}", apiConfig.GetBillingHistoryHandler)
+	mux.HandleFunc("POST /billingHistory/batch", apiConfig.CreateBillingHistoryInBatchHandler)
+	mux.HandleFunc("GET /billingHistory/{id}", apiConfig.GetBillingHistoryByIdHandler)
+	mux.HandleFunc("GET /billingHistory/orgId/{organization_id}", apiConfig.GetBillingHistoryByOrgIdHandler)
+	mux.HandleFunc("GET /billingHistory/subId/{subscription_id}", apiConfig.GetBillingHistoryBySubIdHandler)
 
+}
+
+func ApiUsageSummaryHandler(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
+
+	mux.HandleFunc("POST /apiUsageSummary", apiConfig.CreateApiUsageHander)
+	mux.HandleFunc("POST /apiUsageSummary/batch", apiConfig.CreateApiUsageInBatchHander)
+	mux.HandleFunc("GET /apiUsageSummary/orgId/{organization_id}", apiConfig.GetApiUsageSummaryByOrgIdHandler)
+	mux.HandleFunc("GET /apiUsageSummary/subId/{subscription_id}", apiConfig.GetApiUsageSummaryBySubIdHandler)
+	mux.HandleFunc("GET /apiUsageSummary/endpointId/{endpoint_id}", apiConfig.GetApiUsageSummaryByEndpointIdHandler)
 }
 
 func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
@@ -113,4 +125,5 @@ func RegisterHandlers(mux *http.ServeMux, apiConfig *handler.ApiConfig) {
 	ResourceTypeHandler(mux, apiConfig)
 	OrgPermissionHandler(mux, apiConfig)
 	BillingHistoryHandler(mux, apiConfig)
+	ApiUsageSummaryHandler(mux, apiConfig)
 }

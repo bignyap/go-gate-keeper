@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/hexon/mysqltsv v0.2.1
+	github.com/hexon/mysqltsv v0.2.2-0.20241029093737-01b8881b2730
 	github.com/joho/godotenv v1.5.1
 )
 

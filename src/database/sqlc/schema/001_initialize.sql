@@ -88,17 +88,18 @@ CREATE TABLE billing_history (
   subscription_id int NOT NULL
 );
 
-CREATE TABLE api_usage (
-  usage_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  call_timestamp int NOT NULL,
-  unix_timestamp int NOT NULL,
-  number_of_calls int NOT NULL,
-  cost_per_call float NOT NULL,
+CREATE TABLE api_usage_summary (
+  usage_summary_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  usage_start_date int NOT NULL,
+  usage_end_date int NOT NULL,
+  total_calls int NOT NULL,
   total_cost float NOT NULL,
   subscription_id int NOT NULL,
-  billing_id int NOT NULL,
-  api_endpoint_id int NOT NULL
+  api_endpoint_id int NOT NULL,
+  organization_id int NOT NULL
+  -- ,CONSTRAINT unique_org_endpoint_period UNIQUE (usage_start_date, usage_end_date, api_endpoint_id, organization_id)
 );
+
 
 ALTER TABLE tier_base_pricing ADD CONSTRAINT unique_api_tier UNIQUE (api_endpoint_id, subscription_tier_id);
 
@@ -122,9 +123,11 @@ ALTER TABLE api_usage ADD FOREIGN KEY (subscription_id) REFERENCES subscription 
 
 ALTER TABLE billing_history ADD FOREIGN KEY (subscription_id) REFERENCES subscription (subscription_id);
 
-ALTER TABLE api_usage ADD FOREIGN KEY (api_endpoint_id) REFERENCES api_endpoint (api_endpoint_id);
+ALTER TABLE api_usage_summary ADD FOREIGN KEY (subscription_id) REFERENCES subscription (subscription_id);
+  
+ALTER TABLE api_usage_summary ADD FOREIGN KEY (api_endpoint_id) REFERENCES api_endpoint (api_endpoint_id);
 
-ALTER TABLE api_usage ADD FOREIGN KEY (billing_id) REFERENCES billing_history (billing_id);
+ALTER TABLE api_usage_summary ADD FOREIGN KEY (organization_id) REFERENCES organization (organization_id);
 
 ALTER TABLE organization_permission ADD FOREIGN KEY (resource_type_id) REFERENCES resource_type (resource_type_id);
 

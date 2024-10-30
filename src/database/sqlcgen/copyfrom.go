@@ -15,6 +15,46 @@ import (
 	"github.com/hexon/mysqltsv"
 )
 
+var readerHandlerSequenceForCreateApiUsageSummaries uint32 = 1
+
+func convertRowsForCreateApiUsageSummaries(w *io.PipeWriter, arg []CreateApiUsageSummariesParams) {
+	e := mysqltsv.NewEncoder(w, 7, nil)
+	for _, row := range arg {
+		e.AppendValue(row.UsageStartDate)
+		e.AppendValue(row.UsageEndDate)
+		e.AppendValue(row.TotalCalls)
+		e.AppendValue(row.TotalCost)
+		e.AppendValue(row.SubscriptionID)
+		e.AppendValue(row.ApiEndpointID)
+		e.AppendValue(row.OrganizationID)
+	}
+	w.CloseWithError(e.Close())
+}
+
+// CreateApiUsageSummaries uses MySQL's LOAD DATA LOCAL INFILE and is not atomic.
+//
+// Errors and duplicate keys are treated as warnings and insertion will
+// continue, even without an error for some cases.  Use this in a transaction
+// and use SHOW WARNINGS to check for any problems and roll back if you want to.
+//
+// Check the documentation for more information:
+// https://dev.mysql.com/doc/refman/8.0/en/load-data.html#load-data-error-handling
+func (q *Queries) CreateApiUsageSummaries(ctx context.Context, arg []CreateApiUsageSummariesParams) (int64, error) {
+	pr, pw := io.Pipe()
+	defer pr.Close()
+	rh := fmt.Sprintf("CreateApiUsageSummaries_%d", atomic.AddUint32(&readerHandlerSequenceForCreateApiUsageSummaries, 1))
+	mysql.RegisterReaderHandler(rh, func() io.Reader { return pr })
+	defer mysql.DeregisterReaderHandler(rh)
+	go convertRowsForCreateApiUsageSummaries(pw, arg)
+	// The string interpolation is necessary because LOAD DATA INFILE requires
+	// the file name to be given as a literal string.
+	result, err := q.db.ExecContext(ctx, fmt.Sprintf("LOAD DATA LOCAL INFILE '%s' INTO TABLE `api_usage_summary` %s (usage_start_date, usage_end_date, total_calls, total_cost, subscription_id, api_endpoint_id, organization_id)", "Reader::"+rh, mysqltsv.Escaping))
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 var readerHandlerSequenceForCreateBillingHistories uint32 = 1
 
 func convertRowsForCreateBillingHistories(w *io.PipeWriter, arg []CreateBillingHistoriesParams) {

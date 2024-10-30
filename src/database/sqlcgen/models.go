@@ -14,16 +14,15 @@ type ApiEndpoint struct {
 	EndpointDescription sql.NullString
 }
 
-type ApiUsage struct {
-	UsageID        int32
-	CallTimestamp  int32
-	UnixTimestamp  int32
-	NumberOfCalls  int32
-	CostPerCall    float64
+type ApiUsageSummary struct {
+	UsageSummaryID int32
+	UsageStartDate int32
+	UsageEndDate   int32
+	TotalCalls     int32
 	TotalCost      float64
 	SubscriptionID int32
-	BillingID      int32
 	ApiEndpointID  int32
+	OrganizationID int32
 }
 
 type BillingHistory struct {
