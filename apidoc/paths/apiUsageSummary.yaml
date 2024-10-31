@@ -1,0 +1,109 @@
+paths:
+  /apiUsageSummary:
+    post:
+      summary: Create an API usage summary
+      operationId: createApiUsageSummary
+      tags:
+        - API Usage
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '../schemas/ApiUsageSummary.yaml#/CreateApiUsageSummaryInput'
+      responses:
+        '201':
+          description: Successfully created API usage summary.
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/ApiUsageSummary.yaml#/CreateApiUsageSummaryOutput'
+  /apiUsageSummary/batch:
+    post:
+      summary: Create API usage summaries in bulk
+      operationId: createApiUsageSummariesInBulk
+      tags:
+        - API Usage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../schemas/ApiUsageSummary.yaml#/CreateApiUsageSummaryInput'
+      responses:
+        '201':
+          description: Successfully created API usage summaries.
+  /apiUsageSummary/subId/{subscription_id}:
+    get:
+      summary: Get API usage summaries by subscription ID
+      operationId: getApiUsageSummariesBySubscriptionId
+      tags:
+        - API Usage
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the subscription to retrieve API usage summaries.
+      responses:
+        '200':
+          description: Successfully retrieved API usage summaries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/ApiUsageSummary.yaml#/CreateApiUsageSummaryOutput'
+        '400':
+          description: Invalid subscription ID format or error during retrieval.
+  /apiUsageSummary/orgId/{organization_id}:
+    get:
+      summary: Get API usage summaries by organization ID
+      operationId: getApiUsageSummariesByOrganizationId
+      tags:
+        - API Usage
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the organization to retrieve API usage summaries.
+      responses:
+        '200':
+          description: Successfully retrieved API usage summaries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/ApiUsageSummary.yaml#/CreateApiUsageSummaryOutput'
+        '400':
+          description: Invalid organization ID format or error during retrieval.
+  /apiUsageSummary/endpointId/{endpoint_id}:
+    get:
+      summary: Get API usage summaries by endpoint ID
+      operationId: getApiUsageSummariesByEndpointId
+      tags:
+        - API Usage
+      parameters:
+        - name: endpoint_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the endpoint to retrieve API usage summaries.
+      responses:
+        '200':
+          description: Successfully retrieved API usage summaries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/ApiUsageSummary.yaml#/CreateApiUsageSummaryOutput'
+        '400':
+          description: Invalid endpoint ID format or error during retrieval.

@@ -1,0 +1,107 @@
+paths:
+  /billingHistory:
+    post:
+      summary: Create a billing history entry
+      operationId: createBillingHistory
+      tags:
+        - Billing History
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '../schemas/BillingHistory.yaml#/CreateBillingHistoryInput'
+      responses:
+        '201':
+          description: Successfully created billing history.
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/BillingHistory.yaml#/CreateBillingHistoryOutput'
+  /billingHistory/batch:
+    post:
+      summary: Create billing histories in bulk
+      operationId: createBillingHistoriesInBulk
+      tags:
+        - Billing History
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../schemas/BillingHistory.yaml#/CreateBillingHistoryInput'
+      responses:
+        '201':
+          description: Successfully created billing histories.
+  /billingHistory/orgId/{organization_id}:
+    get:
+      summary: Get billing histories by organization ID
+      operationId: getBillingHistoriesByOrganizationId
+      tags:
+        - Billing History
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the organization to retrieve billing histories.
+      responses:
+        '200':
+          description: Successfully retrieved billing histories.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/BillingHistory.yaml#/CreateBillingHistoryOutput'
+        '400':
+          description: Invalid organization ID format or error during retrieval.
+  /billingHistory/subId/{subscription_id}:
+    get:
+      summary: Get billing histories by subscription ID
+      operationId: getBillingHistoriesBySubscriptionId
+      tags:
+        - Billing History
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the subscription to retrieve billing histories.
+      responses:
+        '200':
+          description: Successfully retrieved billing histories.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/BillingHistory.yaml#/CreateBillingHistoryOutput'
+        '400':
+          description: Invalid subscription ID format or error during retrieval.
+  /billingHistory/id/{billing_id}:
+    get:
+      summary: Get billing history by billing ID
+      operationId: getBillingHistoryById
+      tags:
+        - Billing History
+      parameters:
+        - name: billing_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: ID of the billing history to retrieve.
+      responses:
+        '200':
+          description: Successfully retrieved billing history.
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/BillingHistory.yaml#/CreateBillingHistoryOutput'
+        '400':
+          description: Invalid billing ID format or error during retrieval.

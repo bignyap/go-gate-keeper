@@ -74,6 +74,26 @@ paths:
     $ref: './paths/customPricing.yaml#/paths/~1customPricing~1subId~1{subscription_id}'
   /customPricing/id/{id}:
     $ref: './paths/customPricing.yaml#/paths/~1customPricing~1id~1{id}'
+  /apiUsageSummary:
+    $ref: './paths/apiusagesummary.yaml#/paths/~1apiUsageSummary'
+  /apiUsageSummary/batch:
+    $ref: './paths/apiusagesummary.yaml#/paths/~1apiUsageSummary~1batch'
+  /apiUsageSummary/subId/{subscription_id}:
+    $ref: './paths/apiusagesummary.yaml#/paths/~1apiUsageSummary~1subId~1{subscription_id}'
+  /apiUsageSummary/orgId/{organization_id}:
+    $ref: './paths/apiusagesummary.yaml#/paths/~1apiUsageSummary~1orgId~1{organization_id}'
+  /apiUsageSummary/endpointId/{endpoint_id}:
+    $ref: './paths/apiusagesummary.yaml#/paths/~1apiUsageSummary~1endpointId~1{endpoint_id}'
+  /billingHistory:
+    $ref: './paths/billinghistory.yaml#/paths/~1billingHistory'
+  /billingHistory/batch:
+    $ref: './paths/billinghistory.yaml#/paths/~1billingHistory~1batch'
+  /billingHistory/subId/{subscription_id}:
+    $ref: './paths/billinghistory.yaml#/paths/~1billingHistory~1subId~1{subscription_id}'
+  /billingHistory/orgId/{organization_id}:
+    $ref: './paths/billinghistory.yaml#/paths/~1billingHistory~1orgId~1{organization_id}'
+  /billingHistory/endpointId/id/{id}:
+    $ref: './paths/billinghistory.yaml#/paths/~1billingHistory~1id~1{billing_id}'
 components:
   schemas:
     CreateCustomPricingInput:
@@ -108,3 +128,11 @@ components:
       $ref: './schemas/TierPricing.yaml#/CreateTierPricingInput'
     CreateTierPricingOutput:
       $ref: './schemas/TierPricing.yaml#/CreateTierPricingOutput'
+    CreateApiUsageSummaryInput:
+      $ref: './schemas/ApiUsageSummary.yaml#/CreateApiUsageSummaryInput'
+    CreateApiUsageSummaryOutput:
+      $ref: './schemas/ApiUsageSummary.yaml#/CreateApiUsageSummaryOutput'
+    CreateBillingHistoryInput:
+      $ref: './schemas/BillingHistory.yaml#/CreateBillingHistoryInput'
+    CreateBillingHistoryOutput:
+      $ref: './schemas/BillingHistory.yaml#/CreateBillingHistoryOutput'

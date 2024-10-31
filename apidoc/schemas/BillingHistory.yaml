@@ -1,0 +1,64 @@
+CreateBillingHistoryInput:
+  type: object
+  properties:
+    start_date:
+      type: string
+      format: date-time
+    end_date:
+      type: string
+      format: date-time
+    total_amount_due:
+      type: number
+      format: float
+    total_calls:
+      type: integer
+    payment_status:
+      type: string
+    payment_date:
+      type: string
+      format: date-time
+      nullable: true
+    subscription_id:
+      type: integer
+  required:
+    - start_date
+    - end_date
+    - total_amount_due
+    - total_calls
+    - payment_status
+    - subscription_id
+
+CreateBillingHistoryOutput:
+  type: object
+  properties:
+    id:
+      type: integer
+    start_date:
+      type: string
+      format: date-time
+    end_date:
+      type: string
+      format: date-time
+    total_amount_due:
+      type: number
+      format: float
+    total_calls:
+      type: integer
+    payment_status:
+      type: string
+    payment_date:
+      type: string
+      format: date-time
+      nullable: true
+    created_at:
+      type: string
+      format: date-time
+    subscription_id:
+      type: integer
+  required:
+    - id
+    - start_date
+    - end_date
+    - total_amount_due
+    - total_calls
+    - payment_status
