@@ -25,6 +25,9 @@ paths:
       operationId: listSubscriptions
       tags:
         - Subscription
+      parameters:
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: A list of subscriptions
@@ -125,6 +128,8 @@ paths:
           required: true
           schema:
             type: integer
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: Subscriptions retrieved by organization ID

@@ -132,10 +132,10 @@ func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Req
 
 func (apiCfg *ApiConfig) ListOrgTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.ListOrgTypeParams{
-		Limit:  int32(page),
-		Offset: int32(n),
+		Limit:  int32(limit),
+		Offset: int32(offset),
 	}
 
 	orgTypes, err := apiCfg.DB.ListOrgType(r.Context(), input)

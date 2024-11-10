@@ -163,11 +163,11 @@ func (apiCfg *ApiConfig) GetTierPricingByTierIdHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.GetTierPricingByTierIdParams{
 		SubscriptionTierID: int32(idStr),
-		Limit:              int32(page),
-		Offset:             int32(n),
+		Limit:              int32(limit),
+		Offset:             int32(offset),
 	}
 
 	tierPricings, err := apiCfg.DB.GetTierPricingByTierId(r.Context(), input)

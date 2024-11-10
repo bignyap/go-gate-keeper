@@ -22,6 +22,9 @@ paths:
       operationId: listOrganizations
       tags:
         - Organization
+      parameters:
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: OK

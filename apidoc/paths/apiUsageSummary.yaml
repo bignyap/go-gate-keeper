@@ -48,6 +48,8 @@ paths:
           schema:
             type: integer
             description: ID of the subscription to retrieve API usage summaries.
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: Successfully retrieved API usage summaries.
@@ -72,6 +74,8 @@ paths:
           schema:
             type: integer
             description: ID of the organization to retrieve API usage summaries.
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: Successfully retrieved API usage summaries.
@@ -96,6 +100,8 @@ paths:
           schema:
             type: integer
             description: ID of the endpoint to retrieve API usage summaries.
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: Successfully retrieved API usage summaries.

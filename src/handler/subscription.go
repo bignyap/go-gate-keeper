@@ -304,11 +304,11 @@ func (apiCfg *ApiConfig) GetSubscriptionByrgIdHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.GetSubscriptionByOrgIdParams{
 		OrganizationID: int32(orgId),
-		Limit:          int32(page),
-		Offset:         int32(n),
+		Limit:          int32(limit),
+		Offset:         int32(offset),
 	}
 
 	subscriptions, err := apiCfg.DB.GetSubscriptionByOrgId(r.Context(), input)
@@ -329,10 +329,10 @@ func (apiCfg *ApiConfig) GetSubscriptionByrgIdHandler(w http.ResponseWriter, r *
 
 func (apiCfg *ApiConfig) ListSubscriptionHandler(w http.ResponseWriter, r *http.Request) {
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.ListSubscriptionParams{
-		Limit:  int32(page),
-		Offset: int32(n),
+		Limit:  int32(limit),
+		Offset: int32(offset),
 	}
 
 	subscriptions, err := apiCfg.DB.ListSubscription(r.Context(), input)

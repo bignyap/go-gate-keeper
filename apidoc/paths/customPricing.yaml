@@ -106,6 +106,8 @@ paths:
           schema:
             type: integer
             description: ID of the subscription to retrieve custom pricing.
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: Successfully retrieved custom pricing details.

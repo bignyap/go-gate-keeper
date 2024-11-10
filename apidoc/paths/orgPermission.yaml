@@ -53,6 +53,8 @@ paths:
           required: true
           schema:
             type: integer
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: Organization permission retrieved successfully

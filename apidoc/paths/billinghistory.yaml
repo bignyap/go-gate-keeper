@@ -48,6 +48,8 @@ paths:
           schema:
             type: integer
             description: ID of the organization to retrieve billing histories.
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: Successfully retrieved billing histories.
@@ -72,6 +74,8 @@ paths:
           schema:
             type: integer
             description: ID of the subscription to retrieve billing histories.
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: Successfully retrieved billing histories.

@@ -214,7 +214,7 @@ func (apiCfg *ApiConfig) GetApiUsageSummaryByOrgIdHandler(w http.ResponseWriter,
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	n, page := ExtractPaginationDetail(w, r)
 
 	input := sqlcgen.GetApiUsageSummaryByOrgIdParams{
 		OrganizationID: int32(id),
@@ -246,7 +246,7 @@ func (apiCfg *ApiConfig) GetApiUsageSummaryBySubIdHandler(w http.ResponseWriter,
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	n, page := ExtractPaginationDetail(w, r)
 
 	input := sqlcgen.GetApiUsageSummaryBySubIdParams{
 		SubscriptionID: int32(id),
@@ -278,7 +278,7 @@ func (apiCfg *ApiConfig) GetApiUsageSummaryByEndpointIdHandler(w http.ResponseWr
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	n, page := ExtractPaginationDetail(w, r)
 
 	input := sqlcgen.GetApiUsageSummaryByEndpointIdParams{
 		ApiEndpointID: int32(id),

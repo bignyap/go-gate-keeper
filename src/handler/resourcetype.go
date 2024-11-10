@@ -146,10 +146,10 @@ func (apiCfg *ApiConfig) CreateResurceTypeHandler(w http.ResponseWriter, r *http
 
 func (apiCfg *ApiConfig) ListResourceTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.ListResourceTypeParams{
-		Limit:  int32(page),
-		Offset: int32(n),
+		Limit:  int32(limit),
+		Offset: int32(offset),
 	}
 
 	resourceTypes, err := apiCfg.DB.ListResourceType(r.Context(), input)

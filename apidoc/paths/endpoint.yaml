@@ -23,6 +23,9 @@ paths:
       operationId: listEndpoints
       tags:
         - Register Endpoint
+      parameters:
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         '200':
           description: OK

@@ -152,11 +152,11 @@ func (apiCfg *ApiConfig) GetOrgPermissionHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.GetOrgPermissionParams{
 		OrganizationID: int32(id),
-		Limit:          int32(page),
-		Offset:         int32(n),
+		Limit:          int32(limit),
+		Offset:         int32(offset),
 	}
 
 	orgPermissions, err := apiCfg.DB.GetOrgPermission(r.Context(), input)

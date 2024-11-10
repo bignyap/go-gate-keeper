@@ -29,6 +29,9 @@ paths:
       operationId: listResourceTypes
       tags:
         - Resource Type
+      parameters:
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
+        - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
       responses:
         "200":
           description: A list of resource types

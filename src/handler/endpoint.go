@@ -151,10 +151,10 @@ func (apiCfg *ApiConfig) RegisterEndpointHandler(w http.ResponseWriter, r *http.
 
 func (apiCfg *ApiConfig) ListEndpointsHandler(w http.ResponseWriter, r *http.Request) {
 
-	page, n := ExtractPaginationDetail(w, r)
+	n, page := ExtractPaginationDetail(w, r)
 	input := sqlcgen.ListApiEndpointParams{
-		Limit:  int32(page),
-		Offset: int32(n),
+		Limit:  int32(n),
+		Offset: int32(page),
 	}
 
 	apiEndpoints, err := apiCfg.DB.ListApiEndpoint(r.Context(), input)

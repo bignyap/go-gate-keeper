@@ -229,7 +229,7 @@ func (apiCfg *ApiConfig) GetBillingHistoryByOrgIdHandler(w http.ResponseWriter, 
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	n, page := ExtractPaginationDetail(w, r)
 	input := sqlcgen.GetBillingHistoryByOrgIdParams{
 		OrganizationID: int32(id),
 		Limit:          int32(page),
@@ -253,7 +253,7 @@ func (apiCfg *ApiConfig) GetBillingHistoryBySubIdHandler(w http.ResponseWriter, 
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	n, page := ExtractPaginationDetail(w, r)
 	input := sqlcgen.GetBillingHistoryBySubIdParams{
 		SubscriptionID: int32(id),
 		Limit:          int32(page),
@@ -277,7 +277,7 @@ func (apiCfg *ApiConfig) GetBillingHistoryByIdHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	n, page := ExtractPaginationDetail(w, r)
 	input := sqlcgen.GetBillingHistoryByIdParams{
 		BillingID: int32(id),
 		Limit:     int32(page),

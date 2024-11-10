@@ -204,11 +204,11 @@ func (apiCfg *ApiConfig) GetCustomPricingHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.GetCustomPricingParams{
 		SubscriptionID: int32(id),
-		Limit:          int32(page),
-		Offset:         int32(n),
+		Limit:          int32(limit),
+		Offset:         int32(offset),
 	}
 
 	customPricings, err := apiCfg.DB.GetCustomPricing(r.Context(), input)

@@ -160,10 +160,10 @@ func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *
 
 func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *http.Request) {
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.ListSubscriptionTierParams{
-		Limit:  int32(page),
-		Offset: int32(n),
+		Limit:  int32(limit),
+		Offset: int32(offset),
 	}
 
 	subTiers, err := apiCfg.DB.ListSubscriptionTier(r.Context(), input)

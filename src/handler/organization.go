@@ -229,10 +229,10 @@ func (apiCfg *ApiConfig) CreateOrganizationandler(w http.ResponseWriter, r *http
 
 func (apiCfg *ApiConfig) ListOrganizationsHandler(w http.ResponseWriter, r *http.Request) {
 
-	page, n := ExtractPaginationDetail(w, r)
+	limit, offset := ExtractPaginationDetail(w, r)
 	input := sqlcgen.ListOrganizationParams{
-		Limit:  int32(page),
-		Offset: int32(n),
+		Limit:  int32(limit),
+		Offset: int32(offset),
 	}
 
 	organizations, err := apiCfg.DB.ListOrganization(r.Context(), input)

@@ -1,0 +1,37 @@
+PaginationParameters:
+  PageNumber:
+    in: query
+    name: page_number
+    description: Page number
+    required: false
+    schema:
+      type: integer
+      default: 1
+  ItemsPerPage:
+    in: query
+    name: items_per_page
+    description: Number of items per page
+    required: false
+    schema:
+      type: integer
+      default: 10
+
+
+components:
+  parameters:
+    PageNumber:
+      in: query
+      name: page_number
+      description: Page number
+      required: false
+      schema:
+        type: integer
+        default: 1
+    ItemsPerPage:
+      in: query
+      name: items_per_page
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        default: 10
