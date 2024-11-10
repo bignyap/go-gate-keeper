@@ -108,10 +108,16 @@ func (q *Queries) GetOrganization(ctx context.Context, organizationID int32) (Or
 const listOrganization = `-- name: ListOrganization :many
 SELECT organization_id, organization_name, organization_created_at, organization_updated_at, organization_realm, organization_country, organization_support_email, organization_active, organization_report_q, organization_config, organization_type_id FROM organization
 ORDER BY organization_name
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListOrganization(ctx context.Context) ([]Organization, error) {
-	rows, err := q.db.QueryContext(ctx, listOrganization)
+type ListOrganizationParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListOrganization(ctx context.Context, arg ListOrganizationParams) ([]Organization, error) {
+	rows, err := q.db.QueryContext(ctx, listOrganization, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

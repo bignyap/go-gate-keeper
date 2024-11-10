@@ -66,10 +66,17 @@ func (q *Queries) CreateBillingHistory(ctx context.Context, arg CreateBillingHis
 const getBillingHistoryById = `-- name: GetBillingHistoryById :many
 SELECT billing_id, billing_start_date, billing_end_date, total_amount_due, total_calls, payment_status, payment_date, billing_created_at, subscription_id FROM billing_history
 WHERE billing_id = ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetBillingHistoryById(ctx context.Context, billingID int32) ([]BillingHistory, error) {
-	rows, err := q.db.QueryContext(ctx, getBillingHistoryById, billingID)
+type GetBillingHistoryByIdParams struct {
+	BillingID int32
+	Limit     int32
+	Offset    int32
+}
+
+func (q *Queries) GetBillingHistoryById(ctx context.Context, arg GetBillingHistoryByIdParams) ([]BillingHistory, error) {
+	rows, err := q.db.QueryContext(ctx, getBillingHistoryById, arg.BillingID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -107,10 +114,17 @@ WHERE subscription_id IN (
     SELECT subscription_id FROM subscription
     WHERE organization_id = ?
 )
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetBillingHistoryByOrgId(ctx context.Context, organizationID int32) ([]BillingHistory, error) {
-	rows, err := q.db.QueryContext(ctx, getBillingHistoryByOrgId, organizationID)
+type GetBillingHistoryByOrgIdParams struct {
+	OrganizationID int32
+	Limit          int32
+	Offset         int32
+}
+
+func (q *Queries) GetBillingHistoryByOrgId(ctx context.Context, arg GetBillingHistoryByOrgIdParams) ([]BillingHistory, error) {
+	rows, err := q.db.QueryContext(ctx, getBillingHistoryByOrgId, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -145,10 +159,17 @@ func (q *Queries) GetBillingHistoryByOrgId(ctx context.Context, organizationID i
 const getBillingHistoryBySubId = `-- name: GetBillingHistoryBySubId :many
 SELECT billing_id, billing_start_date, billing_end_date, total_amount_due, total_calls, payment_status, payment_date, billing_created_at, subscription_id FROM billing_history
 WHERE subscription_id = ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetBillingHistoryBySubId(ctx context.Context, subscriptionID int32) ([]BillingHistory, error) {
-	rows, err := q.db.QueryContext(ctx, getBillingHistoryBySubId, subscriptionID)
+type GetBillingHistoryBySubIdParams struct {
+	SubscriptionID int32
+	Limit          int32
+	Offset         int32
+}
+
+func (q *Queries) GetBillingHistoryBySubId(ctx context.Context, arg GetBillingHistoryBySubIdParams) ([]BillingHistory, error) {
+	rows, err := q.db.QueryContext(ctx, getBillingHistoryBySubId, arg.SubscriptionID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

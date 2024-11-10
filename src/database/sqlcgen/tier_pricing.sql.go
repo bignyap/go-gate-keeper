@@ -67,13 +67,20 @@ const getTierPricingByTierId = `-- name: GetTierPricingByTierId :many
 
 SELECT tier_base_pricing_id, base_cost_per_call, base_rate_limit, api_endpoint_id, subscription_tier_id FROM tier_base_pricing
 WHERE subscription_tier_id = ?
+LIMIT ? OFFSET ?
 `
+
+type GetTierPricingByTierIdParams struct {
+	SubscriptionTierID int32
+	Limit              int32
+	Offset             int32
+}
 
 // -- name: ListTierPricing :many
 // SELECT * FROM tier_base_pricing
 // ORDER BY subscription_tier_id;
-func (q *Queries) GetTierPricingByTierId(ctx context.Context, subscriptionTierID int32) ([]TierBasePricing, error) {
-	rows, err := q.db.QueryContext(ctx, getTierPricingByTierId, subscriptionTierID)
+func (q *Queries) GetTierPricingByTierId(ctx context.Context, arg GetTierPricingByTierIdParams) ([]TierBasePricing, error) {
+	rows, err := q.db.QueryContext(ctx, getTierPricingByTierId, arg.SubscriptionTierID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

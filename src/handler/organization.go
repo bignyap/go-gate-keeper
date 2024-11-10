@@ -229,7 +229,13 @@ func (apiCfg *ApiConfig) CreateOrganizationandler(w http.ResponseWriter, r *http
 
 func (apiCfg *ApiConfig) ListOrganizationsHandler(w http.ResponseWriter, r *http.Request) {
 
-	organizations, err := apiCfg.DB.ListOrganization(r.Context())
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.ListOrganizationParams{
+		Limit:  int32(page),
+		Offset: int32(n),
+	}
+
+	organizations, err := apiCfg.DB.ListOrganization(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the organizations: %s", err))
 		return

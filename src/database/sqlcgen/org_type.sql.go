@@ -37,10 +37,16 @@ func (q *Queries) DeleteOrgTypeById(ctx context.Context, organizationTypeID int3
 const listOrgType = `-- name: ListOrgType :many
 SELECT organization_type_id, organization_type_name FROM organization_type
 ORDER BY organization_type_name
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListOrgType(ctx context.Context) ([]OrganizationType, error) {
-	rows, err := q.db.QueryContext(ctx, listOrgType)
+type ListOrgTypeParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListOrgType(ctx context.Context, arg ListOrgTypeParams) ([]OrganizationType, error) {
+	rows, err := q.db.QueryContext(ctx, listOrgType, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

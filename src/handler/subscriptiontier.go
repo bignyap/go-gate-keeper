@@ -160,7 +160,13 @@ func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *
 
 func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *http.Request) {
 
-	subTiers, err := apiCfg.DB.ListSubscriptionTier(r.Context())
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.ListSubscriptionTierParams{
+		Limit:  int32(page),
+		Offset: int32(n),
+	}
+
+	subTiers, err := apiCfg.DB.ListSubscriptionTier(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the subscripion tiers: %s", err))
 		return

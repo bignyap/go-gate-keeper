@@ -23,10 +23,16 @@ func (q *Queries) DeleteApiEndpointById(ctx context.Context, apiEndpointID int32
 const listApiEndpoint = `-- name: ListApiEndpoint :many
 SELECT api_endpoint_id, endpoint_name, endpoint_description FROM api_endpoint
 ORDER BY endpoint_name
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListApiEndpoint(ctx context.Context) ([]ApiEndpoint, error) {
-	rows, err := q.db.QueryContext(ctx, listApiEndpoint)
+type ListApiEndpointParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListApiEndpoint(ctx context.Context, arg ListApiEndpointParams) ([]ApiEndpoint, error) {
+	rows, err := q.db.QueryContext(ctx, listApiEndpoint, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 -- name: ListOrganization :many
 SELECT * FROM organization
-ORDER BY organization_name;
+ORDER BY organization_name
+LIMIT ? OFFSET ?;
 
 -- name: GetOrganization :one
 SELECT * FROM organization

@@ -72,10 +72,17 @@ func (q *Queries) DeleteCustomPricingBySubscriptionId(ctx context.Context, subsc
 const getCustomPricing = `-- name: GetCustomPricing :many
 SELECT custom_endpoint_pricing_id, custom_cost_per_call, custom_rate_limit, subscription_id, tier_base_pricing_id FROM custom_endpoint_pricing
 WHERE subscription_id = ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetCustomPricing(ctx context.Context, subscriptionID int32) ([]CustomEndpointPricing, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomPricing, subscriptionID)
+type GetCustomPricingParams struct {
+	SubscriptionID int32
+	Limit          int32
+	Offset         int32
+}
+
+func (q *Queries) GetCustomPricing(ctx context.Context, arg GetCustomPricingParams) ([]CustomEndpointPricing, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomPricing, arg.SubscriptionID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

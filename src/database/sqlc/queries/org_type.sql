@@ -1,6 +1,7 @@
 -- name: ListOrgType :many
 SELECT * FROM organization_type
-ORDER BY organization_type_name;
+ORDER BY organization_type_name
+LIMIT ? OFFSET ?;
 
 -- name: CreateOrgType :execresult 
 INSERT INTO organization_type (organization_type_name) 

@@ -3,15 +3,18 @@ SELECT * FROM billing_history
 WHERE subscription_id IN (
     SELECT subscription_id FROM subscription
     WHERE organization_id = ?
-);
+)
+LIMIT ? OFFSET ?;
 
 -- name: GetBillingHistoryBySubId :many
 SELECT * FROM billing_history
-WHERE subscription_id = ?;
+WHERE subscription_id = ?
+LIMIT ? OFFSET ?;
 
 -- name: GetBillingHistoryById :many
 SELECT * FROM billing_history
-WHERE billing_id = ?;
+WHERE billing_id = ?
+LIMIT ? OFFSET ?;
 
 -- name: CreateBillingHistory :execresult 
 INSERT INTO billing_history (

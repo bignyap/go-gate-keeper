@@ -59,10 +59,17 @@ func (q *Queries) DeleteOrgPermissionByOrgId(ctx context.Context, organizationID
 const getOrgPermission = `-- name: GetOrgPermission :many
 SELECT organization_permission_id, resource_type_id, permission_code, organization_id FROM organization_permission
 WHERE organization_id = ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetOrgPermission(ctx context.Context, organizationID int32) ([]OrganizationPermission, error) {
-	rows, err := q.db.QueryContext(ctx, getOrgPermission, organizationID)
+type GetOrgPermissionParams struct {
+	OrganizationID int32
+	Limit          int32
+	Offset         int32
+}
+
+func (q *Queries) GetOrgPermission(ctx context.Context, arg GetOrgPermissionParams) ([]OrganizationPermission, error) {
+	rows, err := q.db.QueryContext(ctx, getOrgPermission, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

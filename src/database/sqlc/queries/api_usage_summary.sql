@@ -3,15 +3,18 @@ SELECT * FROM api_usage_summary
 WHERE subscription_id IN (
     SELECT subscription_id FROM subscription s
     WHERE s.organization_id = ?
-);
+)
+LIMIT ? OFFSET ?;
 
 -- name: GetApiUsageSummaryBySubId :many
 SELECT * FROM api_usage_summary
-WHERE subscription_id = ?;
+WHERE subscription_id = ?
+LIMIT ? OFFSET ?;
 
 -- name: GetApiUsageSummaryByEndpointId :many
 SELECT * FROM api_usage_summary
-WHERE api_endpoint_id = ?;
+WHERE api_endpoint_id = ?
+LIMIT ? OFFSET ?;
 
 -- name: CreateApiUsageSummary :execresult 
 INSERT INTO api_usage_summary (

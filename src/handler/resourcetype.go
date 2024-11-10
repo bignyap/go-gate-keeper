@@ -146,7 +146,13 @@ func (apiCfg *ApiConfig) CreateResurceTypeHandler(w http.ResponseWriter, r *http
 
 func (apiCfg *ApiConfig) ListResourceTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	resourceTypes, err := apiCfg.DB.ListResourceType(r.Context())
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.ListResourceTypeParams{
+		Limit:  int32(page),
+		Offset: int32(n),
+	}
+
+	resourceTypes, err := apiCfg.DB.ListResourceType(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the resource types: %s", err))
 		return

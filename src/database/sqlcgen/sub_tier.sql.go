@@ -56,10 +56,16 @@ func (q *Queries) DeleteSubscriptionTierById(ctx context.Context, subscriptionTi
 const listSubscriptionTier = `-- name: ListSubscriptionTier :many
 SELECT subscription_tier_id, tier_name, tier_description, tier_created_at, tier_updated_at FROM subscription_tier
 ORDER BY tier_name
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListSubscriptionTier(ctx context.Context) ([]SubscriptionTier, error) {
-	rows, err := q.db.QueryContext(ctx, listSubscriptionTier)
+type ListSubscriptionTierParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListSubscriptionTier(ctx context.Context, arg ListSubscriptionTierParams) ([]SubscriptionTier, error) {
+	rows, err := q.db.QueryContext(ctx, listSubscriptionTier, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

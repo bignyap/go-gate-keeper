@@ -1,6 +1,7 @@
 -- name: ListSubscriptionTier :many
 SELECT * FROM subscription_tier
-ORDER BY tier_name;
+ORDER BY tier_name
+LIMIT ? OFFSET ?;
 
 -- name: CreateSubscriptionTier :execresult 
 INSERT INTO subscription_tier (tier_name, tier_description, tier_created_at, tier_updated_at) 

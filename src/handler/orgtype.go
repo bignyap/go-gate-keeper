@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/bignyap/go-gate-keeper/database/dbutils"
+	"github.com/bignyap/go-gate-keeper/database/sqlcgen"
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 )
@@ -131,7 +132,13 @@ func (apiCfg *ApiConfig) CreateOrgTypeHandler(w http.ResponseWriter, r *http.Req
 
 func (apiCfg *ApiConfig) ListOrgTypeHandler(w http.ResponseWriter, r *http.Request) {
 
-	orgTypes, err := apiCfg.DB.ListOrgType(r.Context())
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.ListOrgTypeParams{
+		Limit:  int32(page),
+		Offset: int32(n),
+	}
+
+	orgTypes, err := apiCfg.DB.ListOrgType(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the organization types: %s", err))
 		return

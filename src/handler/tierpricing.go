@@ -163,7 +163,14 @@ func (apiCfg *ApiConfig) GetTierPricingByTierIdHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	tierPricings, err := apiCfg.DB.GetTierPricingByTierId(r.Context(), int32(idStr))
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.GetTierPricingByTierIdParams{
+		SubscriptionTierID: int32(idStr),
+		Limit:              int32(page),
+		Offset:             int32(n),
+	}
+
+	tierPricings, err := apiCfg.DB.GetTierPricingByTierId(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the tier pricing list: %s", err))
 		return

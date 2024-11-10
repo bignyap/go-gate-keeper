@@ -122,10 +122,17 @@ func (q *Queries) GetSubscriptionById(ctx context.Context, subscriptionID int32)
 const getSubscriptionByOrgId = `-- name: GetSubscriptionByOrgId :many
 SELECT subscription_id, subscription_name, subscription_type, subscription_created_date, subscription_updated_date, subscription_start_date, subscription_api_limit, subscription_expiry_date, subscription_description, subscription_status, organization_id, subscription_tier_id FROM subscription
 WHERE organization_id = ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetSubscriptionByOrgId(ctx context.Context, organizationID int32) ([]Subscription, error) {
-	rows, err := q.db.QueryContext(ctx, getSubscriptionByOrgId, organizationID)
+type GetSubscriptionByOrgIdParams struct {
+	OrganizationID int32
+	Limit          int32
+	Offset         int32
+}
+
+func (q *Queries) GetSubscriptionByOrgId(ctx context.Context, arg GetSubscriptionByOrgIdParams) ([]Subscription, error) {
+	rows, err := q.db.QueryContext(ctx, getSubscriptionByOrgId, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -163,10 +170,16 @@ func (q *Queries) GetSubscriptionByOrgId(ctx context.Context, organizationID int
 const listSubscription = `-- name: ListSubscription :many
 SELECT subscription_id, subscription_name, subscription_type, subscription_created_date, subscription_updated_date, subscription_start_date, subscription_api_limit, subscription_expiry_date, subscription_description, subscription_status, organization_id, subscription_tier_id FROM subscription
 ORDER BY subscription_name
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListSubscription(ctx context.Context) ([]Subscription, error) {
-	rows, err := q.db.QueryContext(ctx, listSubscription)
+type ListSubscriptionParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListSubscription(ctx context.Context, arg ListSubscriptionParams) ([]Subscription, error) {
+	rows, err := q.db.QueryContext(ctx, listSubscription, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

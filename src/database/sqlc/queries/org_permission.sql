@@ -1,6 +1,7 @@
 -- name: GetOrgPermission :many
 SELECT * FROM organization_permission
-WHERE organization_id = ?;
+WHERE organization_id = ?
+LIMIT ? OFFSET ?;
 
 -- name: CreateOrgPermission :execresult 
 INSERT INTO organization_permission (resource_type_id, permission_code, organization_id) 

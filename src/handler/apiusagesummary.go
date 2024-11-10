@@ -214,7 +214,15 @@ func (apiCfg *ApiConfig) GetApiUsageSummaryByOrgIdHandler(w http.ResponseWriter,
 		return
 	}
 
-	apiUsageSummaries, err := apiCfg.DB.GetApiUsageSummaryByOrgId(r.Context(), int32(id))
+	page, n := ExtractPaginationDetail(w, r)
+
+	input := sqlcgen.GetApiUsageSummaryByOrgIdParams{
+		OrganizationID: int32(id),
+		Limit:          int32(page),
+		Offset:         int32(n),
+	}
+
+	apiUsageSummaries, err := apiCfg.DB.GetApiUsageSummaryByOrgId(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the api usage summaries: %s", err))
 		return
@@ -238,7 +246,15 @@ func (apiCfg *ApiConfig) GetApiUsageSummaryBySubIdHandler(w http.ResponseWriter,
 		return
 	}
 
-	apiUsageSummaries, err := apiCfg.DB.GetApiUsageSummaryBySubId(r.Context(), int32(id))
+	page, n := ExtractPaginationDetail(w, r)
+
+	input := sqlcgen.GetApiUsageSummaryBySubIdParams{
+		SubscriptionID: int32(id),
+		Limit:          int32(page),
+		Offset:         int32(n),
+	}
+
+	apiUsageSummaries, err := apiCfg.DB.GetApiUsageSummaryBySubId(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the api usage summaries: %s", err))
 		return
@@ -262,7 +278,15 @@ func (apiCfg *ApiConfig) GetApiUsageSummaryByEndpointIdHandler(w http.ResponseWr
 		return
 	}
 
-	apiUsageSummaries, err := apiCfg.DB.GetApiUsageSummaryByEndpointId(r.Context(), int32(id))
+	page, n := ExtractPaginationDetail(w, r)
+
+	input := sqlcgen.GetApiUsageSummaryByEndpointIdParams{
+		ApiEndpointID: int32(id),
+		Limit:         int32(page),
+		Offset:        int32(n),
+	}
+
+	apiUsageSummaries, err := apiCfg.DB.GetApiUsageSummaryByEndpointId(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the api usage summaries: %s", err))
 		return

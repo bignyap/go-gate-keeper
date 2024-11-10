@@ -63,10 +63,17 @@ func (q *Queries) CreateApiUsageSummary(ctx context.Context, arg CreateApiUsageS
 const getApiUsageSummaryByEndpointId = `-- name: GetApiUsageSummaryByEndpointId :many
 SELECT usage_summary_id, usage_start_date, usage_end_date, total_calls, total_cost, subscription_id, api_endpoint_id, organization_id FROM api_usage_summary
 WHERE api_endpoint_id = ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetApiUsageSummaryByEndpointId(ctx context.Context, apiEndpointID int32) ([]ApiUsageSummary, error) {
-	rows, err := q.db.QueryContext(ctx, getApiUsageSummaryByEndpointId, apiEndpointID)
+type GetApiUsageSummaryByEndpointIdParams struct {
+	ApiEndpointID int32
+	Limit         int32
+	Offset        int32
+}
+
+func (q *Queries) GetApiUsageSummaryByEndpointId(ctx context.Context, arg GetApiUsageSummaryByEndpointIdParams) ([]ApiUsageSummary, error) {
+	rows, err := q.db.QueryContext(ctx, getApiUsageSummaryByEndpointId, arg.ApiEndpointID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -103,10 +110,17 @@ WHERE subscription_id IN (
     SELECT subscription_id FROM subscription s
     WHERE s.organization_id = ?
 )
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetApiUsageSummaryByOrgId(ctx context.Context, organizationID int32) ([]ApiUsageSummary, error) {
-	rows, err := q.db.QueryContext(ctx, getApiUsageSummaryByOrgId, organizationID)
+type GetApiUsageSummaryByOrgIdParams struct {
+	OrganizationID int32
+	Limit          int32
+	Offset         int32
+}
+
+func (q *Queries) GetApiUsageSummaryByOrgId(ctx context.Context, arg GetApiUsageSummaryByOrgIdParams) ([]ApiUsageSummary, error) {
+	rows, err := q.db.QueryContext(ctx, getApiUsageSummaryByOrgId, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -140,10 +154,17 @@ func (q *Queries) GetApiUsageSummaryByOrgId(ctx context.Context, organizationID 
 const getApiUsageSummaryBySubId = `-- name: GetApiUsageSummaryBySubId :many
 SELECT usage_summary_id, usage_start_date, usage_end_date, total_calls, total_cost, subscription_id, api_endpoint_id, organization_id FROM api_usage_summary
 WHERE subscription_id = ?
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetApiUsageSummaryBySubId(ctx context.Context, subscriptionID int32) ([]ApiUsageSummary, error) {
-	rows, err := q.db.QueryContext(ctx, getApiUsageSummaryBySubId, subscriptionID)
+type GetApiUsageSummaryBySubIdParams struct {
+	SubscriptionID int32
+	Limit          int32
+	Offset         int32
+}
+
+func (q *Queries) GetApiUsageSummaryBySubId(ctx context.Context, arg GetApiUsageSummaryBySubIdParams) ([]ApiUsageSummary, error) {
+	rows, err := q.db.QueryContext(ctx, getApiUsageSummaryBySubId, arg.SubscriptionID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

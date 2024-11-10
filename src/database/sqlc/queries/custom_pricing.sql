@@ -1,6 +1,7 @@
 -- name: GetCustomPricing :many
 SELECT * FROM custom_endpoint_pricing
-WHERE subscription_id = ?;
+WHERE subscription_id = ?
+LIMIT ? OFFSET ?;
 
 -- name: CreateCustomPricing :execresult 
 INSERT INTO custom_endpoint_pricing (

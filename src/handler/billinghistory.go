@@ -229,7 +229,14 @@ func (apiCfg *ApiConfig) GetBillingHistoryByOrgIdHandler(w http.ResponseWriter, 
 		return
 	}
 
-	billingHistories, err := apiCfg.DB.GetBillingHistoryByOrgId(r.Context(), int32(id))
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.GetBillingHistoryByOrgIdParams{
+		OrganizationID: int32(id),
+		Limit:          int32(page),
+		Offset:         int32(n),
+	}
+
+	billingHistories, err := apiCfg.DB.GetBillingHistoryByOrgId(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the billing histories: %s", err))
 		return
@@ -246,7 +253,14 @@ func (apiCfg *ApiConfig) GetBillingHistoryBySubIdHandler(w http.ResponseWriter, 
 		return
 	}
 
-	billingHistories, err := apiCfg.DB.GetBillingHistoryBySubId(r.Context(), int32(id))
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.GetBillingHistoryBySubIdParams{
+		SubscriptionID: int32(id),
+		Limit:          int32(page),
+		Offset:         int32(n),
+	}
+
+	billingHistories, err := apiCfg.DB.GetBillingHistoryBySubId(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the billing histories: %s", err))
 		return
@@ -263,7 +277,14 @@ func (apiCfg *ApiConfig) GetBillingHistoryByIdHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	billingHistory, err := apiCfg.DB.GetBillingHistoryById(r.Context(), int32(id))
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.GetBillingHistoryByIdParams{
+		BillingID: int32(id),
+		Limit:     int32(page),
+		Offset:    int32(n),
+	}
+
+	billingHistory, err := apiCfg.DB.GetBillingHistoryById(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the billing history: %s", err))
 		return

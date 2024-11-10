@@ -204,7 +204,14 @@ func (apiCfg *ApiConfig) GetCustomPricingHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	customPricings, err := apiCfg.DB.GetCustomPricing(r.Context(), int32(id))
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.GetCustomPricingParams{
+		SubscriptionID: int32(id),
+		Limit:          int32(page),
+		Offset:         int32(n),
+	}
+
+	customPricings, err := apiCfg.DB.GetCustomPricing(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the custom pricing list: %s", err))
 		return

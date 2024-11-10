@@ -151,7 +151,13 @@ func (apiCfg *ApiConfig) RegisterEndpointHandler(w http.ResponseWriter, r *http.
 
 func (apiCfg *ApiConfig) ListEndpointsHandler(w http.ResponseWriter, r *http.Request) {
 
-	apiEndpoints, err := apiCfg.DB.ListApiEndpoint(r.Context())
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.ListApiEndpointParams{
+		Limit:  int32(page),
+		Offset: int32(n),
+	}
+
+	apiEndpoints, err := apiCfg.DB.ListApiEndpoint(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the organization types: %s", err))
 		return

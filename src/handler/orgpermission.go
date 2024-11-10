@@ -152,7 +152,14 @@ func (apiCfg *ApiConfig) GetOrgPermissionHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	orgPermissions, err := apiCfg.DB.GetOrgPermission(r.Context(), int32(id))
+	page, n := ExtractPaginationDetail(w, r)
+	input := sqlcgen.GetOrgPermissionParams{
+		OrganizationID: int32(id),
+		Limit:          int32(page),
+		Offset:         int32(n),
+	}
+
+	orgPermissions, err := apiCfg.DB.GetOrgPermission(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the resource types: %s", err))
 		return

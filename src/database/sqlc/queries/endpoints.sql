@@ -1,6 +1,7 @@
 -- name: ListApiEndpoint :many
 SELECT * FROM api_endpoint
-ORDER BY endpoint_name;
+ORDER BY endpoint_name
+LIMIT ? OFFSET ?;
 
 -- name: RegisterApiEndpoint :execresult 
 INSERT INTO api_endpoint (endpoint_name, endpoint_description) 

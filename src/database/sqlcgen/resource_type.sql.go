@@ -49,10 +49,16 @@ func (q *Queries) DeleteResourceTypeById(ctx context.Context, resourceTypeID int
 const listResourceType = `-- name: ListResourceType :many
 SELECT resource_type_id, resource_type_code, resource_type_name, resource_type_description FROM resource_type
 ORDER BY resource_type_name
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListResourceType(ctx context.Context) ([]ResourceType, error) {
-	rows, err := q.db.QueryContext(ctx, listResourceType)
+type ListResourceTypeParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListResourceType(ctx context.Context, arg ListResourceTypeParams) ([]ResourceType, error) {
+	rows, err := q.db.QueryContext(ctx, listResourceType, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

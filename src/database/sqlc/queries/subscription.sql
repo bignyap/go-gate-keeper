@@ -1,6 +1,7 @@
 -- name: ListSubscription :many
 SELECT * FROM subscription
-ORDER BY subscription_name;
+ORDER BY subscription_name
+LIMIT ? OFFSET ?;
 
 -- name: GetSubscriptionById :one
 SELECT * FROM subscription
@@ -8,7 +9,8 @@ WHERE subscription_id = ?;
 
 -- name: GetSubscriptionByOrgId :many
 SELECT * FROM subscription
-WHERE organization_id = ?;
+WHERE organization_id = ?
+LIMIT ? OFFSET ?;
 
 -- name: CreateSubscription :execresult 
 INSERT INTO subscription (
