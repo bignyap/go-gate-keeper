@@ -11,23 +11,36 @@ import Error from './components/Common/Error';
 
 import ContactPage from './pages/Contact';
 import NotFound from './pages/NotFound';
+import OrganizationPage from './pages/Organizations';
+import SubTierPage from './pages/SubTiers';
+import EndpointPage from './pages/Endpoints';
+import ResourcePage from './pages/Resources';
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path="/" element={<Navbar title='GATE|KEEPER'/>}>
     <Route 
-      path ="item1" 
-      element={<ContactPage />} 
+      path ="organizations" 
+      element={<OrganizationPage />} 
       errorElement={<Error />}
       // loader={chatLoader}
     />
     <Route 
-      path="item2" 
-      element={<ContactPage />} 
-    />
-    <Route
-      path="item3"
-      element={<ContactPage />}
+      path ="endpoints" 
+      element={<EndpointPage />} 
       errorElement={<Error />}
+      // loader={chatLoader}
+    />
+    <Route 
+      path ="resources" 
+      element={<ResourcePage />} 
+      errorElement={<Error />}
+      // loader={chatLoader}
+    />
+    <Route 
+      path ="tiers" 
+      element={<SubTierPage />} 
+      errorElement={<Error />}
+      // loader={chatLoader}
     />
     <Route path="*" element={<NotFound />} />
   </Route>

@@ -9,10 +9,10 @@ import MobileMenu from './MobileMenu';
 import DesktopMenu from './DesktopMenu';
 
 const pages = [
-  { name: 'Endpoints', link: '/endpoints' },
-  { name: 'Resources', link: '/resources' },
   { name: 'Organizations', link: '/organizations' },
-  { name: 'Sub Tiers', link: '/tiers' }
+  { name: 'Sub Tiers', link: '/tiers' },
+  { name: 'Endpoints', link: '/endpoints' },
+  { name: 'Resources', link: '/resources' }
 ];
 
 interface NavbarProps {
