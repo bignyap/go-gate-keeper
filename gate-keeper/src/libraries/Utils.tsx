@@ -30,7 +30,7 @@ async function headerWithToken(
   // }
 }
 
-async function postData(
+export async function PostData(
   url: string, 
   data: Record<string, any> = {}, 
   headers: Record<string, string> = {}, 
@@ -57,7 +57,7 @@ async function postData(
   }
 }
 
-async function putData(
+export async function PutData(
   url: string, 
   data: Record<string, any> = {}, 
   headers: Record<string, string> = {}, 
@@ -84,14 +84,21 @@ async function putData(
   }
 }
 
-async function getData(
+export async function GetData(
   url: string, 
+  queryParams: Record<string, string> = {},
   headers: Record<string, string> = {}, 
   includeDefaultHeader: boolean = true
 ): Promise<any> {
   try {
+    // Create a URL object and append query parameters
+    const urlObj = new URL(url);
+    Object.entries(queryParams).forEach(([key, value]) => {
+      urlObj.searchParams.append(key, value);
+    });
+
     const reqHeaders = await headerWithToken(headers, includeDefaultHeader);
-    const response = await fetch(url, {
+    const response = await fetch(urlObj.toString(), {
       method: 'GET',
       headers: reqHeaders
     });
@@ -105,7 +112,7 @@ async function getData(
   }
 }
 
-async function deleteData(
+export async function DeleteData(
   url: string, 
   headers: Record<string, string> = {}, 
   includeDefaultHeader: boolean = true

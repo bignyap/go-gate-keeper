@@ -10,7 +10,7 @@ import Navbar from './components/Navbar/Navbar';
 import Error from './components/Common/Error';
 
 import NotFound from './pages/NotFound';
-import OrganizationPage from './pages/Organizations';
+import { OrganizationPage } from './pages/Organizations';
 import SubTierPage from './pages/SubTiers';
 import EndpointPage from './pages/Endpoints';
 import ResourcePage from './pages/Resources';
@@ -27,7 +27,6 @@ const router = createBrowserRouter(
           path ="organizations" 
           element={<OrganizationPage />} 
           errorElement={<Error />}
-          // loader={chatLoader}
         />
         <Route 
           path ="endpoints" 

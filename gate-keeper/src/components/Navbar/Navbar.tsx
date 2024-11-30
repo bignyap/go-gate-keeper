@@ -8,6 +8,8 @@ import Logo from './Logo';
 import MobileMenu from './MobileMenu';
 import DesktopMenu from './DesktopMenu';
 
+import "../../styles/main.css"
+
 const pages = [
   { name: 'Organizations', link: '/organizations' },
   { name: 'Sub Tiers', link: '/tiers' },
