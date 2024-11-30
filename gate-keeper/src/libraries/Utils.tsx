@@ -6,6 +6,13 @@
 //   return config.chatServiceUrl + api_paths["chatService"][pathName]
 // }
 
+
+export function BuildUrl(base: string, ...paths: string[]): string {
+  const sanitizedBase = base.replace(/\/+$/, '');
+  const sanitizedPaths = paths.map(path => path.replace(/^\/+/, ''));
+  return [sanitizedBase, ...sanitizedPaths].join('/');
+}
+
 const defaultHeaders: Record<string, string> = {
   'Accept': 'application/json',
   'Content-Type': 'application/x-www-form-urlencoded'

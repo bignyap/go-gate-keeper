@@ -17,15 +17,16 @@ export interface EnhancedTableProps {
   headCells: readonly HeadCell[];
   defaultSort: string;
   title: React.ReactNode;
+  defaultRows: number;
 }
   
-export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, defaultSort, title }) => {
+export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, defaultSort, title, defaultRows }) => {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<string>(defaultSort);
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   // const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(defaultRows);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -78,7 +79,7 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, d
       [...rows]
         .sort(getComparator(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage],
+    [order, orderBy, page, rowsPerPage, rows],
   );
 
   return (
@@ -153,7 +154,7 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, d
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 20, 50, 75, 100]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}

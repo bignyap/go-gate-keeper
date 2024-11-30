@@ -1,14 +1,14 @@
 import {
-    PostData, DeleteData, GetData
+    PostData, DeleteData, GetData, BuildUrl
  } from './Utils';
 import {
     API_PATHS, API_BASE_URL
 } from './Paths';
 
-const ORGANIZATION_API_BASE_URL = API_BASE_URL + API_PATHS["organization"]
+const ORGANIZATION_API_BASE_URL = BuildUrl(API_BASE_URL, API_PATHS["organization"]);
 
 export async function CreateOrganization(data: Record<string, any>): Promise<any> {
-  return PostData(`${ORGANIZATION_API_BASE_URL}`, data);
+  return PostData(ORGANIZATION_API_BASE_URL, data);
 }
 
 export async function ListOrganizations(pageNumber: number, itemsPerPage: number): Promise<any> {
