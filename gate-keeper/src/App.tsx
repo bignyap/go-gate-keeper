@@ -13,7 +13,7 @@ import ContactPage from './pages/Contact';
 import NotFound from './pages/NotFound';
 
 const router = createBrowserRouter(createRoutesFromElements(
-  <Route path="/" element={<Navbar />}>
+  <Route path="/" element={<Navbar title='GATE|KEEPER'/>}>
     <Route 
       path ="item1" 
       element={<ContactPage />} 
