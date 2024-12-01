@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import { EnhancedTableHead } from './TableHead';
 import { EnhancedTableToolbar } from './Toolbar';
-import { Order, getComparator, Data, HeadCell, StyledTableCell, StyledTableRow } from './Utils';
+import { Order, getComparator, Data, HeadCell, StyledTableCell, StyledTableRow, StickyTableCell } from './Utils';
 
 
 export interface EnhancedTableProps {
@@ -18,9 +18,12 @@ export interface EnhancedTableProps {
   defaultSort: string;
   title: React.ReactNode;
   defaultRows: number;
+  stickyColumnIds: string[];
 }
   
-export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, defaultSort, title, defaultRows }) => {
+export const EnhancedTable: React.FC<EnhancedTableProps> = (
+  { rows, headCells, defaultSort, title, defaultRows, stickyColumnIds }
+) => {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<string>(defaultSort);
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -82,11 +85,24 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, d
     [order, orderBy, page, rowsPerPage, rows],
   );
 
+  const CheckboxCellType = stickyColumnIds.length > 0 ? StickyTableCell : StyledTableCell;
+
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box 
+      sx={{ 
+        width: '100%', 
+        maxWidth: '85vw'
+      }}
+    >
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <EnhancedTableToolbar numSelected={selected.length} title={title} />
-        <TableContainer>
+        <TableContainer
+          sx={{ 
+            maxHeight: '70vh',
+            overflowX: 'auto',
+            overflowY: 'auto'
+          }}
+        >
           <Table
             stickyHeader
             sx={{ minWidth: 750 }}
@@ -101,6 +117,7 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, d
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
               headCells={headCells}
+              stickyColumnIds={stickyColumnIds}
             />
             <TableBody>
               {visibleRows.map((row, index) => {
@@ -118,7 +135,10 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, d
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <StyledTableCell padding="checkbox">
+                    <CheckboxCellType 
+                      padding="checkbox" 
+                      sx={{ position: 'sticky', left: 0, zIndex: 2 }} // Ensure left is set to 0 for the first sticky column
+                    >
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
@@ -126,27 +146,32 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = ({ rows, headCells, d
                           'aria-labelledby': labelId,
                         }}
                       />
-                    </StyledTableCell>
-                    {headCells.map((headCell) => (
-                      <StyledTableCell
-                        key={headCell.id}
-                        align='center'
-                        component={headCell.id === 'name' ? 'th' : undefined}
-                        id={headCell.id === 'name' ? labelId : undefined}
-                        scope={headCell.id === 'name' ? 'row' : undefined}
-                        // padding={headCell.disablePadding ? 'none' : 'normal'}
-                      >
-                       {
-                        row[headCell.id] === null
-                          ? "--"
-                          : typeof row[headCell.id] === 'boolean'
-                          ? row[headCell.id] ? "True" : "False"
-                          : typeof row[headCell.id] === 'object'
-                          ? JSON.stringify(row[headCell.id])
-                          : row[headCell.id]
-                        }
-                      </StyledTableCell>
-                    ))}
+                    </CheckboxCellType>
+                    {headCells.map((headCell, headIndex) => {
+                      const stickyQ = stickyColumnIds.includes(headCell.id);
+                      const CellComponent = stickyQ ? StickyTableCell : StyledTableCell;
+                      const leftPosition = stickyQ ? headIndex + 1 : 'auto';
+                      return (
+                        <CellComponent
+                          key={headCell.id}
+                          align='center'
+                          component={headCell.id === 'name' ? 'th' : undefined}
+                          id={headCell.id === 'name' ? labelId : undefined}
+                          scope={headCell.id === 'name' ? 'row' : undefined}
+                          sx={stickyQ ? { position: 'sticky', left: leftPosition, zIndex: 1 } : {}} // Adjust left for each sticky column
+                        >
+                          {
+                            row[headCell.id] === null
+                              ? "--"
+                              : typeof row[headCell.id] === 'boolean'
+                              ? row[headCell.id] ? "True" : "False"
+                              : typeof row[headCell.id] === 'object'
+                              ? JSON.stringify(row[headCell.id])
+                              : row[headCell.id]
+                          }
+                        </CellComponent>
+                      );
+                    })}
                   </StyledTableRow>
                 );
               })}

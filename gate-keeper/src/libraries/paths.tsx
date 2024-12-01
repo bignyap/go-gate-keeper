@@ -6,4 +6,5 @@ export const API_PATHS = {
    "organizationType": "/orgType",
    "resourceType": "/resourceType",
    "subscriptionTier": "/subTier", 
+   "subscription": "/subscription",
 };

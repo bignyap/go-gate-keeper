@@ -118,7 +118,7 @@ func CreateSubscriptionFormValidation(r *http.Request) (*sqlcgen.CreateSubscript
 	}
 
 	dateField := []string{"expiry_date"}
-	dateParsed, err := formvalidator.ParseNullUnixTimeFromForm(r, dateField)
+	dateParsed, err := formvalidator.ParseNullUnixTime32FromForm(r, dateField)
 	if err != nil {
 		return nil, err
 	}

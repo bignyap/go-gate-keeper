@@ -110,6 +110,7 @@ export function OrganizationLoader() {
         headCells={headCells}
         defaultSort="id"
         defaultRows={10}
+        stickyColumnIds={["id", "name"]}
         title={
           <Button
             component="label"

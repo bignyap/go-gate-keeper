@@ -104,6 +104,30 @@ func ParseNullTimeFromForm(r *http.Request, fields []string) (map[string]sql.Nul
 	return ParseFromForm[sql.NullTime](r, fields, NullTimeFormField{})
 }
 
-func ParseNullUnixTimeFromForm(r *http.Request, fields []string) (map[string]sql.NullInt32, error) {
-	return ParseFromForm[sql.NullInt32](r, fields, NullUnixTimeFormField{})
+func ParseNullUnixTimeFromForm(r *http.Request, fields []string) (map[string]sql.NullInt64, error) {
+	return ParseFromForm[sql.NullInt64](r, fields, NullUnixTimeFormField{})
+}
+
+func ParseNullUnixTime32FromForm(r *http.Request, fields []string) (map[string]sql.NullInt32, error) {
+	parsed, err := ParseFromForm[sql.NullInt64](r, fields, NullUnixTimeFormField{})
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]sql.NullInt32)
+	for k, v := range parsed {
+		if !v.Valid {
+			result[k] = sql.NullInt32{
+				Int32: 0,
+				Valid: false,
+			}
+		} else {
+			result[k] = sql.NullInt32{
+				Int32: int32(v.Int64),
+				Valid: true,
+			}
+		}
+	}
+
+	return result, nil
 }

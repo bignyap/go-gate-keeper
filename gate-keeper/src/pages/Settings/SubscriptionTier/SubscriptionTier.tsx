@@ -73,6 +73,7 @@ export function SubScriptionTierLoader() {
           headCells={headCells}
           defaultSort="id"
           defaultRows={10}
+          stickyColumnIds={[]}
           title={
             <Button
               component="label"

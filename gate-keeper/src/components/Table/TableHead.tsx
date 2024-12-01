@@ -6,7 +6,7 @@ import TableHead from '@mui/material/TableHead';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { visuallyHidden } from '@mui/utils';
-import { Order, Data, HeadCell, StyledTableCell, StyledTableRow } from './Utils';
+import { Order, Data, HeadCell, StyledTableCell, StyledTableRow, StickyTableCell, StickyTableRow } from './Utils';
 
 interface EnhancedTableProps {
     numSelected: number;
@@ -15,39 +15,57 @@ interface EnhancedTableProps {
     order: Order;
     orderBy: string;
     rowCount: number;
-    headCells: readonly HeadCell[]
+    headCells: readonly HeadCell[];
+    stickyColumnIds: string[];
 }
+
+EnhancedTableHead.defaultProps = {
+  stickyColumnIds: [],
+};
   
 export function EnhancedTableHead(props: EnhancedTableProps) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, headCells, onRequestSort } =
-      props;
-    const createSortHandler =
-      (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-        onRequestSort(event, property);
-      };
-  
-    return (
-      <TableHead>
-        <StyledTableRow>
-          <StyledTableCell padding="checkbox" align='center'>
-            <Checkbox
-              color="primary"
-              indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={rowCount > 0 && numSelected === rowCount}
-              onChange={onSelectAllClick}
-              inputProps={{
-                'aria-label': 'select all',
-              }}
-            />
-          </StyledTableCell>
-          {headCells.map((headCell) => (
-            <StyledTableCell
+  const { 
+    numSelected, onRequestSort, onSelectAllClick, order, orderBy, 
+    rowCount, headCells, stickyColumnIds 
+  } = props;
+  const createSortHandler =
+    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+  };
+
+  const CheckboxCellType = stickyColumnIds.length > 0 ? StickyTableCell : StyledTableCell;
+
+  return (
+    <TableHead>
+      <StickyTableRow>
+        <CheckboxCellType 
+          padding="checkbox" 
+          align='center'
+          sx={{ position: 'sticky', left: 0, zIndex: 1 }} // Ensure sticky positioning
+        >
+          <Checkbox
+            color="primary"
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{
+              'aria-label': 'select all',
+            }}
+          />
+        </CheckboxCellType>
+        {headCells.map((headCell, index) => {
+          const TableCellComponent = stickyColumnIds.includes(headCell.id) ? StickyTableCell : StyledTableCell;
+          return (
+            <TableCellComponent
               key={headCell.id}
               align='center'
-              // align={headCell.numeric ? 'right' : 'left'}
-              // padding={headCell.disablePadding ? 'none' : 'normal'}
               sortDirection={orderBy === headCell.id ? order : false}
-              sx={{ padding: '8px' }}
+              sx={{ 
+                padding: '8px', 
+                position: stickyColumnIds.includes(headCell.id) ? 'sticky' : 'static', 
+                left: stickyColumnIds.includes(headCell.id) ? index + 1 : 'auto', 
+                zIndex: stickyColumnIds.includes(headCell.id) ? 1 : 'auto' 
+              }} // Ensure sticky positioning
             >
               <TableSortLabel
                 active={orderBy === headCell.id}
@@ -62,9 +80,10 @@ export function EnhancedTableHead(props: EnhancedTableProps) {
                   </Box>
                 ) : null}
               </TableSortLabel>
-            </StyledTableCell>
-          ))}
-        </StyledTableRow>
-      </TableHead>
-    );
+            </TableCellComponent>
+          );
+        })}
+      </StickyTableRow>
+    </TableHead>
+  );
 }

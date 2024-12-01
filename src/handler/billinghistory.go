@@ -102,7 +102,7 @@ func CreateBillingHistoryFormValidation(r *http.Request) (*sqlcgen.CreateBilling
 	}
 
 	nullDateField := []string{"payment_date"}
-	nulldateParsed, err := formvalidator.ParseNullUnixTimeFromForm(r, nullDateField)
+	nulldateParsed, err := formvalidator.ParseNullUnixTime32FromForm(r, nullDateField)
 	if err != nil {
 		return nil, err
 	}
