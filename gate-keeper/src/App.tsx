@@ -11,9 +11,10 @@ import Error from './components/Common/Error';
 
 import NotFound from './pages/NotFound';
 import { OrganizationPage } from './pages/Organization/Organizations';
-import SubTierPage from './pages/SubTiers';
-import EndpointPage from './pages/Endpoints';
-import ResourcePage from './pages/Resources';
+import { PricingPage } from './pages/Pricing/Pricing';
+import { SubscriptionPage } from './pages/Subscription/Subscription';
+import { UsagePage } from './pages/Usage/Usage';
+import { SettingsPage } from './pages/Settings/Settings';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,20 +30,26 @@ const router = createBrowserRouter(
           errorElement={<Error />}
         />
         <Route 
-          path ="endpoints" 
-          element={<EndpointPage />} 
+          path ="subscriptions" 
+          element={<SubscriptionPage />} 
           errorElement={<Error />}
           // loader={chatLoader}
         />
         <Route 
-          path ="resources" 
-          element={<ResourcePage />} 
+          path ="pricings" 
+          element={<PricingPage />} 
           errorElement={<Error />}
           // loader={chatLoader}
         />
         <Route 
-          path ="tiers" 
-          element={<SubTierPage />} 
+          path ="usage" 
+          element={<UsagePage />} 
+          errorElement={<Error />}
+          // loader={chatLoader}
+        />
+        <Route 
+          path ="settings" 
+          element={<SettingsPage />} 
           errorElement={<Error />}
           // loader={chatLoader}
         />

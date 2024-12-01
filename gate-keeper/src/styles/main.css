@@ -11,3 +11,29 @@
     align-items: center;
     align-content: center;
 }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-sizing: border-box;
+    height: 90vh;
+    padding: 50px;
+    max-width: 90vw;
+}
+
+.tabs-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.settings--container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-sizing: border-box;
+    height: 80vh;
+    padding: 50px;
+    max-width: 90vw;
+}

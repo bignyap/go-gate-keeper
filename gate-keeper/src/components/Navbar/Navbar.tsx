@@ -12,9 +12,10 @@ import "../../styles/main.css"
 
 const pages = [
   { name: 'Organizations', link: '/organizations' },
-  { name: 'Sub Tiers', link: '/tiers' },
-  { name: 'Endpoints', link: '/endpoints' },
-  { name: 'Resources', link: '/resources' }
+  { name: 'Subscriptions', link: '/subscriptions' },
+  { name: 'Pricings', link: '/pricings' },
+  { name: 'Usage', link: '/usage' },
+  { name: 'Settings', link: '/settings' }
 ];
 
 interface NavbarProps {

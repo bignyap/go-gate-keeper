@@ -11,17 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 export function OrganizationPage() {
   return (
-    <div 
-        style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            boxSizing: 'border-box',
-            height: '90vh',
-            padding: '50px',
-            maxWidth: '90vw'
-        }}
-    >
+    <div className = 'container'>
       <OrganizationLoader />
     </div>
   );
