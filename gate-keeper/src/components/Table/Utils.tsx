@@ -34,6 +34,7 @@ export interface HeadCell {
     // disablePadding: boolean;
     id: string;
     label: string;
+    width?: number;
     // numeric: boolean;
 }
 
@@ -41,6 +42,10 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.grey[200],
       color: theme.palette.primary,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '200px',
       position: 'relative',
       '&::after': {
         content: '""',
@@ -83,6 +88,10 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
       backgroundColor: theme.palette.grey[200],
       boxShadow: "5px 2px 5px grey",
       zIndex: 1,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '200px',
       color: theme.palette.primary,
       '&::after': {
         content: '""',

@@ -150,7 +150,13 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
                     {headCells.map((headCell, headIndex) => {
                       const stickyQ = stickyColumnIds.includes(headCell.id);
                       const CellComponent = stickyQ ? StickyTableCell : StyledTableCell;
-                      const leftPosition = stickyQ ? headIndex + 1 : 'auto';
+                      const leftPosition = stickyQ ? headIndex + 1 : 0;
+                      // const leftPosition = stickyQ 
+                      //   ? headCells.slice(0, headIndex).reduce((acc, curr) => {
+                      //       const width = typeof curr.width === 'number' ? curr.width : 0; // Ensure width is a number
+                      //       return stickyColumnIds.includes(curr.id) ? acc + width : acc;
+                      //     }, 0)
+                      //   : 'auto';
                       return (
                         <CellComponent
                           key={headCell.id}

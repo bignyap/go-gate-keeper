@@ -3,33 +3,40 @@ import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 
+interface TabItem {
+  label: string;
+  value: string;
+}
+
 interface ScrollableTabsButtonAutoProps {
-  tabs: string[];
+  tabs: TabItem[];
   onTabChange: (newTab: string) => void;
+  initialIndex?: number;
 }
 
 export default function ScrollableTabsButtonAuto(
   props: ScrollableTabsButtonAutoProps
 ) {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(props.initialIndex || 0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-    props.onTabChange(props.tabs[newValue]);
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    console.log("dfdsfds", newValue);
+    setValue(props.tabs.findIndex(tab => tab.value === newValue));
+    props.onTabChange(newValue);
   };
 
   return (
     <Box 
-    sx={{
-      flexGrow: 1,
-      maxWidth: { xs: '100%', md: '800px' },
-      width: '100%',
-      bgcolor: 'background.paper',
-      height: 'auto',
-    }}
+      sx={{
+        flexGrow: 1,
+        maxWidth: { xs: '100%', md: '800px' },
+        width: '100%',
+        bgcolor: 'background.paper',
+        height: 'auto',
+      }}
     >
       <Tabs
-        value={value}
+        value={props.tabs[value]?.value || ''}
         onChange={handleChange}
         variant="scrollable"
         scrollButtons
@@ -44,10 +51,9 @@ export default function ScrollableTabsButtonAuto(
         {props.tabs.map((tab, index) => (
           <Tab 
             key={index} 
-            label={tab}
-            sx = {{ 
-              fontWeight: 'Bold'
-            }} 
+            label={tab.label}
+            value={tab.value}
+            sx={{ fontWeight: 'Bold' }} 
           />
         ))}
       </Tabs>

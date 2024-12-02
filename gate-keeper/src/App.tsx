@@ -48,7 +48,7 @@ const router = createBrowserRouter(
           // loader={chatLoader}
         />
         <Route 
-          path ="settings" 
+          path ="settings/:tab?" 
           element={<SettingsPage />} 
           errorElement={<Error />}
           // loader={chatLoader}

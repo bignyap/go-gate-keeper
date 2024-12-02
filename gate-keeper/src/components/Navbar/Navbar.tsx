@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -23,7 +24,13 @@ interface NavbarProps {
 }
 
 export default function Navbar({ title }: NavbarProps) {
+  const location = useLocation();
   const [anchorElNav, setAnchorElNav] = React.useState<HTMLElement | null>(null);
+  const [selectedPage, setSelectedPage] = React.useState<string>(() => {
+    const currentPath = location.pathname;
+    const currentPage = pages.find(page => page.link === currentPath);
+    return currentPage ? currentPage.name : pages[0].name;
+  });
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget as HTMLElement);
@@ -31,6 +38,11 @@ export default function Navbar({ title }: NavbarProps) {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleMenuItemClick = (pageName: string) => {
+    setSelectedPage(pageName); // Update selected page
+    handleCloseNavMenu();
   };
 
   return (
@@ -45,12 +57,16 @@ export default function Navbar({ title }: NavbarProps) {
                 handleOpenNavMenu={handleOpenNavMenu}
                 handleCloseNavMenu={handleCloseNavMenu}
                 pages={pages}
+                selectedPage={selectedPage} // Pass selected page
+                onMenuItemClick={handleMenuItemClick} // Pass click handler
               />
             </Box>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'flex-end' }}>
               <DesktopMenu
                 pages={pages}
                 handleCloseNavMenu={handleCloseNavMenu}
+                selectedPage={selectedPage} // Pass selected page
+                onMenuItemClick={handleMenuItemClick} // Pass click handler
               />
             </Box>
           </Toolbar>

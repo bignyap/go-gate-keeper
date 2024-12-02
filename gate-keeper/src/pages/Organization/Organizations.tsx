@@ -135,8 +135,8 @@ export function OrganizationLoader() {
 }
 
 const headCells: HeadCell[] = [
-  { id: 'id', label: 'ID' },
-  { id: 'name', label: 'Name' },
+  { id: 'id', label: 'ID', width: 20 },
+  { id: 'name', label: 'Name', width: 20 },
   { id: 'type', label: 'Type' },
   { id: 'created_at', label: 'Created At' },
   { id: 'updated_at', label: 'Updated At' },

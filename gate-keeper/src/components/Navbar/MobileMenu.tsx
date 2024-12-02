@@ -11,9 +11,11 @@ interface MobileMenuProps {
   handleOpenNavMenu: (event: React.MouseEvent<HTMLElement>) => void;
   handleCloseNavMenu: () => void;
   pages: { name: string; link: string }[];
+  selectedPage: string; // Add selectedPage prop
+  onMenuItemClick: (pageName: string) => void; // Add click handler prop
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ anchorElNav, handleOpenNavMenu, handleCloseNavMenu, pages }) => (
+const MobileMenu: React.FC<MobileMenuProps> = ({ anchorElNav, handleOpenNavMenu, handleCloseNavMenu, pages, selectedPage, onMenuItemClick }) => (
   <div>
     <IconButton
       size="large"
@@ -48,7 +50,13 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ anchorElNav, handleOpenNavMenu,
           key={page.name}
           component={Link}
           to={page.link}
-          onClick={handleCloseNavMenu}
+          onClick={() => {
+            onMenuItemClick(page.name);
+            handleCloseNavMenu();
+          }}
+          sx={{
+            backgroundColor: selectedPage === page.name ? 'primary.light' : 'inherit',
+          }}
         >
           <Typography textAlign="center">{page.name}</Typography>
         </MenuItem>

@@ -18,16 +18,17 @@ interface EnhancedTableProps {
     headCells: readonly HeadCell[];
     stickyColumnIds: string[];
 }
-
-EnhancedTableHead.defaultProps = {
-  stickyColumnIds: [],
-};
   
-export function EnhancedTableHead(props: EnhancedTableProps) {
-  const { 
-    numSelected, onRequestSort, onSelectAllClick, order, orderBy, 
-    rowCount, headCells, stickyColumnIds 
-  } = props;
+export function EnhancedTableHead({
+  numSelected,
+  onRequestSort,
+  onSelectAllClick,
+  order,
+  orderBy,
+  rowCount,
+  headCells,
+  stickyColumnIds = [],
+}: EnhancedTableProps) {
   const createSortHandler =
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
@@ -65,7 +66,7 @@ export function EnhancedTableHead(props: EnhancedTableProps) {
                 position: stickyColumnIds.includes(headCell.id) ? 'sticky' : 'static', 
                 left: stickyColumnIds.includes(headCell.id) ? index + 1 : 'auto', 
                 zIndex: stickyColumnIds.includes(headCell.id) ? 1 : 'auto' 
-              }} // Ensure sticky positioning
+              }}
             >
               <TableSortLabel
                 active={orderBy === headCell.id}
