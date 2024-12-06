@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ListOrganizations } from '../../libraries/Organization';
 import OrganizationModal from './OrganizationModal';
-import { ListOrganizationTypes } from '../../libraries/OrgType'
+// import { ListOrganizationTypes } from '../../libraries/OrgType'
 import { EnhancedTable } from '../../components/Table/Table'
 import { HeadCell } from '../../components/Table/Utils';
 import Button from '@mui/material/Button'
@@ -18,28 +18,37 @@ export function OrganizationPage() {
 }
 
 
-function addOrgType(organizations: any, organizationTypes: any) {
-  return organizations.map((org: any) => {
-    const orgType = organizationTypes.find((type: any) => type.id === org.type_id);
-    return {
-      ...org,
-      type: orgType ? orgType.name : '--'
-    };
-  });
-}
+// async function fetchOrganizationTypes() {
+  //   try {
+  //     const orgTypeData = await ListOrganizationTypes(1, 10);
+  //     setOrganizationTypes(orgTypeData);
+  //   } catch (error) {
+  //     console.error("Error fetching organization types:", error);
+  //     setOrganizationTypes([]);
+  //     setSnackbar({
+  //       message: "Failed to load organization types. Please try again later.",
+  //       status: "error"
+  //     });
+  //   }
+  // }
 
 export function OrganizationLoader() {
-  const [organizationTypes, setOrganizationTypes] = useState<any[]>([]);
   const [organizations, setOrganizations] = useState<any[]>([]);
-  const [mappedOrganizations, setMappedOrganizations] = useState<any[]>([]);
+  const [count, setCount] = useState<number>(-1);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState<{ message: string, status: string } | null>(null);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [page, setPage] = useState<number>(0);
 
-  async function fetchOrganizations() {
+  async function fetchOrganizations(newPage: number, itemsPerPage: number) {
     try {
-      const orgData = await ListOrganizations(1, 10);
-      setOrganizations(orgData);
+      const orgData = await ListOrganizations(newPage, itemsPerPage);
+      const iCount = orgData["total_items"];
+      setCount(iCount);
+      if (iCount > 0) {
+        setOrganizations(orgData["data"]);
+      }; 
     } catch (error) {
       console.error("Error fetching organizations:", error);
       setOrganizations([]);
@@ -51,32 +60,10 @@ export function OrganizationLoader() {
       setLoading(false);
     }
   }
-  
-  async function fetchOrganizationTypes() {
-    try {
-      const orgTypeData = await ListOrganizationTypes(1, 10);
-      setOrganizationTypes(orgTypeData);
-    } catch (error) {
-      console.error("Error fetching organization types:", error);
-      setOrganizationTypes([]);
-      setSnackbar({
-        message: "Failed to load organization types. Please try again later.",
-        status: "error"
-      });
-    }
-  }
 
   useEffect(() => {
-    fetchOrganizationTypes();
-    fetchOrganizations();
-  }, []);
-
-  useEffect(() => {
-    if (organizations.length > 0 && organizationTypes.length > 0) {
-      const mappedOrgData = addOrgType(organizations, organizationTypes);
-      setMappedOrganizations(mappedOrgData);
-    }
-  }, [organizations, organizationTypes]);
+    fetchOrganizations(page + 1, itemsPerPage);
+  }, [itemsPerPage, page]);
 
   if (loading) {
     return (
@@ -90,9 +77,22 @@ export function OrganizationLoader() {
     setIsModalOpen(true);
   };
 
-  const handleOrganizationCreated = (newOrg: any) => {
-    const mappedOrgData = [...mappedOrganizations, ...addOrgType([newOrg], organizationTypes)];
-    setMappedOrganizations(mappedOrgData);
+  const onPageChange = async (newPage: number) => {
+    await fetchOrganizations(newPage, itemsPerPage)
+  };
+
+  const handleRowsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    fetchOrganizations(1, newItemsPerPage);
+  };
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+    onPageChange(newPage + 1);
+  };
+
+  const handleOrganizationCreated = () => {
+    fetchOrganizations(1, itemsPerPage);
   };
 
   return (
@@ -106,11 +106,15 @@ export function OrganizationLoader() {
         />
       )}
       <EnhancedTable
-        rows={mappedOrganizations}
+        rows={organizations}
         headCells={headCells}
         defaultSort="id"
         defaultRows={10}
         stickyColumnIds={["id", "name"]}
+        page={page}
+        onPageChange={handleChangePage} // Ensure this matches the expected signature
+        count={count}
+        onRowsPerPageChange={handleRowsPerPageChange}
         title={
           <Button
             component="label"
@@ -135,16 +139,16 @@ export function OrganizationLoader() {
 }
 
 const headCells: HeadCell[] = [
-  { id: 'id', label: 'ID', width: 20 },
+  // { id: 'id', label: 'ID', width: 20 },
   { id: 'name', label: 'Name', width: 20 },
   { id: 'type', label: 'Type' },
-  { id: 'created_at', label: 'Created At' },
-  { id: 'updated_at', label: 'Updated At' },
   { id: 'realm', label: 'Realm' },
   { id: 'country', label: 'Country' },
   { id: 'support_email', label: 'Support Email' },
   { id: 'active', label: 'Active' },
   { id: 'report_q', label: 'Reporting' },
   { id: 'config', label: 'Config' },
+  { id: 'created_at', label: 'Created At' },
+  { id: 'updated_at', label: 'Updated At' },
   // { id: 'type', label: 'TypeID' }
 ];

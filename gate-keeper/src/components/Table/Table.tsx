@@ -19,17 +19,21 @@ export interface EnhancedTableProps {
   title: React.ReactNode;
   defaultRows: number;
   stickyColumnIds: string[];
+  page: number;
+  count: number;
+  onPageChange: (newPage: number) => void;
+  onRowsPerPageChange: (newItemsPerPage: number) => void;
 }
   
 export const EnhancedTable: React.FC<EnhancedTableProps> = (
-  { rows, headCells, defaultSort, title, defaultRows, stickyColumnIds }
+  { rows, headCells, defaultSort, title, defaultRows, stickyColumnIds, page, count, onPageChange, onRowsPerPageChange }
 ) => {
-  const [order, setOrder] = React.useState<Order>('asc');
+
+  const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<string>(defaultSort);
   const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0);
-  // const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRows);
+  const [currentPage, setCurrentPage] = React.useState(page);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -68,22 +72,22 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    // setPage(1);
+    onRowsPerPageChange(newRowsPerPage);
   };
 
-  const visibleRows = React.useMemo(
-    () =>
-      [...rows]
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage, rows],
-  );
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setCurrentPage(newPage);
+    onPageChange(newPage);
+  };
+
+  const visibleRows = React.useMemo(() => {
+    const sortedRows = [...rows].sort(getComparator(order, orderBy));
+    return sortedRows;
+  }, [order, orderBy, page, rowsPerPage, rows]);
 
   const CheckboxCellType = stickyColumnIds.length > 0 ? StickyTableCell : StyledTableCell;
 
@@ -127,7 +131,7 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
                 return (
                   <StyledTableRow
                     hover
-                    onClick={(event) => handleClick(event, Number(row.id))}
+                    // onClick={(event) => handleClick(event, Number(row.id))}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -137,10 +141,12 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
                   >
                     <CheckboxCellType 
                       padding="checkbox" 
-                      sx={{ position: 'sticky', left: 0, zIndex: 2 }} // Ensure left is set to 0 for the first sticky column
+                      // Ensure left is set to 0 for the first sticky column
+                      sx={{ position: 'sticky', left: 0, zIndex: 2 }}
                     >
                       <Checkbox
                         color="primary"
+                        onClick={(event) => handleClick(event, Number(row.id))}
                         checked={isItemSelected}
                         inputProps={{
                           'aria-labelledby': labelId,
@@ -164,7 +170,8 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
                           component={headCell.id === 'name' ? 'th' : undefined}
                           id={headCell.id === 'name' ? labelId : undefined}
                           scope={headCell.id === 'name' ? 'row' : undefined}
-                          sx={stickyQ ? { position: 'sticky', left: leftPosition, zIndex: 1 } : {}} // Adjust left for each sticky column
+                          // Adjust left for each sticky column
+                          sx={stickyQ ? { position: 'sticky', left: leftPosition, zIndex: 1 } : {}} 
                         >
                           {
                             row[headCell.id] === null
@@ -187,7 +194,7 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
         <TablePagination
           rowsPerPageOptions={[5, 10, 20, 50, 75, 100]}
           component="div"
-          count={rows.length}
+          count={count || -1}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

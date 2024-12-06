@@ -20,7 +20,7 @@ const OrganizationModal: React.FC<OrganizationFormProps> = ({ onClose, onOrganiz
     realm: '',
     country: '',
     support_email: '',
-    active: false,
+    active: true,
     report_q: false,
     config: '',
     type_id: 0,
@@ -125,7 +125,7 @@ const OrganizationModal: React.FC<OrganizationFormProps> = ({ onClose, onOrganiz
                 onChange={handleChange}
               />
             }
-            label="Report Q"
+            label="Reporting"
           />
           <TextField
             fullWidth

@@ -13,13 +13,17 @@ export async function CreateOrganization(data: Record<string, any>): Promise<any
 
 export async function ListOrganizations(pageNumber: number, itemsPerPage: number): Promise<any> {
     const queryParams = {
-      pageNumber: pageNumber.toString(),
-      itemsPerPage: itemsPerPage.toString()
+      page_number: pageNumber.toString(),
+      items_per_page: itemsPerPage.toString()
     };
   
-    const organizations = await GetData(ORGANIZATION_API_BASE_URL, queryParams);
+    let organizations = await GetData(ORGANIZATION_API_BASE_URL, queryParams);
+
+    if (organizations["total_items"] > 0) {
+      organizations["data"] = organizations["data"].map((org: any) => createOrganizationData(org));
+    }
     
-    return organizations.map((org: any) => createOrganizationData(org));
+    return organizations
   }
 
 export async function GetOrganizationById(id: string): Promise<any> {
@@ -39,6 +43,7 @@ function createOrganizationData(org: any): OrganizationData {
     return {
       id: org.id,
       name: org.name,
+      type: org.type,
       created_at: org.created_at,
       updated_at: org.updated_at,
       realm: org.realm,
@@ -47,13 +52,14 @@ function createOrganizationData(org: any): OrganizationData {
       active: org.active,
       report_q: org.report_q,
       config: org.config,
-      type_id: org.type_id,
+      // type_id: org.type_id,
     };
 }
 
 interface OrganizationData {
     id: number;
     name: string;
+    type: string;
     created_at: string;
     updated_at: string;
     realm: string;
@@ -62,6 +68,6 @@ interface OrganizationData {
     active: boolean;
     report_q: boolean;
     config: any | null;
-    type_id: number;
+    // type_id: number;
     [key: string]: any;
 }

@@ -1,16 +1,28 @@
 -- name: ListSubscription :many
-SELECT * FROM subscription
-ORDER BY subscription_name
+SELECT 
+    subscription.*, subscription_tier.tier_name, 
+    COUNT(subscription.subscription_tier_id) OVER() AS total_items  
+FROM subscription
+INNER JOIN subscription_tier ON subscription.subscription_tier_id = subscription_tier.subscription_tier_id
+ORDER BY subscription.subscription_tier_id DESC
 LIMIT ? OFFSET ?;
 
 -- name: GetSubscriptionById :one
-SELECT * FROM subscription
-WHERE subscription_id = ?;
+SELECT 
+    subscription.*, subscription_tier.tier_name  
+FROM subscription
+INNER JOIN subscription_tier ON subscription.subscription_tier_id = subscription_tier.subscription_tier_id
+WHERE subscription.subscription_id = ?;
 
 -- name: GetSubscriptionByOrgId :many
-SELECT * FROM subscription
-WHERE organization_id = ?
+SELECT 
+    subscription.*, subscription_tier.tier_name,
+    COUNT(subscription.subscription_tier_id) OVER() AS total_items  
+FROM subscription
+INNER JOIN subscription_tier ON subscription.subscription_tier_id = subscription_tier.subscription_tier_id
+WHERE subscription.organization_id = ?
 LIMIT ? OFFSET ?;
+
 
 -- name: CreateSubscription :execresult 
 INSERT INTO subscription (

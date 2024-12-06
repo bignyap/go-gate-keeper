@@ -13,8 +13,8 @@ export async function CreateEndpoint(data: Record<string, any>): Promise<any> {
 
 export async function ListEndpoints(pageNumber: number, itemsPerPage: number): Promise<any> {
     const queryParams = {
-      pageNumber: pageNumber.toString(),
-      itemsPerPage: itemsPerPage.toString()
+      page_number: pageNumber.toString(),
+      items_per_page: itemsPerPage.toString()
     };
   
     const endpoints = await GetData(ENDPOINT_API_BASE_URL, queryParams);

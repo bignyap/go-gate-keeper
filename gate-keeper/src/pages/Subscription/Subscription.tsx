@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import SubscriptionModal from './SubscriptionModal';
-// import { ListOrganizationTypes } from '../../libraries/OrgType'
 import { EnhancedTable } from '../../components/Table/Table'
 import { HeadCell } from '../../components/Table/Utils';
 import Button from '@mui/material/Button'
@@ -8,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { CustomizedSnackbars } from '../../components/Common/Toast';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ListSubscriptions } from '../../libraries/Subscription';
-import { ListSubscriptionTiers } from '../../libraries/SubscriptionTier';
+// import { ListSubscriptionTiers } from '../../libraries/SubscriptionTier';
 
 export function SubscriptionPage() {
   return (
@@ -19,29 +18,37 @@ export function SubscriptionPage() {
 }
 
 
-function addSubTier(subscriptions: any, subTier: any) {
-  return subscriptions.map((sub: any) => {
-    const subT = subTier.find((type: any) => type.id === sub.subscription_tier_id);
-    return {
-      ...sub,
-      tier: subT ? subT.name : '--'
-    };
-  });
-}
+// async function fetchSubscriptionTiers() {
+//   try {
+//     const subTierData = await ListSubscriptionTiers(1, 10);
+//     setSubscriptionTiers(subTierData);
+//   } catch (error) {
+//     console.error("Error fetching subscription tier:", error);
+//     setSubscriptionTiers([]);
+//     setSnackbar({
+//       message: "Failed to load subscription tiers. Please try again later.",
+//       status: "error"
+//     });
+//   }
+// }
 
 export function SubscriptionLoader() {
-  const [subscriptionTiers, setSubscriptionTiers] = useState<any[]>([]);
-//   const [organizations, setOrganizations] = useState<any[]>([]);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
-  const [mappedsubscriptions, setMappedsubscriptions] = useState<any[]>([]);
+  const [count, setCount] = useState<number>(-1);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState<{ message: string, status: string } | null>(null);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [page, setPage] = useState<number>(0);
 
-  async function fetchSubscriptions() {
+  async function fetchSubscriptions(newPage: number, itemsPerPage: number) {
     try {
-      const subData = await ListSubscriptions(1, 10);
-      setSubscriptions(subData);
+      const subData = await ListSubscriptions(newPage, itemsPerPage);
+      const iCount = subData["total_items"];
+      setCount(iCount);
+      if (iCount > 0) {
+        setSubscriptions(subData["data"]);
+      }; 
     } catch (error) {
       console.error("Error fetching subscriptions:", error);
       setSubscriptions([]);
@@ -53,32 +60,10 @@ export function SubscriptionLoader() {
       setLoading(false);
     }
   }
-  
-  async function fetchSubscriptionTiers() {
-    try {
-      const subTierData = await ListSubscriptionTiers(1, 10);
-      setSubscriptionTiers(subTierData);
-    } catch (error) {
-      console.error("Error fetching subscription tier:", error);
-      setSubscriptionTiers([]);
-      setSnackbar({
-        message: "Failed to load subscription tiers. Please try again later.",
-        status: "error"
-      });
-    }
-  }
 
   useEffect(() => {
-    fetchSubscriptionTiers();
-    fetchSubscriptions();
+    fetchSubscriptions(page + 1, itemsPerPage);
   }, []);
-
-  useEffect(() => {
-    if (subscriptions.length > 0 && subscriptionTiers.length > 0) {
-      const mappedSubData = addSubTier(subscriptions, subscriptionTiers);
-      setMappedsubscriptions(mappedSubData);
-    }
-  }, [subscriptions, subscriptionTiers]);
 
   if (loading) {
     return (
@@ -92,9 +77,22 @@ export function SubscriptionLoader() {
     setIsModalOpen(true);
   };
 
+  const onPageChange = async (newPage: number, itemsPerPage: number) => {
+    await fetchSubscriptions(newPage, itemsPerPage)
+  };
+
+  const handleRowsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    fetchSubscriptions(1, newItemsPerPage);
+  };
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+    onPageChange(newPage + 1, itemsPerPage);
+  };
+
   const handleSubscriptionCreated = (newSub: any) => {
-    const mappedSubData = [...mappedsubscriptions, ...addSubTier([newSub], subscriptionTiers)];
-    setMappedsubscriptions(mappedSubData);
+    setSubscriptions([...subscriptions, newSub]);
   };
 
   return (
@@ -108,11 +106,15 @@ export function SubscriptionLoader() {
         />
       )}
       <EnhancedTable
-        rows={mappedsubscriptions}
+        rows={subscriptions}
         headCells={headCells}
         defaultSort="id"
         defaultRows={10}
         stickyColumnIds={["id", "name"]}
+        page={page}
+        onPageChange={handleChangePage}
+        count={count}
+        onRowsPerPageChange={handleRowsPerPageChange}
         title={
           <Button
             component="label"
@@ -137,17 +139,17 @@ export function SubscriptionLoader() {
 }
 
 const headCells: HeadCell[] = [
-    { id: 'id', label: 'ID', width: 20 },
+    // { id: 'id', label: 'ID', width: 20 },
     { id: 'name', label: 'Name', width: 20 },
-    { id: 'tier', label: 'Tier' },
+    // { id: 'tier', label: 'Tier' },
     { id: 'type', label: 'Type' },
-    { id: 'created_at', label: 'Created At' },
-    { id: 'updated_at', label: 'Updated At' },
     { id: 'start_date', label: 'Start Date' },
     { id: 'api_limit', label: 'API Limit' },
     { id: 'expiry_date', label: 'Expiry Date' },
-    { id: 'description', label: 'Description' },
     { id: 'status', label: 'Status' },
+    { id: 'description', label: 'Description' },
+    { id: 'created_at', label: 'Created At' },
+    { id: 'updated_at', label: 'Updated At' },
     // { id: 'organization_id', label: 'Organization ID' },
     // { id: 'subscription_tier_id', label: 'Subscription Tier ID' },
 ];

@@ -13,8 +13,8 @@ export async function CreateResourceType(data: Record<string, any>): Promise<any
 
 export async function ListResourceTypes(pageNumber: number, itemsPerPage: number): Promise<any> {
     const queryParams = {
-      pageNumber: pageNumber.toString(),
-      itemsPerPage: itemsPerPage.toString()
+      page_number: pageNumber.toString(),
+      items_per_page: itemsPerPage.toString()
     };
   
     const endpoints = await GetData(RESOURCE_TYPE_API_BASE_URL, queryParams);

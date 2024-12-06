@@ -95,13 +95,32 @@ func (q *Queries) DeleteSubscriptionByOrgId(ctx context.Context, organizationID 
 }
 
 const getSubscriptionById = `-- name: GetSubscriptionById :one
-SELECT subscription_id, subscription_name, subscription_type, subscription_created_date, subscription_updated_date, subscription_start_date, subscription_api_limit, subscription_expiry_date, subscription_description, subscription_status, organization_id, subscription_tier_id FROM subscription
-WHERE subscription_id = ?
+SELECT 
+    subscription.subscription_id, subscription.subscription_name, subscription.subscription_type, subscription.subscription_created_date, subscription.subscription_updated_date, subscription.subscription_start_date, subscription.subscription_api_limit, subscription.subscription_expiry_date, subscription.subscription_description, subscription.subscription_status, subscription.organization_id, subscription.subscription_tier_id, subscription_tier.tier_name  
+FROM subscription
+INNER JOIN subscription_tier ON subscription.subscription_tier_id = subscription_tier.subscription_tier_id
+WHERE subscription.subscription_id = ?
 `
 
-func (q *Queries) GetSubscriptionById(ctx context.Context, subscriptionID int32) (Subscription, error) {
+type GetSubscriptionByIdRow struct {
+	SubscriptionID          int32
+	SubscriptionName        string
+	SubscriptionType        string
+	SubscriptionCreatedDate int32
+	SubscriptionUpdatedDate int32
+	SubscriptionStartDate   int32
+	SubscriptionApiLimit    sql.NullInt32
+	SubscriptionExpiryDate  sql.NullInt32
+	SubscriptionDescription sql.NullString
+	SubscriptionStatus      sql.NullBool
+	OrganizationID          int32
+	SubscriptionTierID      int32
+	TierName                string
+}
+
+func (q *Queries) GetSubscriptionById(ctx context.Context, subscriptionID int32) (GetSubscriptionByIdRow, error) {
 	row := q.db.QueryRowContext(ctx, getSubscriptionById, subscriptionID)
-	var i Subscription
+	var i GetSubscriptionByIdRow
 	err := row.Scan(
 		&i.SubscriptionID,
 		&i.SubscriptionName,
@@ -115,13 +134,18 @@ func (q *Queries) GetSubscriptionById(ctx context.Context, subscriptionID int32)
 		&i.SubscriptionStatus,
 		&i.OrganizationID,
 		&i.SubscriptionTierID,
+		&i.TierName,
 	)
 	return i, err
 }
 
 const getSubscriptionByOrgId = `-- name: GetSubscriptionByOrgId :many
-SELECT subscription_id, subscription_name, subscription_type, subscription_created_date, subscription_updated_date, subscription_start_date, subscription_api_limit, subscription_expiry_date, subscription_description, subscription_status, organization_id, subscription_tier_id FROM subscription
-WHERE organization_id = ?
+SELECT 
+    subscription.subscription_id, subscription.subscription_name, subscription.subscription_type, subscription.subscription_created_date, subscription.subscription_updated_date, subscription.subscription_start_date, subscription.subscription_api_limit, subscription.subscription_expiry_date, subscription.subscription_description, subscription.subscription_status, subscription.organization_id, subscription.subscription_tier_id, subscription_tier.tier_name,
+    COUNT(subscription.subscription_tier_id) OVER() AS total_items  
+FROM subscription
+INNER JOIN subscription_tier ON subscription.subscription_tier_id = subscription_tier.subscription_tier_id
+WHERE subscription.organization_id = ?
 LIMIT ? OFFSET ?
 `
 
@@ -131,15 +155,32 @@ type GetSubscriptionByOrgIdParams struct {
 	Offset         int32
 }
 
-func (q *Queries) GetSubscriptionByOrgId(ctx context.Context, arg GetSubscriptionByOrgIdParams) ([]Subscription, error) {
+type GetSubscriptionByOrgIdRow struct {
+	SubscriptionID          int32
+	SubscriptionName        string
+	SubscriptionType        string
+	SubscriptionCreatedDate int32
+	SubscriptionUpdatedDate int32
+	SubscriptionStartDate   int32
+	SubscriptionApiLimit    sql.NullInt32
+	SubscriptionExpiryDate  sql.NullInt32
+	SubscriptionDescription sql.NullString
+	SubscriptionStatus      sql.NullBool
+	OrganizationID          int32
+	SubscriptionTierID      int32
+	TierName                string
+	TotalItems              interface{}
+}
+
+func (q *Queries) GetSubscriptionByOrgId(ctx context.Context, arg GetSubscriptionByOrgIdParams) ([]GetSubscriptionByOrgIdRow, error) {
 	rows, err := q.db.QueryContext(ctx, getSubscriptionByOrgId, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Subscription{}
+	items := []GetSubscriptionByOrgIdRow{}
 	for rows.Next() {
-		var i Subscription
+		var i GetSubscriptionByOrgIdRow
 		if err := rows.Scan(
 			&i.SubscriptionID,
 			&i.SubscriptionName,
@@ -153,6 +194,8 @@ func (q *Queries) GetSubscriptionByOrgId(ctx context.Context, arg GetSubscriptio
 			&i.SubscriptionStatus,
 			&i.OrganizationID,
 			&i.SubscriptionTierID,
+			&i.TierName,
+			&i.TotalItems,
 		); err != nil {
 			return nil, err
 		}
@@ -168,8 +211,12 @@ func (q *Queries) GetSubscriptionByOrgId(ctx context.Context, arg GetSubscriptio
 }
 
 const listSubscription = `-- name: ListSubscription :many
-SELECT subscription_id, subscription_name, subscription_type, subscription_created_date, subscription_updated_date, subscription_start_date, subscription_api_limit, subscription_expiry_date, subscription_description, subscription_status, organization_id, subscription_tier_id FROM subscription
-ORDER BY subscription_name
+SELECT 
+    subscription.subscription_id, subscription.subscription_name, subscription.subscription_type, subscription.subscription_created_date, subscription.subscription_updated_date, subscription.subscription_start_date, subscription.subscription_api_limit, subscription.subscription_expiry_date, subscription.subscription_description, subscription.subscription_status, subscription.organization_id, subscription.subscription_tier_id, subscription_tier.tier_name, 
+    COUNT(subscription.subscription_tier_id) OVER() AS total_items  
+FROM subscription
+INNER JOIN subscription_tier ON subscription.subscription_tier_id = subscription_tier.subscription_tier_id
+ORDER BY subscription.subscription_tier_id DESC
 LIMIT ? OFFSET ?
 `
 
@@ -178,15 +225,32 @@ type ListSubscriptionParams struct {
 	Offset int32
 }
 
-func (q *Queries) ListSubscription(ctx context.Context, arg ListSubscriptionParams) ([]Subscription, error) {
+type ListSubscriptionRow struct {
+	SubscriptionID          int32
+	SubscriptionName        string
+	SubscriptionType        string
+	SubscriptionCreatedDate int32
+	SubscriptionUpdatedDate int32
+	SubscriptionStartDate   int32
+	SubscriptionApiLimit    sql.NullInt32
+	SubscriptionExpiryDate  sql.NullInt32
+	SubscriptionDescription sql.NullString
+	SubscriptionStatus      sql.NullBool
+	OrganizationID          int32
+	SubscriptionTierID      int32
+	TierName                string
+	TotalItems              interface{}
+}
+
+func (q *Queries) ListSubscription(ctx context.Context, arg ListSubscriptionParams) ([]ListSubscriptionRow, error) {
 	rows, err := q.db.QueryContext(ctx, listSubscription, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Subscription{}
+	items := []ListSubscriptionRow{}
 	for rows.Next() {
-		var i Subscription
+		var i ListSubscriptionRow
 		if err := rows.Scan(
 			&i.SubscriptionID,
 			&i.SubscriptionName,
@@ -200,6 +264,8 @@ func (q *Queries) ListSubscription(ctx context.Context, arg ListSubscriptionPara
 			&i.SubscriptionStatus,
 			&i.OrganizationID,
 			&i.SubscriptionTierID,
+			&i.TierName,
+			&i.TotalItems,
 		); err != nil {
 			return nil, err
 		}

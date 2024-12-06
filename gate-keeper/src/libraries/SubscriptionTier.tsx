@@ -13,8 +13,8 @@ export async function CreateSubscriptionTier(data: Record<string, any>): Promise
 
 export async function ListSubscriptionTiers(pageNumber: number, itemsPerPage: number): Promise<any> {
     const queryParams = {
-      pageNumber: pageNumber.toString(),
-      itemsPerPage: itemsPerPage.toString()
+      page_number: pageNumber.toString(),
+      items_per_page: itemsPerPage.toString()
     };
   
     const endpoints = await GetData(SUBSCRIPTION_TIER_API_BASE_URL, queryParams);

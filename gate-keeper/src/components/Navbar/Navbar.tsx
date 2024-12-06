@@ -29,7 +29,7 @@ export default function Navbar({ title }: NavbarProps) {
   const [selectedPage, setSelectedPage] = React.useState<string>(() => {
     const currentPath = location.pathname;
     const currentPage = pages.find(page => page.link === currentPath);
-    return currentPage ? currentPage.name : pages[0].name;
+    return currentPage ? currentPage.name : "";
   });
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -41,8 +41,12 @@ export default function Navbar({ title }: NavbarProps) {
   };
 
   const handleMenuItemClick = (pageName: string) => {
-    setSelectedPage(pageName); // Update selected page
+    setSelectedPage(pageName);
     handleCloseNavMenu();
+  };
+
+  const handleLogoClick = () => {
+    setSelectedPage("");
   };
 
   return (
@@ -50,7 +54,7 @@ export default function Navbar({ title }: NavbarProps) {
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Container component="div" maxWidth={false} sx={{ minHeight: "100%" }}>
           <Toolbar disableGutters>
-            <Logo title={title} />
+            <Logo title={title} onClick={handleLogoClick} />
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <MobileMenu
                 anchorElNav={anchorElNav}

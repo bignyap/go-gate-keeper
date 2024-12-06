@@ -9,6 +9,8 @@ import { ResourceTypeTab } from './ResourceType/ResourceType';
 import '../../styles/main.css';
 
 export function SettingsPage () {
+
+    console.log("Rendering settings page from sratch...");
     const { tab } = useParams();
     const navigate = useNavigate();
 
@@ -54,6 +56,7 @@ export function SettingsPage () {
                 {selectedTab === "organization-types" && <OrganizationTypeTab />}
                 {selectedTab === "subscription-tiers" && <SubScriptionTierTab />}
             </div>
+            
         </div>
     )
 }

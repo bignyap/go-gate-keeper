@@ -1,6 +1,10 @@
 -- name: ListOrganization :many
-SELECT * FROM organization
-ORDER BY organization_name
+SELECT 
+    organization.*, organization_type.organization_type_name, 
+    COUNT(organization_id) OVER() AS total_items 
+FROM organization
+INNER JOIN organization_type ON organization.organization_type_id = organization_type.organization_type_id
+ORDER BY organization_id DESC
 LIMIT ? OFFSET ?;
 
 -- name: GetOrganization :one

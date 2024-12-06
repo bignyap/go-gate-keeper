@@ -13,13 +13,17 @@ export async function CreateSubscription(data: Record<string, any>): Promise<any
 
 export async function ListSubscriptions(pageNumber: number, itemsPerPage: number): Promise<any> {
     const queryParams = {
-      pageNumber: pageNumber.toString(),
-      itemsPerPage: itemsPerPage.toString()
+      page_number: pageNumber.toString(),
+      items_per_page: itemsPerPage.toString()
     };
   
     const subscriptions = await GetData(SUBSCRIPTION_API_BASE_URL, queryParams);
+
+    if (subscriptions["total_items"] > 0) {
+      subscriptions["data"] = subscriptions["data"].map((org: any) => createSubscriptionData(org));
+    }
     
-    return subscriptions.map((sub: any) => createSubscriptionData(sub));
+    return subscriptions
 }
 
 export async function GetSubscriptionById(id: string): Promise<any> {
@@ -47,7 +51,7 @@ function createSubscriptionData(sub: any): SubscriptionData {
     return {
       id: sub.id,
       name: sub.name,
-      type: sub.type,
+      type: sub.tier_name,
       created_at: sub.created_at,
       updated_at: sub.updated_at,
       start_date: sub.start_date,
@@ -63,7 +67,6 @@ function createSubscriptionData(sub: any): SubscriptionData {
 interface SubscriptionData {
     id: number;
     name: string;
-    type: string;
     created_at: string;
     updated_at: string;
     start_date: string;
@@ -73,5 +76,6 @@ interface SubscriptionData {
     status: boolean;
     organization_id: number;
     subscription_tier_id: number;
+    type: string;
     [key: string]: any;
 }

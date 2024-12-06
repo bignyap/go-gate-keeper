@@ -34,6 +34,17 @@ type CreateOrganizationOutput struct {
 	CreateOrganizationParams
 }
 
+type ListOrganizationOutput struct {
+	ID                   int    `json:"id"`
+	OrganizationTypeName string `json:"type"`
+	CreateOrganizationParams
+}
+
+type ListOrganizationOutputWithCount struct {
+	TotalItems int                      `json:"total_items"`
+	Data       []ListOrganizationOutput `json:"data"`
+}
+
 type CreateOrganizationInputs interface {
 	ToCreateOrganizationParams() CreateOrganizationParams
 }
@@ -241,14 +252,51 @@ func (apiCfg *ApiConfig) ListOrganizationsHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	var output []CreateOrganizationOutput
+	output := ToListOrganizationOutputWithCount(organizations)
+	respondWithJSON(w, StatusOK, output)
+}
 
-	for _, organization := range organizations {
+func ToListOrganizationOutput(input sqlcgen.ListOrganizationRow) ListOrganizationOutput {
+	return ListOrganizationOutput{
+		ID:                   int(input.OrganizationID),
+		OrganizationTypeName: input.OrganizationTypeName,
+		CreateOrganizationParams: CreateOrganizationParams{
+			Name:         input.OrganizationName,
+			SupportEmail: input.OrganizationSupportEmail,
+			CreatedAt:    misc.FromUnixTime32(input.OrganizationCreatedAt),
+			UpdatedAt:    misc.FromUnixTime32(input.OrganizationUpdatedAt),
+			Realm:        input.OrganizationRealm,
+			Active:       converter.NullBoolToBool(&input.OrganizationActive),
+			ReportQ:      converter.NullBoolToBool(&input.OrganizationReportQ),
+			TypeID:       int(input.OrganizationTypeID),
+			Config:       converter.NullStrToStr(&input.OrganizationConfig),
+			Country:      converter.NullStrToStr(&input.OrganizationCountry),
+		},
+	}
+}
 
-		output = append(output, ToCreateOrganizationOutput(organization))
+func ToListOrganizationOutputWithCount(inputs []sqlcgen.ListOrganizationRow) ListOrganizationOutputWithCount {
+	var data []ListOrganizationOutput
+	for _, input := range inputs {
+		data = append(data, ToListOrganizationOutput(input))
 	}
 
-	respondWithJSON(w, StatusOK, output)
+	totalItems := 0
+	if len(inputs) > 0 {
+		switch total := inputs[0].TotalItems.(type) {
+		case int64:
+			totalItems = int(total)
+		case int:
+			totalItems = total
+		default:
+			totalItems = 0
+		}
+	}
+
+	return ListOrganizationOutputWithCount{
+		Data:       data,
+		TotalItems: totalItems,
+	}
 }
 
 func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *http.Request) {

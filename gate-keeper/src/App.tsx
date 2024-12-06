@@ -3,13 +3,15 @@ import {
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
-  Route 
+  Route,
+  Navigate
 } from 'react-router-dom';
 
 import Navbar from './components/Navbar/Navbar';
 import Error from './components/Common/Error';
 
 import NotFound from './pages/NotFound';
+import { HomePage } from './pages/Home/Home';
 import { OrganizationPage } from './pages/Organization/Organizations';
 import { PricingPage } from './pages/Pricing/Pricing';
 import { SubscriptionPage } from './pages/Subscription/Subscription';
@@ -24,6 +26,15 @@ const router = createBrowserRouter(
         element={<Navbar title='GATE|KEEPER'/>}
         errorElement={<Error />}
       >
+        <Route 
+          index 
+          element={<Navigate to="/home" replace />}
+        />
+        <Route 
+          path="home" 
+          element={<HomePage />}
+          errorElement={<Error />}
+        />
         <Route 
           path ="organizations" 
           element={<OrganizationPage />} 

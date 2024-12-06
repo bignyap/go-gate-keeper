@@ -20,9 +20,11 @@ export default function ScrollableTabsButtonAuto(
   const [value, setValue] = React.useState(props.initialIndex || 0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    console.log("dfdsfds", newValue);
-    setValue(props.tabs.findIndex(tab => tab.value === newValue));
-    props.onTabChange(newValue);
+    const newIndex = props.tabs.findIndex(tab => tab.value === newValue);
+    if (newIndex !== value) {
+      setValue(newIndex);
+      props.onTabChange(newValue);
+    }
   };
 
   return (

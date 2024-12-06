@@ -106,8 +106,12 @@ func (q *Queries) GetOrganization(ctx context.Context, organizationID int32) (Or
 }
 
 const listOrganization = `-- name: ListOrganization :many
-SELECT organization_id, organization_name, organization_created_at, organization_updated_at, organization_realm, organization_country, organization_support_email, organization_active, organization_report_q, organization_config, organization_type_id FROM organization
-ORDER BY organization_name
+SELECT 
+    organization.organization_id, organization.organization_name, organization.organization_created_at, organization.organization_updated_at, organization.organization_realm, organization.organization_country, organization.organization_support_email, organization.organization_active, organization.organization_report_q, organization.organization_config, organization.organization_type_id, organization_type.organization_type_name, 
+    COUNT(organization_id) OVER() AS total_items 
+FROM organization
+INNER JOIN organization_type ON organization.organization_type_id = organization_type.organization_type_id
+ORDER BY organization_id DESC
 LIMIT ? OFFSET ?
 `
 
@@ -116,15 +120,31 @@ type ListOrganizationParams struct {
 	Offset int32
 }
 
-func (q *Queries) ListOrganization(ctx context.Context, arg ListOrganizationParams) ([]Organization, error) {
+type ListOrganizationRow struct {
+	OrganizationID           int32
+	OrganizationName         string
+	OrganizationCreatedAt    int32
+	OrganizationUpdatedAt    int32
+	OrganizationRealm        string
+	OrganizationCountry      sql.NullString
+	OrganizationSupportEmail string
+	OrganizationActive       sql.NullBool
+	OrganizationReportQ      sql.NullBool
+	OrganizationConfig       sql.NullString
+	OrganizationTypeID       int32
+	OrganizationTypeName     string
+	TotalItems               interface{}
+}
+
+func (q *Queries) ListOrganization(ctx context.Context, arg ListOrganizationParams) ([]ListOrganizationRow, error) {
 	rows, err := q.db.QueryContext(ctx, listOrganization, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Organization{}
+	items := []ListOrganizationRow{}
 	for rows.Next() {
-		var i Organization
+		var i ListOrganizationRow
 		if err := rows.Scan(
 			&i.OrganizationID,
 			&i.OrganizationName,
@@ -137,6 +157,8 @@ func (q *Queries) ListOrganization(ctx context.Context, arg ListOrganizationPara
 			&i.OrganizationReportQ,
 			&i.OrganizationConfig,
 			&i.OrganizationTypeID,
+			&i.OrganizationTypeName,
+			&i.TotalItems,
 		); err != nil {
 			return nil, err
 		}

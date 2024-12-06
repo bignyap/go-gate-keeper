@@ -14,6 +14,7 @@ import (
 	"github.com/bignyap/go-gate-keeper/utils/converter"
 	"github.com/bignyap/go-gate-keeper/utils/formvalidator"
 	"github.com/bignyap/go-gate-keeper/utils/misc"
+	"github.com/jinzhu/copier"
 )
 
 type CreateSubscriptionParams struct {
@@ -33,6 +34,17 @@ type CreateSubscriptionParams struct {
 type CreateSubscriptionOutput struct {
 	ID int `json:"id"`
 	CreateSubscriptionParams
+}
+
+type ListSubscriptionOutput struct {
+	ID       int    `json:"id"`
+	TierName string `json:"tier_name"`
+	CreateSubscriptionParams
+}
+
+type ListSubscriptionOutputWithCount struct {
+	TotalItems int                      `json:"total_items"`
+	Data       []ListSubscriptionOutput `json:"data"`
 }
 
 type CreateSubscriptionInputs interface {
@@ -291,8 +303,10 @@ func (apiCfg *ApiConfig) GetSubscriptionHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	output := ToCreateSubscriptionOutput(subscription)
+	listSubscriptionRow := sqlcgen.ListSubscriptionRow{}
+	copier.Copy(&listSubscriptionRow, &subscription)
 
+	output := ToListSubscriptionOutput(listSubscriptionRow)
 	respondWithJSON(w, StatusOK, output)
 }
 
@@ -317,13 +331,12 @@ func (apiCfg *ApiConfig) GetSubscriptionByrgIdHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	var output []CreateSubscriptionOutput
-
-	for _, subscription := range subscriptions {
-
-		output = append(output, ToCreateSubscriptionOutput(subscription))
+	listSubscriptionRows := make([]sqlcgen.ListSubscriptionRow, len(subscriptions))
+	for i, sub := range subscriptions {
+		listSubscriptionRows[i] = sqlcgen.ListSubscriptionRow(sub)
 	}
 
+	output := ToListSubscriptionOutputWithCount(listSubscriptionRows)
 	respondWithJSON(w, StatusOK, output)
 }
 
@@ -341,12 +354,50 @@ func (apiCfg *ApiConfig) ListSubscriptionHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	var output []CreateSubscriptionOutput
+	output := ToListSubscriptionOutputWithCount(subscriptions)
+	respondWithJSON(w, StatusOK, output)
+}
 
-	for _, subscription := range subscriptions {
+func ToListSubscriptionOutput(input sqlcgen.ListSubscriptionRow) ListSubscriptionOutput {
+	return ListSubscriptionOutput{
+		ID:       int(input.SubscriptionID),
+		TierName: input.TierName,
+		CreateSubscriptionParams: CreateSubscriptionParams{
+			Name:               input.SubscriptionName,
+			Type:               input.SubscriptionType,
+			CreatedAt:          misc.FromUnixTime32(input.SubscriptionCreatedDate),
+			UpdatedAt:          misc.FromUnixTime32(input.SubscriptionUpdatedDate),
+			StartDate:          misc.FromUnixTime32(input.SubscriptionStartDate),
+			APILimit:           converter.NullInt32ToInt(&input.SubscriptionApiLimit),
+			ExpiryDate:         converter.NullInt32ToTime(&input.SubscriptionExpiryDate),
+			Description:        &input.SubscriptionDescription.String,
+			Status:             converter.NullBoolToBool(&input.SubscriptionStatus),
+			OrganizationID:     int(input.OrganizationID),
+			SubscriptionTierID: int(input.SubscriptionTierID),
+		},
+	}
+}
 
-		output = append(output, ToCreateSubscriptionOutput(subscription))
+func ToListSubscriptionOutputWithCount(inputs []sqlcgen.ListSubscriptionRow) ListSubscriptionOutputWithCount {
+	var data []ListSubscriptionOutput
+	for _, input := range inputs {
+		data = append(data, ToListSubscriptionOutput(input))
 	}
 
-	respondWithJSON(w, StatusOK, output)
+	totalItems := 0
+	if len(inputs) > 0 {
+		switch total := inputs[0].TotalItems.(type) {
+		case int64:
+			totalItems = int(total)
+		case int:
+			totalItems = total
+		default:
+			totalItems = 0
+		}
+	}
+
+	return ListSubscriptionOutputWithCount{
+		Data:       data,
+		TotalItems: totalItems,
+	}
 }
