@@ -131,11 +131,15 @@ export async function DeleteData(
       headers: reqHeaders
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      const errorText = await response.text();
+      throw new Error(`Error: ${response.status} ${errorText}`);
     }
-    return response.json();
+  
+    if (response.status !== 204) {
+      await response.json();
+    }
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
-    throw error; // Propagate the error
+    throw error;
   }
 }

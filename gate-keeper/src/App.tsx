@@ -9,14 +9,18 @@ import {
 
 import Navbar from './components/Navbar/Navbar';
 import Error from './components/Common/Error';
-
 import NotFound from './pages/NotFound';
 import { HomePage } from './pages/Home/Home';
 import { OrganizationPage } from './pages/Organization/Organizations';
+import { ViewOrganizationPage } from './pages/Organization/ViewOrganization';
 import { PricingPage } from './pages/Pricing/Pricing';
 import { SubscriptionPage } from './pages/Subscription/Subscription';
 import { UsagePage } from './pages/Usage/Usage';
 import { SettingsPage } from './pages/Settings/Settings';
+import { EndpointTab } from './pages/Settings/Endpoint/Endpoint';
+import { SubScriptionTierTab } from './pages/Settings/SubscriptionTier/SubscriptionTier';
+import { OrganizationTypeTab } from './pages/Settings/OrganizationType/OrganizationType';
+import { ResourceTypeTab } from './pages/Settings/ResourceType/ResourceType';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,41 +40,49 @@ const router = createBrowserRouter(
           errorElement={<Error />}
         />
         <Route 
-          path ="organizations" 
+          path="organizations" 
           element={<OrganizationPage />} 
           errorElement={<Error />}
-        />
+        >
+          <Route 
+            path=":id" 
+            element={<ViewOrganizationPage />} 
+            errorElement={<Error />}
+          />
+        </Route>
         <Route 
-          path ="subscriptions" 
+          path="subscriptions" 
           element={<SubscriptionPage />} 
           errorElement={<Error />}
-          // loader={chatLoader}
         />
         <Route 
-          path ="pricings" 
+          path="pricings" 
           element={<PricingPage />} 
           errorElement={<Error />}
-          // loader={chatLoader}
         />
         <Route 
-          path ="usage" 
+          path="usage" 
           element={<UsagePage />} 
           errorElement={<Error />}
-          // loader={chatLoader}
         />
-        <Route 
-          path ="settings/:tab?" 
-          element={<SettingsPage />} 
-          errorElement={<Error />}
-          // loader={chatLoader}
-        />
+        <Route path="settings" element={<SettingsPage />}>
+          <Route 
+            index 
+            element={<Navigate to="endpoints" replace />}
+          />
+          <Route path="endpoints" element={<EndpointTab />} />
+          <Route path="organization-types" element={<OrganizationTypeTab />} />
+          <Route path="resources" element={<ResourceTypeTab />} />
+          <Route path="subscription-tiers" element={<SubScriptionTierTab />} />
+        </Route>
       </Route>,
       <Route path="*" element={<NotFound />} />
     </>
-))
+  )
+);
 
 export default function App() {
   return (
     <RouterProvider router={router} />
-  )
+  );
 }

@@ -174,6 +174,11 @@ func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *
 
 	var output []CreateSubTierOuput
 
+	if len(subTiers) == 0 {
+		respondWithJSON(w, StatusOK, []CreateSubTierOuput{})
+		return
+	}
+
 	for _, subTier := range subTiers {
 
 		var description *string

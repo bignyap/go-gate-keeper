@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ListOrganizations } from '../../libraries/Organization';
+import { useNavigate, Outlet } from 'react-router-dom';
+import { ListOrganizations, DeleteOrganization } from '../../libraries/Organization';
 import OrganizationModal from './OrganizationModal';
-// import { ListOrganizationTypes } from '../../libraries/OrgType'
 import { EnhancedTable } from '../../components/Table/Table'
 import { HeadCell } from '../../components/Table/Utils';
 import Button from '@mui/material/Button'
@@ -13,26 +13,13 @@ export function OrganizationPage() {
   return (
     <div className = 'container'>
       <OrganizationLoader />
+      <Outlet />
     </div>
   );
 }
 
-
-// async function fetchOrganizationTypes() {
-  //   try {
-  //     const orgTypeData = await ListOrganizationTypes(1, 10);
-  //     setOrganizationTypes(orgTypeData);
-  //   } catch (error) {
-  //     console.error("Error fetching organization types:", error);
-  //     setOrganizationTypes([]);
-  //     setSnackbar({
-  //       message: "Failed to load organization types. Please try again later.",
-  //       status: "error"
-  //     });
-  //   }
-  // }
-
 export function OrganizationLoader() {
+  
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [count, setCount] = useState<number>(-1);
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,6 +27,8 @@ export function OrganizationLoader() {
   const [snackbar, setSnackbar] = useState<{ message: string, status: string } | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
+
+  const navigate = useNavigate();
 
   async function fetchOrganizations(newPage: number, itemsPerPage: number) {
     try {
@@ -59,7 +48,20 @@ export function OrganizationLoader() {
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const onDeleteOrg = async (row: any) => {
+    try {
+      await DeleteOrganization(row["id"]);
+      fetchOrganizations(page + 1, itemsPerPage);
+    } catch (error) {
+      console.error("Error deleting organization:", error);
+      setSnackbar({
+        message: "Failed to delete organization. Please try again later.",
+        status: "error"
+      });
+    }
+  };
 
   useEffect(() => {
     fetchOrganizations(page + 1, itemsPerPage);
@@ -101,7 +103,7 @@ export function OrganizationLoader() {
         <CustomizedSnackbars
           message={snackbar.message}
           status={snackbar.status}
-          open={true} // Ensure the snackbar opens automatically
+          open={true}
           onClose={() => setSnackbar(null)}
         />
       )}
@@ -112,9 +114,26 @@ export function OrganizationLoader() {
         defaultRows={10}
         stickyColumnIds={["id", "name"]}
         page={page}
-        onPageChange={handleChangePage} // Ensure this matches the expected signature
+        onPageChange={handleChangePage}
         count={count}
         onRowsPerPageChange={handleRowsPerPageChange}
+        stickyRight={true}
+        menuOptions={['View', 'Edit', 'Delete']}
+        onOptionSelect={(action, row) => {
+          switch (action) {
+            case 'View':
+              navigate(`/organization/${row["id"]}`);
+              break;
+            case 'Edit':
+              console.log(row)
+              break;
+            case 'Delete':
+              onDeleteOrg(row);
+              break;
+            default:
+              break;
+          }
+        }}
         title={
           <Button
             component="label"
@@ -147,8 +166,7 @@ const headCells: HeadCell[] = [
   { id: 'support_email', label: 'Support Email' },
   { id: 'active', label: 'Active' },
   { id: 'report_q', label: 'Reporting' },
-  { id: 'config', label: 'Config' },
+  // { id: 'config', label: 'Config' },
   { id: 'created_at', label: 'Created At' },
   { id: 'updated_at', label: 'Updated At' },
-  // { id: 'type', label: 'TypeID' }
 ];

@@ -74,6 +74,11 @@ export function SubScriptionTierLoader() {
           defaultSort="id"
           defaultRows={10}
           stickyColumnIds={[]}
+          tableContainerSx= {{
+            maxHeight: '50vh',
+            overflowX: 'auto',
+            overflowY: 'auto'
+          }}
           title={
             <Button
               component="label"
@@ -83,9 +88,15 @@ export function SubScriptionTierLoader() {
               startIcon={<AddIcon />}
               onClick={handleCreateTier}
             >
-              CREATE SUBSCRIPTION TIER
+              CREATE ORGANIZATION TYPES
             </Button>
           }
+          page={0}
+          count={-1}
+          onPageChange={(newPage) => {
+          }}
+          onRowsPerPageChange={(event) => {
+          }}
         />
         {isModalOpen && (
           <TierModal

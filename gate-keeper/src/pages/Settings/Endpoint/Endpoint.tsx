@@ -72,8 +72,13 @@ export function EndpointLoader() {
           rows={endpoints}
           headCells={headCells}
           defaultSort="id"
-          defaultRows={10}
+          defaultRows={1}
           stickyColumnIds={[]}
+          tableContainerSx= {{
+            maxHeight: '50vh',
+            overflowX: 'auto',
+            overflowY: 'auto'
+          }}
           title={
             <Button
               component="label"
@@ -86,6 +91,12 @@ export function EndpointLoader() {
               CREATE ENDPOINT
             </Button>
           }
+          page={0}
+          count={-1}
+          onPageChange={(newPage) => {
+          }}
+          onRowsPerPageChange={(event) => {
+          }}
         />
         {isModalOpen && (
           <EndpointModal

@@ -160,6 +160,11 @@ func (apiCfg *ApiConfig) ListResourceTypeHandler(w http.ResponseWriter, r *http.
 
 	var output []CreateResourceTypeOutput
 
+	if len(resourceTypes) == 0 {
+		respondWithJSON(w, StatusOK, []CreateResourceTypeOutput{})
+		return
+	}
+
 	for _, resourceType := range resourceTypes {
 		output = append(output, CreateResourceTypeOutput{
 			ID: int(resourceType.ResourceTypeID),

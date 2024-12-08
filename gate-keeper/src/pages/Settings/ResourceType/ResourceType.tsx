@@ -74,6 +74,11 @@ export function ResourceTypeLoader() {
           defaultSort="id"
           defaultRows={10}
           stickyColumnIds={[]}
+          tableContainerSx= {{
+            maxHeight: '50vh',
+            overflowX: 'auto',
+            overflowY: 'auto'
+          }}
           title={
             <Button
               component="label"
@@ -83,9 +88,15 @@ export function ResourceTypeLoader() {
               startIcon={<AddIcon />}
               onClick={handleCreateResourceType}
             >
-              CREATE RESOURCE
+              CREATE ORGANIZATION TYPES
             </Button>
           }
+          page={0}
+          count={-1}
+          onPageChange={(newPage) => {
+          }}
+          onRowsPerPageChange={(event) => {
+          }}
         />
         {isModalOpen && (
           <ResourceTypeModal

@@ -2,6 +2,7 @@ import * as React from 'react';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import { NavLink } from 'react-router-dom';
 
 interface TabItem {
   label: string;
@@ -40,20 +41,27 @@ export default function ScrollableTabsButtonAuto(
       <Tabs
         value={props.tabs[value]?.value || ''}
         onChange={handleChange}
-        variant="scrollable"
-        scrollButtons
+        variant="standard" // Change to 'standard' to remove scroll buttons
         aria-label="scrollable auto tabs example"
-        allowScrollButtonsMobile
         sx={{
+          justifyContent: 'flex-start', // Align tabs to the left
           [`& .${tabsClasses.scrollButtons}`]: {
-            '&.Mui-disabled': { opacity: 0.3 },
+            display: 'none', // Hide scroll buttons
           },
         }}
       >
         {props.tabs.map((tab, index) => (
           <Tab 
             key={index} 
-            label={tab.label}
+            label={
+              <NavLink 
+                to={`/settings/${tab.value}`} 
+                style={{ textDecoration: 'none', color: 'inherit' }}
+                className={({ isActive }) => isActive ? 'active-tab' : ''}
+              >
+                {tab.label}
+              </NavLink>
+            }
             value={tab.value}
             sx={{ fontWeight: 'Bold' }} 
           />

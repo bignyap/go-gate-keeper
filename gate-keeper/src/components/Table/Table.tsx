@@ -4,12 +4,11 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-// import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
 import { EnhancedTableHead } from './TableHead';
 import { EnhancedTableToolbar } from './Toolbar';
 import { Order, getComparator, Data, HeadCell, StyledTableCell, StyledTableRow, StickyTableCell } from './Utils';
+import LongMenu from '../Menu/Menu';
 
 
 export interface EnhancedTableProps {
@@ -23,15 +22,24 @@ export interface EnhancedTableProps {
   count: number;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newItemsPerPage: number) => void;
+  stickyRight?: boolean;
+  menuOptions?: string[];  
+  onOptionSelect?: (action: string, row: Data) => void;
+  tableContainerSx?: object;
 }
   
 export const EnhancedTable: React.FC<EnhancedTableProps> = (
-  { rows, headCells, defaultSort, title, defaultRows, stickyColumnIds, page, count, onPageChange, onRowsPerPageChange }
+  { 
+    rows, headCells, defaultSort, 
+    title, defaultRows, stickyColumnIds, 
+    page, count, onPageChange, onRowsPerPageChange,   
+    stickyRight, menuOptions, onOptionSelect,
+    tableContainerSx
+  }
 ) => {
 
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<string>(defaultSort);
-  const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRows);
   const [currentPage, setCurrentPage] = React.useState(page);
 
@@ -44,38 +52,9 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
     setOrderBy(property as string);
   };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = rows.map((n) => Number(n.id));
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly number[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
-    // setPage(1);
     onRowsPerPageChange(newRowsPerPage);
   };
 
@@ -89,8 +68,6 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
     return sortedRows;
   }, [order, orderBy, page, rowsPerPage, rows]);
 
-  const CheckboxCellType = stickyColumnIds.length > 0 ? StickyTableCell : StyledTableCell;
-
   return (
     <Box 
       sx={{ 
@@ -99,9 +76,9 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
       }}
     >
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <EnhancedTableToolbar numSelected={selected.length} title={title} />
+        <EnhancedTableToolbar title={title} />
         <TableContainer
-          sx={{ 
+          sx={tableContainerSx || {
             maxHeight: '70vh',
             overflowX: 'auto',
             overflowY: 'auto'
@@ -114,55 +91,29 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
             aria-labelledby="tableTitle"
           >
             <EnhancedTableHead
-              numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
               headCells={headCells}
               stickyColumnIds={stickyColumnIds}
+              stickyRight={stickyRight}
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                const isItemSelected = selected.includes(Number(row.id));
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <StyledTableRow
                     hover
-                    // onClick={(event) => handleClick(event, Number(row.id))}
                     role="checkbox"
-                    aria-checked={isItemSelected}
                     tabIndex={-1}
                     key={row.id}
-                    selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <CheckboxCellType 
-                      padding="checkbox" 
-                      // Ensure left is set to 0 for the first sticky column
-                      sx={{ position: 'sticky', left: 0, zIndex: 2 }}
-                    >
-                      <Checkbox
-                        color="primary"
-                        onClick={(event) => handleClick(event, Number(row.id))}
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      />
-                    </CheckboxCellType>
                     {headCells.map((headCell, headIndex) => {
                       const stickyQ = stickyColumnIds.includes(headCell.id);
                       const CellComponent = stickyQ ? StickyTableCell : StyledTableCell;
                       const leftPosition = stickyQ ? headIndex + 1 : 0;
-                      // const leftPosition = stickyQ 
-                      //   ? headCells.slice(0, headIndex).reduce((acc, curr) => {
-                      //       const width = typeof curr.width === 'number' ? curr.width : 0; // Ensure width is a number
-                      //       return stickyColumnIds.includes(curr.id) ? acc + width : acc;
-                      //     }, 0)
-                      //   : 'auto';
                       return (
                         <CellComponent
                           key={headCell.id}
@@ -170,7 +121,6 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
                           component={headCell.id === 'name' ? 'th' : undefined}
                           id={headCell.id === 'name' ? labelId : undefined}
                           scope={headCell.id === 'name' ? 'row' : undefined}
-                          // Adjust left for each sticky column
                           sx={stickyQ ? { position: 'sticky', left: leftPosition, zIndex: 1 } : {}} 
                         >
                           {
@@ -185,6 +135,17 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
                         </CellComponent>
                       );
                     })}
+                    {stickyRight && (
+                      <StickyTableCell 
+                        padding="checkbox" 
+                        sx={{ position: 'sticky', right: 0, zIndex: 2 }}
+                      >
+                        <LongMenu
+                          options={menuOptions}
+                          onOptionSelect={(option) => onOptionSelect && onOptionSelect(option, row)}
+                        />
+                      </StickyTableCell>
+                    )}
                   </StyledTableRow>
                 );
               })}

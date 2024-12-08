@@ -26,6 +26,24 @@ export async function ListSubscriptions(pageNumber: number, itemsPerPage: number
     return subscriptions
 }
 
+export async function ListSubscriptionByOrgIds(orgId: number, pageNumber: number, itemsPerPage: number): Promise<any> {
+  const queryParams = {
+    page_number: pageNumber.toString(),
+    items_per_page: itemsPerPage.toString()
+  };
+
+  
+  const finalUrl = BuildUrl(SUBSCRIPTION_API_BASE_URL, "orgId", orgId.toString());
+
+  const subscriptions = await GetData(finalUrl, queryParams);
+
+  if (subscriptions["total_items"] > 0) {
+    subscriptions["data"] = subscriptions["data"].map((org: any) => createSubscriptionData(org));
+  }
+  
+  return subscriptions
+}
+
 export async function GetSubscriptionById(id: string): Promise<any> {
   return GetData(`${SUBSCRIPTION_API_BASE_URL}/${id}`);
 }

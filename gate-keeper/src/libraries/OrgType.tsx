@@ -22,6 +22,25 @@ export async function ListOrganizationTypes(pageNumber: number, itemsPerPage: nu
     return organizations.map((org: any) => createOrganizationTypeData(org));
   }
 
+export async function ListAllOrganizationTypes(): Promise<any> {
+    let allOrganizations: any[] = [];
+    let currentPage = 1;
+    const itemsPerPage = 100;
+    let fetchedItems: any[];
+
+    do {
+        const queryParams = {
+            page_number: currentPage.toString(),
+            items_per_page: itemsPerPage.toString()
+        };
+        fetchedItems = await GetData(ORGANIZATION_TYPE_API_BASE_URL, queryParams);
+        allOrganizations = allOrganizations.concat(fetchedItems.map((org: any) => createOrganizationTypeData(org)));
+        currentPage++;
+    } while (fetchedItems.length === itemsPerPage);
+
+    return allOrganizations;
+}
+
 export async function DeleteOrganizationType(id: string): Promise<void> {
   await DeleteData(`${ORGANIZATION_TYPE_API_BASE_URL}/${id}`);
 }

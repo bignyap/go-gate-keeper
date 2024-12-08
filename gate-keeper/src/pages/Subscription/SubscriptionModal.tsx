@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreateSubscription } from '../../libraries/Subscription';
+import { ListAllSubscriptionTiers } from '../../libraries/SubscriptionTier';
+import { ListAllOrganizationTypes } from '../../libraries/OrgType';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -16,6 +18,16 @@ interface SubscriptionFormProps {
     onSubscriptionCreated: (org: any) => void;
   }
 
+interface OrganizationType {
+    id: number;
+    name: string;
+}
+
+interface SubTiers {
+    id: number;
+    name: string;
+}
+
 const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscriptionCreated }) => {
     const [formData, setFormData] = useState({
         name: '',
@@ -28,6 +40,44 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
         organization_id: 0,
         subscription_tier_id: 0,
     });
+
+    const [organizationTypes, setOrganizationTypes] = useState<OrganizationType[]>([]);
+    const [subTiers, setSubTiers] = useState<SubTiers[]>([]);
+    const [snackbar, setSnackbar] = useState<{ message: string; status: string } | null>(null);
+
+    async function fetchOrganizationTypes() {
+      try {
+        const orgTypeData = await ListAllOrganizationTypes();
+        setOrganizationTypes(orgTypeData);
+      } catch (error) {
+        console.error("Error fetching organization types:", error);
+        setOrganizationTypes([]);
+        setSnackbar({
+          message: "Failed to load organization types. Please try again later.",
+          status: "error"
+        });
+      }
+    };
+
+    async function fetchSubTiers() {
+      try {
+        const subTiers = await ListAllSubscriptionTiers();
+        setSubTiers(subTiers);
+      } catch (error) {
+        console.error("Error fetching subscription tiers:", error);
+        setSubTiers([]);
+        setSnackbar({
+          message: "Failed to load subscription tiers. Please try again later.",
+          status: "error"
+        });
+      }
+    };
+
+    useEffect(() => {
+        fetchOrganizationTypes();
+        fetchSubTiers();
+      },
+    [])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const target = e.target;
@@ -57,140 +107,163 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
     };
 
   return (
-    <Modal open={true} onClose={onClose}>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2,
-          maxHeight: '90vh',
-          overflowY: 'auto',
-        }}
-      >
-        <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-          Create Subscription
-        </Typography>
-        <form onSubmit={handleSubmit}>
-            <TextField
-                fullWidth
-                margin="normal"
-                name="name"
-                label="Name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-            />
-            <TextField
-                fullWidth
-                margin="normal"
-                name="type"
-                label="Type"
-                value={formData.type}
-                onChange={handleChange}
-                required
-            />
-            <TextField
-                fullWidth
-                margin="normal"
-                name="start_date"
-                label="Start Date"
-                type="date"
-                value={formData.start_date}
-                onChange={handleChange}
-                InputLabelProps={{ shrink: true }}
-                required
-            />
-            <TextField
-                fullWidth
-                margin="normal"
-                name="api_limit"
-                label="API Limit"
-                type="number"
-                value={formData.api_limit}
-                onChange={handleChange}
-                required
-            />
-            <TextField
-                fullWidth
-                margin="normal"
-                name="expiry_date"
-                label="Expiry Date"
-                type="date"
-                value={formData.expiry_date}
-                onChange={handleChange}
-                InputLabelProps={{ shrink: true }}
-                required
-            />
-            <TextField
-                fullWidth
-                margin="normal"
-                name="description"
-                label="Description"
-                value={formData.description}
-                onChange={handleChange}
-            />
-            <FormControl 
-                fullWidth
-                margin="normal"
-            >
-                <InputLabel>Status</InputLabel>
-                <Select
-                    name="status"
-                    value={formData.status ? 'true' : 'false'}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value === 'true' })}
-                    label="Status"
-                >
-                    <MenuItem value="true">Active</MenuItem>
-                    <MenuItem value="false">Inactive</MenuItem>
-                </Select>
-            </FormControl>
-            <TextField
-                fullWidth
-                margin="normal"
-                name="organization_id"
-                label="Organization ID"
-                type="number"
-                value={formData.organization_id}
-                onChange={handleChange}
-                required
-            />
-            <TextField
-                fullWidth
-                margin="normal"
-                name="subscription_tier_id"
-                label="Subscription Tier ID"
-                type="number"
-                value={formData.subscription_tier_id}
-                onChange={handleChange}
-                required
-            />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <Button 
-                type="submit" 
-                variant="contained" 
-                color="primary"
-                onClick={handleSubmit} 
-            >
-              Create
-            </Button>
-            <Button 
-                type="button" 
-                onClick={onClose} 
-                variant="outlined" 
-                color="secondary"
-            >
-              Cancel
-            </Button>
-          </Box>
-        </form>
-      </Box>
-    </Modal>
+    <>
+      {snackbar && (
+        <CustomizedSnackbars
+          message={snackbar.message}
+          status={snackbar.status}
+          open={true}
+          onClose={() => setSnackbar(null)}
+        />
+      )}
+      <Modal open={true} onClose={onClose}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+            maxHeight: '90vh',
+            overflowY: 'auto',
+          }}
+        >
+          <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+            Create Subscription
+          </Typography>
+          <form onSubmit={handleSubmit}>
+              <TextField
+                  fullWidth
+                  margin="normal"
+                  name="name"
+                  label="Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+              />
+              <TextField
+                  fullWidth
+                  margin="normal"
+                  name="type"
+                  label="Type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  required
+              />
+              <TextField
+                  fullWidth
+                  margin="normal"
+                  name="start_date"
+                  label="Start Date"
+                  type="date"
+                  value={formData.start_date}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  required
+              />
+              <TextField
+                  fullWidth
+                  margin="normal"
+                  name="api_limit"
+                  label="API Limit"
+                  type="number"
+                  value={formData.api_limit}
+                  onChange={handleChange}
+                  required
+              />
+              <TextField
+                  fullWidth
+                  margin="normal"
+                  name="expiry_date"
+                  label="Expiry Date"
+                  type="date"
+                  value={formData.expiry_date}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  required
+              />
+              <TextField
+                  fullWidth
+                  margin="normal"
+                  name="description"
+                  label="Description"
+                  value={formData.description}
+                  onChange={handleChange}
+              />
+              <FormControl 
+                  fullWidth
+                  margin="normal"
+              >
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                      name="status"
+                      value={formData.status ? 'true' : 'false'}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value === 'true' })}
+                      label="Status"
+                  >
+                      <MenuItem value="true">Active</MenuItem>
+                      <MenuItem value="false">Inactive</MenuItem>
+                  </Select>
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                  <InputLabel>Organization</InputLabel>
+                  <Select
+                      name="organization_id"
+                      value={formData.organization_id}
+                      onChange={(e) => setFormData({ ...formData, organization_id: Number(e.target.value) })}
+                      label="Organization"
+                      required
+                  >
+                      {organizationTypes.map((orgType) => (
+                          <MenuItem key={orgType.id} value={orgType.id}>
+                              {orgType.name}
+                          </MenuItem>
+                      ))}
+                  </Select>
+              </FormControl>
+
+              <FormControl fullWidth margin="normal">
+                  <InputLabel>Subscription Tier</InputLabel>
+                  <Select
+                      name="subscription_tier_id"
+                      value={formData.subscription_tier_id}
+                      onChange={(e) => setFormData({ ...formData, subscription_tier_id: Number(e.target.value) })}
+                      label="Subscription Tier"
+                      required
+                  >
+                      {subTiers.map((subTier) => (
+                          <MenuItem key={subTier.id} value={subTier.id}>
+                              {subTier.name}
+                          </MenuItem>
+                      ))}
+                  </Select>
+              </FormControl>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+              <Button 
+                  type="submit" 
+                  variant="contained" 
+                  color="primary"
+                  onClick={handleSubmit} 
+              >
+                Create
+              </Button>
+              <Button 
+                  type="button" 
+                  onClick={onClose} 
+                  variant="outlined" 
+                  color="secondary"
+              >
+                Cancel
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Modal>
+    </>
   );
 };
 

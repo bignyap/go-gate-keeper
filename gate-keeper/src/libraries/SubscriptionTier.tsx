@@ -22,6 +22,25 @@ export async function ListSubscriptionTiers(pageNumber: number, itemsPerPage: nu
     return endpoints.map((endpoint: any) => createSubscriptionTierData(endpoint));
   }
 
+export async function ListAllSubscriptionTiers(): Promise<any> {
+    let allSubTiers: any[] = [];
+    let currentPage = 1;
+    const itemsPerPage = 100;
+    let fetchedItems: any[];
+
+    do {
+        const queryParams = {
+            page_number: currentPage.toString(),
+            items_per_page: itemsPerPage.toString()
+        };
+        fetchedItems = await GetData(SUBSCRIPTION_TIER_API_BASE_URL, queryParams);
+        allSubTiers = allSubTiers.concat(fetchedItems.map((org: any) => createSubscriptionTierData(org)));
+        currentPage++;
+    } while (fetchedItems.length === itemsPerPage);
+
+    return allSubTiers;
+}
+
 export async function DeleteResourceType(id: string): Promise<void> {
   await DeleteData(`${SUBSCRIPTION_TIER_API_BASE_URL}/${id}`);
 }

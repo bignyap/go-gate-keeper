@@ -146,6 +146,11 @@ func (apiCfg *ApiConfig) ListOrgTypeHandler(w http.ResponseWriter, r *http.Reque
 
 	var output []CreateOrgTypeOutput
 
+	if len(orgTypes) == 0 {
+		respondWithJSON(w, StatusOK, []CreateOrgTypeOutput{})
+		return
+	}
+
 	for _, orgType := range orgTypes {
 		output = append(output, CreateOrgTypeOutput{
 			ID: int(orgType.OrganizationTypeID),

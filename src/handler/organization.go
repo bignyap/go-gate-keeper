@@ -326,7 +326,7 @@ func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *ht
 
 func (apiCfg *ApiConfig) DeleteOrganizationByIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.PathValue("id")
+	idStr := r.PathValue("Id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return
@@ -344,7 +344,5 @@ func (apiCfg *ApiConfig) DeleteOrganizationByIdHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	respondWithJSON(w, StatusNoContent, map[string]string{
-		"message": fmt.Sprintf("organization with ID %d deleted successfully", int32(id64)),
-	})
+	respondWithJSON(w, StatusNoContent, nil)
 }
