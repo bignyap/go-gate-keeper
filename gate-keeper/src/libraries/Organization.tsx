@@ -53,7 +53,7 @@ function createOrganizationData(org: any): OrganizationData {
       active: org.active,
       report_q: org.report_q,
       config: org.config,
-      // type_id: org.type_id,
+      type_id: org.type_id,
     };
 }
 
@@ -69,6 +69,6 @@ interface OrganizationData {
     active: boolean;
     report_q: boolean;
     config: any | null;
-    // type_id: number;
+    type_id: number;
     [key: string]: any;
 }

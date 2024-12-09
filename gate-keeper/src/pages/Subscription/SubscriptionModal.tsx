@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CreateSubscription } from '../../libraries/Subscription';
 import { ListAllSubscriptionTiers } from '../../libraries/SubscriptionTier';
-import { ListAllOrganizationTypes } from '../../libraries/OrgType';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -16,48 +15,30 @@ import { CustomizedSnackbars } from '../../components/Common/Toast';
 interface SubscriptionFormProps {
     onClose: () => void;
     onSubscriptionCreated: (org: any) => void;
+    orgId: number;
+    subInitName?: string
   }
-
-interface OrganizationType {
-    id: number;
-    name: string;
-}
 
 interface SubTiers {
     id: number;
     name: string;
 }
 
-const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscriptionCreated }) => {
+const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscriptionCreated, orgId, subInitName = '' }) => {
     const [formData, setFormData] = useState({
-        name: '',
+        name: subInitName,
         type: '',
         start_date: new Date().toISOString().split('T')[0],
         api_limit: 0,
         expiry_date: '',
         description: null,
         status: true,
-        organization_id: 0,
-        subscription_tier_id: 0,
+        organization_id: orgId,
+        subscription_tier_id: 0
     });
 
-    const [organizationTypes, setOrganizationTypes] = useState<OrganizationType[]>([]);
     const [subTiers, setSubTiers] = useState<SubTiers[]>([]);
     const [snackbar, setSnackbar] = useState<{ message: string; status: string } | null>(null);
-
-    async function fetchOrganizationTypes() {
-      try {
-        const orgTypeData = await ListAllOrganizationTypes();
-        setOrganizationTypes(orgTypeData);
-      } catch (error) {
-        console.error("Error fetching organization types:", error);
-        setOrganizationTypes([]);
-        setSnackbar({
-          message: "Failed to load organization types. Please try again later.",
-          status: "error"
-        });
-      }
-    };
 
     async function fetchSubTiers() {
       try {
@@ -74,7 +55,6 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
     };
 
     useEffect(() => {
-        fetchOrganizationTypes();
         fetchSubTiers();
       },
     [])
@@ -82,9 +62,15 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const target = e.target;
         const { name, value, type, checked } = target as HTMLInputElement;
+        if (name === 'api_limit' && Number(value) < 0) {
+          setFormData({
+            ...formData,
+            api_limit: 0
+          })
+        }
         setFormData({
-        ...formData,
-        [name]: type === 'checkbox' ? checked : value,
+          ...formData,
+          [name]: type === 'checkbox' ? checked : value,
         });
     };
 
@@ -132,9 +118,9 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
             overflowY: 'auto',
           }}
         >
-          <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+          {/* <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
             Create Subscription
-          </Typography>
+          </Typography> */}
           <form onSubmit={handleSubmit}>
               <TextField
                   fullWidth
@@ -186,14 +172,6 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
                   InputLabelProps={{ shrink: true }}
                   required
               />
-              <TextField
-                  fullWidth
-                  margin="normal"
-                  name="description"
-                  label="Description"
-                  value={formData.description}
-                  onChange={handleChange}
-              />
               <FormControl 
                   fullWidth
                   margin="normal"
@@ -210,23 +188,6 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
                   </Select>
               </FormControl>
               <FormControl fullWidth margin="normal">
-                  <InputLabel>Organization</InputLabel>
-                  <Select
-                      name="organization_id"
-                      value={formData.organization_id}
-                      onChange={(e) => setFormData({ ...formData, organization_id: Number(e.target.value) })}
-                      label="Organization"
-                      required
-                  >
-                      {organizationTypes.map((orgType) => (
-                          <MenuItem key={orgType.id} value={orgType.id}>
-                              {orgType.name}
-                          </MenuItem>
-                      ))}
-                  </Select>
-              </FormControl>
-
-              <FormControl fullWidth margin="normal">
                   <InputLabel>Subscription Tier</InputLabel>
                   <Select
                       name="subscription_tier_id"
@@ -242,6 +203,14 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
                       ))}
                   </Select>
               </FormControl>
+              <TextField
+                  fullWidth
+                  margin="normal"
+                  name="description"
+                  label="Description"
+                  value={formData.description}
+                  onChange={handleChange}
+              />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
               <Button 
                   type="submit" 

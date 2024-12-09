@@ -10,6 +10,7 @@ import { ListSubscriptionByOrgIds, ListSubscriptions } from '../../libraries/Sub
 
 interface SubscriptionProps {
   orgId: number | null;
+  subInitName?: string;
   tableContainerSx?: object;
 }
 
@@ -21,7 +22,7 @@ export function SubscriptionPage({ orgId }: SubscriptionProps) {
   );
 }
 
-export function SubscriptionLoader({ orgId, tableContainerSx }: SubscriptionProps) {
+export function SubscriptionLoader({ orgId, tableContainerSx, subInitName = '' }: SubscriptionProps) {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [count, setCount] = useState<number>(-1);
   const [loading, setLoading] = useState<boolean>(true);
@@ -107,6 +108,19 @@ export function SubscriptionLoader({ orgId, tableContainerSx }: SubscriptionProp
         count={count}
         onRowsPerPageChange={handleRowsPerPageChange}
         tableContainerSx={tableContainerSx}
+        stickyRight={true}
+        menuOptions={['Edit', 'Delete']}
+        onOptionSelect={(action, row) => {
+          switch (action) {
+            case 'Edit':
+              break;
+            case 'Delete':
+              // onDeleteOrg(row);
+              break;
+            default:
+              break;
+          }
+        }}
         title={
           <Button
             component="label"
@@ -124,6 +138,8 @@ export function SubscriptionLoader({ orgId, tableContainerSx }: SubscriptionProp
         <SubscriptionModal
           onClose={() => setIsModalOpen(false)}
           onSubscriptionCreated={handleSubscriptionCreated}
+          orgId={orgId ?? 0}
+          subInitName={subInitName}
         />
       )}
     </div>

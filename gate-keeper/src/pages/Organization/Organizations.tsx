@@ -117,14 +117,11 @@ export function OrganizationLoader() {
         count={count}
         onRowsPerPageChange={handleRowsPerPageChange}
         stickyRight={true}
-        menuOptions={['View', 'Edit', 'Delete']}
+        menuOptions={['View', 'Delete']}
         onOptionSelect={(action, row) => {
           switch (action) {
             case 'View':
-              navigate(`/organizations/${row["id"]}/view`);
-              break;
-            case 'Edit':
-              navigate(`/organizations/${row["id"]}/edit`);
+              navigate(`/organizations/${row["id"]}`);
               break;
             case 'Delete':
               onDeleteOrg(row);

@@ -13,9 +13,7 @@ import NotFound from './pages/NotFound';
 import { HomePage } from './pages/Home/Home';
 import { OrganizationPage } from './pages/Organization/Organizations';
 import { ViewOrganizationPage } from './pages/Organization/ViewOrganization';
-import { EditOrganizationPage } from './pages/Organization/EditOrganization';
 import { PricingPage } from './pages/Pricing/Pricing';
-import { SubscriptionPage } from './pages/Subscription/Subscription';
 import { UsagePage } from './pages/Usage/Usage';
 import { SettingsPage } from './pages/Settings/Settings';
 import { EndpointTab } from './pages/Settings/Endpoint/Endpoint';
@@ -48,19 +46,7 @@ const router = createBrowserRouter(
         <Route 
           path="organizations/:id" 
           errorElement={<Error />}
-        >
-          <Route 
-            index 
-            element={<Navigate to="view" replace />}
-            errorElement={<Error />}
-          />
-          <Route path="view" element={<ViewOrganizationPage />} errorElement={<Error />} />
-          <Route path="edit" element={<EditOrganizationPage />} errorElement={<Error />} />
-        </Route>
-        <Route 
-          path="subscriptions" 
-          element={<SubscriptionPage orgId={null}/>} 
-          errorElement={<Error />}
+          element={<ViewOrganizationPage />}
         />
         <Route 
           path="pricings" 

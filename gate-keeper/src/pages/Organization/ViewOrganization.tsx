@@ -8,7 +8,10 @@ import { GetOrganizationById } from '../../libraries/Organization';
 import { CustomizedSnackbars } from '../../components/Common/Toast';
 import { SubscriptionLoader } from '../Subscription/Subscription';
 import { Tabs, Tab } from '@mui/material';
-import { TextField } from '@mui/material';
+import OrganizationForm from './OrganizationForm';
+import ConfigEditor from './ConfigEditor';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/mode/javascript/javascript';
 
 export function ViewOrganizationPage() {
     const navigate = useNavigate();
@@ -28,10 +31,11 @@ interface OrganizationRow {
     country: string;
     support_email: string;
     active: boolean;
-    report_q: string;
+    report_q: boolean;
     created_at: string;
     updated_at: string;
     config: string;
+    type_id: number;
 }
 
 function ViewOrganizationLoader(navigate: (path: string) => void): JSX.Element {
@@ -90,9 +94,15 @@ function ViewOrganizationLoader(navigate: (path: string) => void): JSX.Element {
                     Back
                 </Button>
             </Box>
-            <Tabs value={activeTab} onChange={handleTabChange} aria-label="organization tabs">
-                <Tab label="Details" />
+            <Tabs 
+                value={activeTab} 
+                onChange={handleTabChange} 
+                aria-label="organization tabs"
+            >
+                <Tab label="INFO" />
+                <Tab label="Configuration" />
                 <Tab label="Subscription" />
+                <Tab label="Permission" />
                 <Tab label="Usage" />
             </Tabs>
             {activeTab === 0 && (
@@ -101,7 +111,7 @@ function ViewOrganizationLoader(navigate: (path: string) => void): JSX.Element {
                         <CardContent>
                             {organization && (
                                 <>
-                                    <Box 
+                                    {!isEditMode && <Box 
                                         display="flex" 
                                         justifyContent="flex-end" 
                                         alignItems="center" 
@@ -110,32 +120,21 @@ function ViewOrganizationLoader(navigate: (path: string) => void): JSX.Element {
                                         top={8} 
                                         right={8}
                                     >
-                                       {isEditMode && (
-                                            <Box mr={2}>
-                                                <Button
-                                                    variant="contained"
-                                                    startIcon={<Save />}
-                                                    color="primary"
-                                                    onClick={() => {
-                                                        // Add your save logic here
-                                                        setIsEditMode(false);
-                                                    }}
-                                                >
-                                                    Save
-                                                </Button>
-                                            </Box>
-                                        )}
-                                       <Button
-                                            variant="outlined"
-                                            startIcon={isEditMode ? <Cancel /> : <Edit />}
-                                            onClick={() => setIsEditMode(!isEditMode)}
-                                        >
-                                            {isEditMode ? "Cancel" : "Edit"}
-                                        </Button>
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<Edit />}
+                                        color="primary"
+                                        onClick={() => setIsEditMode(!isEditMode)}
+                                    >
+                                        Edit
+                                    </Button>
                                         
-                                    </Box>
+                                    </Box>}
                                     {isEditMode ? (
-                                        <OrganizationDetailsInEditMode row={organization} />
+                                        <OrganizationDetailsInEditMode 
+                                            row={organization}
+                                            onClose={() => setIsEditMode(false)} 
+                                        />
                                     ) : (
                                         <OrganizationDetails row={organization} />
                                     )}
@@ -143,43 +142,33 @@ function ViewOrganizationLoader(navigate: (path: string) => void): JSX.Element {
                             )}
                         </CardContent>
                     </Card>
-                    <Card sx={{ mt: 2 }}>
+                </Box>
+            )}
+            {activeTab === 1 && (
+                <Box mt={2}>
+                    <Card>
                         <CardContent>
                             {organization && (
-                                <>
-                                    <Box 
-                                        display="flex" 
-                                        justifyContent="flex-end" 
-                                        alignItems="center" 
-                                        mb={2} 
-                                        position="relative" 
-                                        top={8} 
-                                        right={8}
-                                    >
-                                        <Button
-                                            variant="outlined"
-                                            startIcon={<Edit />}
-                                            onClick={() => navigate(`/organizations/${id}/edit`)}
-                                        >
-                                            Edit
-                                        </Button>
-                                    </Box>
-                                    <Typography 
-                                        align="left"
-                                        sx={{ height: '100px', overflow: 'auto' }}
-                                    >
-                                        {organization["config"] || "No config available"}
-                                    </Typography>
-                                </>
+                                <ConfigEditor
+                                    config={organization.config}
+                                    onConfigChange={(newConfig) => {
+                                        setOrganization(prevOrg => prevOrg ? { ...prevOrg, config: newConfig } : null);
+                                    }}
+                                    editorMode={false}
+                                    alwaysEditMode={false}
+                                    editorHeight={'50vh'}
+
+                                />
                             )}
                         </CardContent>
                     </Card>
                 </Box>
             )}
-            {activeTab === 1 && organization && (
+            {activeTab === 2 && organization && (
                 <Box mt={2}>
                     <SubscriptionLoader 
                         orgId={Number(id)} 
+                        subInitName={organization["name"]}
                         tableContainerSx={{
                             maxHeight: '50vh',
                             overflowX: 'auto',
@@ -188,7 +177,13 @@ function ViewOrganizationLoader(navigate: (path: string) => void): JSX.Element {
                     />
                 </Box>
             )}
-            {activeTab === 2 && (
+            {activeTab === 3 && (
+                <Box mt={2}>
+                    {/* Add your Usage component or content here */}
+                    <Typography variant="body1">Resource Permission will be shown here</Typography>
+                </Box>
+            )}
+            {activeTab === 4 && (
                 <Box mt={2}>
                     {/* Add your Usage component or content here */}
                     <Typography variant="body1">Usage data will be displayed here.</Typography>
@@ -208,13 +203,13 @@ function GridComponent({ label, value }: { label: string; value: string | boolea
 
 function OrganizationDetails({ row }: { row: OrganizationRow & { config: string } }) {
     return (
-        <Grid container spacing={2} justifyContent="flex-start" alignItems="flex-start">
+        <Grid container spacing={3} justifyContent="flex-start" alignItems="flex-start">
             <GridComponent label="Name" value={row.name} />
-            <GridComponent label="Type" value={row.type} />
             <GridComponent label="Realm" value={row.realm} />
+            <GridComponent label="Type" value={row.type} />
             <GridComponent label="Country" value={row.country} />
             <GridComponent label="Support Email" value={row.support_email} />
-            <GridComponent label="Active" value={row.active ? 'Yes' : 'No'} />
+            <GridComponent label="Status" value={row.active ? 'Active' : 'Inactive'} />
             <GridComponent label="Reporting" value={row.report_q} />
             <GridComponent label="Created At" value={row.created_at} />
             <GridComponent label="Updated At" value={row.updated_at} />
@@ -222,16 +217,20 @@ function OrganizationDetails({ row }: { row: OrganizationRow & { config: string 
     );
 }
 
-function OrganizationDetailsInEditMode({ row }: { row: OrganizationRow & { config: string } }) {
+function OrganizationDetailsInEditMode({ row, onClose }: { row: OrganizationRow & { config: string }, onClose: () => void }) {
+    const handleSubmit = (data: any) => {
+        // Add your save logic here
+        console.log("Updated data:", data);
+    };
+
     return (
-        <Grid container spacing={2} justifyContent="flex-start" alignItems="flex-start">
-            <GridComponent label="Name" value={row.name} />
-            <GridComponent label="Type" value={row.type} />
-            <GridComponent label="Realm" value={row.realm} />
-            <GridComponent label="Country" value={row.country} />
-            <GridComponent label="Support Email" value={row.support_email} />
-            <GridComponent label="Active" value={row.active ? 'Yes' : 'No'} />
-            <GridComponent label="Reporting" value={row.report_q} />
-        </Grid>
+        <OrganizationForm 
+            initialData={row} 
+            onSubmit={handleSubmit} 
+            onCancel={onClose}
+            columns={3} 
+            buttonAtTop={true}
+            includeConfig={false}
+        />
     );
 }
