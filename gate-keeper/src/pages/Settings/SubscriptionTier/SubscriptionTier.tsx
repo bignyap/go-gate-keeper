@@ -88,7 +88,7 @@ export function SubScriptionTierLoader() {
               startIcon={<AddIcon />}
               onClick={handleCreateTier}
             >
-              CREATE ORGANIZATION TYPES
+              CREATE SUBSCRIPTION TIER
             </Button>
           }
           page={0}

@@ -81,43 +81,22 @@ func (q *Queries) DeleteOrganizationById(ctx context.Context, organizationID int
 	return err
 }
 
-const getOrganization = `-- name: GetOrganization :one
-SELECT organization_id, organization_name, organization_created_at, organization_updated_at, organization_realm, organization_country, organization_support_email, organization_active, organization_report_q, organization_config, organization_type_id FROM organization
-WHERE organization_id = ?
-`
-
-func (q *Queries) GetOrganization(ctx context.Context, organizationID int32) (Organization, error) {
-	row := q.db.QueryRowContext(ctx, getOrganization, organizationID)
-	var i Organization
-	err := row.Scan(
-		&i.OrganizationID,
-		&i.OrganizationName,
-		&i.OrganizationCreatedAt,
-		&i.OrganizationUpdatedAt,
-		&i.OrganizationRealm,
-		&i.OrganizationCountry,
-		&i.OrganizationSupportEmail,
-		&i.OrganizationActive,
-		&i.OrganizationReportQ,
-		&i.OrganizationConfig,
-		&i.OrganizationTypeID,
-	)
-	return i, err
-}
-
 const listOrganization = `-- name: ListOrganization :many
 SELECT 
     organization.organization_id, organization.organization_name, organization.organization_created_at, organization.organization_updated_at, organization.organization_realm, organization.organization_country, organization.organization_support_email, organization.organization_active, organization.organization_report_q, organization.organization_config, organization.organization_type_id, organization_type.organization_type_name, 
     COUNT(organization_id) OVER() AS total_items 
 FROM organization
 INNER JOIN organization_type ON organization.organization_type_id = organization_type.organization_type_id
+WHERE (? IS NULL OR organization.organization_id = ?)
 ORDER BY organization_id DESC
 LIMIT ? OFFSET ?
 `
 
 type ListOrganizationParams struct {
-	Limit  int32
-	Offset int32
+	Column1        interface{}
+	OrganizationID int32
+	Limit          int32
+	Offset         int32
 }
 
 type ListOrganizationRow struct {
@@ -137,7 +116,12 @@ type ListOrganizationRow struct {
 }
 
 func (q *Queries) ListOrganization(ctx context.Context, arg ListOrganizationParams) ([]ListOrganizationRow, error) {
-	rows, err := q.db.QueryContext(ctx, listOrganization, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listOrganization,
+		arg.Column1,
+		arg.OrganizationID,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -13,6 +13,7 @@ import NotFound from './pages/NotFound';
 import { HomePage } from './pages/Home/Home';
 import { OrganizationPage } from './pages/Organization/Organizations';
 import { ViewOrganizationPage } from './pages/Organization/ViewOrganization';
+import { EditOrganizationPage } from './pages/Organization/EditOrganization';
 import { PricingPage } from './pages/Pricing/Pricing';
 import { SubscriptionPage } from './pages/Subscription/Subscription';
 import { UsagePage } from './pages/Usage/Usage';
@@ -43,16 +44,22 @@ const router = createBrowserRouter(
           path="organizations" 
           element={<OrganizationPage />} 
           errorElement={<Error />}
+        />
+        <Route 
+          path="organizations/:id" 
+          errorElement={<Error />}
         >
           <Route 
-            path=":id" 
-            element={<ViewOrganizationPage />} 
+            index 
+            element={<Navigate to="view" replace />}
             errorElement={<Error />}
           />
+          <Route path="view" element={<ViewOrganizationPage />} errorElement={<Error />} />
+          <Route path="edit" element={<EditOrganizationPage />} errorElement={<Error />} />
         </Route>
         <Route 
           path="subscriptions" 
-          element={<SubscriptionPage />} 
+          element={<SubscriptionPage orgId={null}/>} 
           errorElement={<Error />}
         />
         <Route 
@@ -65,15 +72,16 @@ const router = createBrowserRouter(
           element={<UsagePage />} 
           errorElement={<Error />}
         />
-        <Route path="settings" element={<SettingsPage />}>
+        <Route path="settings" element={<SettingsPage />} errorElement={<Error />}>
           <Route 
             index 
             element={<Navigate to="endpoints" replace />}
+            errorElement={<Error />}
           />
-          <Route path="endpoints" element={<EndpointTab />} />
-          <Route path="organization-types" element={<OrganizationTypeTab />} />
-          <Route path="resources" element={<ResourceTypeTab />} />
-          <Route path="subscription-tiers" element={<SubScriptionTierTab />} />
+          <Route path="endpoints" element={<EndpointTab />} errorElement={<Error />} />
+          <Route path="organization-types" element={<OrganizationTypeTab />} errorElement={<Error />} />
+          <Route path="resources" element={<ResourceTypeTab />} errorElement={<Error />} />
+          <Route path="subscription-tiers" element={<SubScriptionTierTab />} errorElement={<Error />} />
         </Route>
       </Route>,
       <Route path="*" element={<NotFound />} />

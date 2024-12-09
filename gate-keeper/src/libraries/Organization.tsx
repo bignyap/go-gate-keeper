@@ -26,11 +26,12 @@ export async function ListOrganizations(pageNumber: number, itemsPerPage: number
     return organizations
   }
 
-export async function GetOrganizationById(id: string): Promise<any> {
-  return GetData(`${ORGANIZATION_API_BASE_URL}/${id}`);
+export async function GetOrganizationById(id: number): Promise<any> {
+  const val = await GetData(`${ORGANIZATION_API_BASE_URL}/${id}`)
+  return createOrganizationData(val);
 }
 
-export async function DeleteOrganization(id: string): Promise<void> {
+export async function DeleteOrganization(id: number): Promise<void> {
   await DeleteData(`${ORGANIZATION_API_BASE_URL}/${id}`);
 }
 

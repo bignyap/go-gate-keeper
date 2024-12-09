@@ -301,7 +301,7 @@ func ToListOrganizationOutputWithCount(inputs []sqlcgen.ListOrganizationRow) Lis
 
 func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *http.Request) {
 
-	idStr := r.PathValue("id")
+	idStr := r.PathValue("Id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return
@@ -312,15 +312,24 @@ func (apiCfg *ApiConfig) GetOrganizationByIdHandler(w http.ResponseWriter, r *ht
 		respondWithError(w, StatusBadRequest, "Invalid ID format")
 		return
 	}
+	input := sqlcgen.ListOrganizationParams{
+		Limit:          1,
+		Offset:         0,
+		OrganizationID: int32(id64),
+	}
 
-	organization, err := apiCfg.DB.GetOrganization(r.Context(), int32(id64))
+	organization, err := apiCfg.DB.ListOrganization(r.Context(), input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't retrieve the organization: %s", err))
 		return
 	}
 
-	output := ToCreateOrganizationOutput(organization)
+	if len(organization) == 0 {
+		respondWithJSON(w, StatusOK, map[string]interface{}{})
+		return
+	}
 
+	output := ToListOrganizationOutput(organization[0])
 	respondWithJSON(w, StatusOK, output)
 }
 

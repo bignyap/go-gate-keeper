@@ -88,7 +88,7 @@ export function ResourceTypeLoader() {
               startIcon={<AddIcon />}
               onClick={handleCreateResourceType}
             >
-              CREATE ORGANIZATION TYPES
+              CREATE RESOURCE
             </Button>
           }
           page={0}

@@ -39,3 +39,18 @@
     width: 100%;
     max-width: 90vw;
 }
+
+.error-container {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+.error-content {
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}

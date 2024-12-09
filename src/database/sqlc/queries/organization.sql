@@ -4,12 +4,9 @@ SELECT
     COUNT(organization_id) OVER() AS total_items 
 FROM organization
 INNER JOIN organization_type ON organization.organization_type_id = organization_type.organization_type_id
+WHERE (? IS NULL OR organization.organization_id = ?)
 ORDER BY organization_id DESC
 LIMIT ? OFFSET ?;
-
--- name: GetOrganization :one
-SELECT * FROM organization
-WHERE organization_id = ?;
 
 -- name: CreateOrganization :execresult 
 INSERT INTO organization (

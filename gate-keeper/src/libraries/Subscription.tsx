@@ -44,7 +44,7 @@ export async function ListSubscriptionByOrgIds(orgId: number, pageNumber: number
   return subscriptions
 }
 
-export async function GetSubscriptionById(id: string): Promise<any> {
+export async function GetSubscriptionById(id: number): Promise<any> {
   return GetData(`${SUBSCRIPTION_API_BASE_URL}/${id}`);
 }
 

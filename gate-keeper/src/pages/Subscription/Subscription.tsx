@@ -6,33 +6,22 @@ import Button from '@mui/material/Button'
 import AddIcon from '@mui/icons-material/Add';
 import { CustomizedSnackbars } from '../../components/Common/Toast';
 import CircularProgress from '@mui/material/CircularProgress';
-import { ListSubscriptions } from '../../libraries/Subscription';
-// import { ListSubscriptionTiers } from '../../libraries/SubscriptionTier';
+import { ListSubscriptionByOrgIds, ListSubscriptions } from '../../libraries/Subscription';
 
-export function SubscriptionPage() {
+interface SubscriptionProps {
+  orgId: number | null;
+  tableContainerSx?: object;
+}
+
+export function SubscriptionPage({ orgId }: SubscriptionProps) {
   return (
     <div className = 'container'>
-      <SubscriptionLoader />
+      <SubscriptionLoader orgId={orgId}/>
     </div>
   );
 }
 
-
-// async function fetchSubscriptionTiers() {
-//   try {
-//     const subTierData = await ListSubscriptionTiers(1, 10);
-//     setSubscriptionTiers(subTierData);
-//   } catch (error) {
-//     console.error("Error fetching subscription tier:", error);
-//     setSubscriptionTiers([]);
-//     setSnackbar({
-//       message: "Failed to load subscription tiers. Please try again later.",
-//       status: "error"
-//     });
-//   }
-// }
-
-export function SubscriptionLoader() {
+export function SubscriptionLoader({ orgId, tableContainerSx }: SubscriptionProps) {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [count, setCount] = useState<number>(-1);
   const [loading, setLoading] = useState<boolean>(true);
@@ -43,7 +32,9 @@ export function SubscriptionLoader() {
 
   async function fetchSubscriptions(newPage: number, itemsPerPage: number) {
     try {
-      const subData = await ListSubscriptions(newPage, itemsPerPage);
+      const subData = orgId == null 
+        ? await ListSubscriptions(newPage, itemsPerPage) 
+        : await ListSubscriptionByOrgIds(orgId, newPage, itemsPerPage);
       const iCount = subData["total_items"];
       setCount(iCount);
       if (iCount > 0) {
@@ -101,7 +92,7 @@ export function SubscriptionLoader() {
         <CustomizedSnackbars
           message={snackbar.message}
           status={snackbar.status}
-          open={true} // Ensure the snackbar opens automatically
+          open={true}
           onClose={() => setSnackbar(null)}
         />
       )}
@@ -115,6 +106,7 @@ export function SubscriptionLoader() {
         onPageChange={handleChangePage}
         count={count}
         onRowsPerPageChange={handleRowsPerPageChange}
+        tableContainerSx={tableContainerSx}
         title={
           <Button
             component="label"

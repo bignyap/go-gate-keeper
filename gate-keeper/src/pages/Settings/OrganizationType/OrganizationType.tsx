@@ -89,7 +89,7 @@ export function OrganizationTypeLoader() {
               startIcon={<AddIcon />}
               onClick={handleCreateOrgType}
             >
-              CREATE ORGANIZATION TYPES
+              CREATE ORGANIZATION TYPE
             </Button>
           }
           page={0}

@@ -13,7 +13,6 @@ export function OrganizationPage() {
   return (
     <div className = 'container'>
       <OrganizationLoader />
-      <Outlet />
     </div>
   );
 }
@@ -122,10 +121,10 @@ export function OrganizationLoader() {
         onOptionSelect={(action, row) => {
           switch (action) {
             case 'View':
-              navigate(`/organization/${row["id"]}`);
+              navigate(`/organizations/${row["id"]}/view`);
               break;
             case 'Edit':
-              console.log(row)
+              navigate(`/organizations/${row["id"]}/edit`);
               break;
             case 'Delete':
               onDeleteOrg(row);
