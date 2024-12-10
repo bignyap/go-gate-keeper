@@ -10,9 +10,7 @@ export function SettingsPage () {
 
     const tabs = [
         { label: "Endpoints", value: "endpoints" },
-        { label: "Resources", value: "resources" },
-        // { label: "Organization Types", value: "organization-types" },
-        { label: "Subscription Tiers", value: "subscription-tiers" }
+        { label: "Resources", value: "types" },
     ];
 
     const initialIndex = tabs.findIndex(t => location.pathname.includes(t.value));

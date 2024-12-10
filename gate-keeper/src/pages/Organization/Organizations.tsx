@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { TextField, InputAdornment }  from '@mui/material'; 
 import { CustomizedSnackbars } from '../../components/Common/Toast';
 import CircularProgress from '@mui/material/CircularProgress';
-import OrgTypeModal from '../Settings/OrganizationType/OrgTypeModal';
+import OrgTypeModal from '../OrganizationType/OrgTypeModal';
 
 export function OrganizationPage() {
   return (

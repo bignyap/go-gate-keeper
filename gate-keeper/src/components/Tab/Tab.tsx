@@ -55,7 +55,7 @@ export default function ScrollableTabsButtonAuto(
             key={index} 
             label={
               <NavLink 
-                to={`/settings/${tab.value}`} 
+                to={`/resources/${tab.value}`} 
                 style={{ textDecoration: 'none', color: 'inherit' }}
                 className={({ isActive }) => isActive ? 'active-tab' : ''}
               >

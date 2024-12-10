@@ -17,8 +17,6 @@ import { PricingPage } from './pages/Pricing/Pricing';
 import { UsagePage } from './pages/Usage/Usage';
 import { SettingsPage } from './pages/Settings/Settings';
 import { EndpointTab } from './pages/Settings/Endpoint/Endpoint';
-import { SubScriptionTierTab } from './pages/Settings/SubscriptionTier/SubscriptionTier';
-import { OrganizationTypeTab } from './pages/Settings/OrganizationType/OrganizationType';
 import { ResourceTypeTab } from './pages/Settings/ResourceType/ResourceType';
 
 const router = createBrowserRouter(
@@ -58,16 +56,14 @@ const router = createBrowserRouter(
           element={<UsagePage />} 
           errorElement={<Error />}
         />
-        <Route path="settings" element={<SettingsPage />} errorElement={<Error />}>
+        <Route path="resources" element={<SettingsPage />} errorElement={<Error />}>
           <Route 
             index 
-            element={<Navigate to="endpoints" replace />}
+            element={<Navigate to="types" replace />}
             errorElement={<Error />}
           />
           <Route path="endpoints" element={<EndpointTab />} errorElement={<Error />} />
-          <Route path="organization-types" element={<OrganizationTypeTab />} errorElement={<Error />} />
-          <Route path="resources" element={<ResourceTypeTab />} errorElement={<Error />} />
-          <Route path="subscription-tiers" element={<SubScriptionTierTab />} errorElement={<Error />} />
+          <Route path="types" element={<ResourceTypeTab />} errorElement={<Error />} />
         </Route>
       </Route>,
       <Route path="*" element={<NotFound />} />

@@ -1,6 +1,6 @@
 import React from 'react';
-import { CreateOrganizationType } from '../../../libraries/OrgType';
-import SettingsModal from '../Modal';
+import { CreateOrganizationType } from '../../libraries/OrgType';
+import SettingsModal from '../Settings/Modal';
 
 interface OrgTypeFormProps {
   onClose: () => void;

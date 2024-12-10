@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ListSubscriptionTiers } from '../../../libraries/SubscriptionTier';
+import { ListSubscriptionTiers } from '../../libraries/SubscriptionTier';
 import CircularProgress from '@mui/material/CircularProgress';
-import { EnhancedTable } from '../../../components/Table/Table'
-import { HeadCell } from '../../../components/Table/Utils';
+import { EnhancedTable } from '../../components/Table/Table'
+import { HeadCell } from '../../components/Table/Utils';
 import Button from '@mui/material/Button'
 import AddIcon from '@mui/icons-material/Add';
-import { CustomizedSnackbars } from '../../../components/Common/Toast';
+import { CustomizedSnackbars } from '../../components/Common/Toast';
 import TierModal from './TierModal';
 
 export function SubScriptionTierTab() {
