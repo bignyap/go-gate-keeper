@@ -77,16 +77,16 @@ const SubscriptionModal: React.FC<SubscriptionFormProps> = ({ onClose, onSubscri
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-        const newSub = await CreateSubscription(formData);
-        console.log("subscription created", newSub);
-        onSubscriptionCreated(newSub);
-        onClose();
-        CustomizedSnackbars({
-            message: `Subscription ${newSub.name} created successfully!`,
-            status: "success",
-            onClose: () => {},
-            open: true
-        });
+          const newSub = await CreateSubscription(formData);
+          console.log("subscription created", newSub);
+          onSubscriptionCreated(newSub);
+          onClose();
+          <CustomizedSnackbars
+              message={`Subscription ${newSub.name} created successfully!`}
+              status="success"
+              onClose={() => {}}
+              open={true}
+          />
         } catch (error) {
         console.error('Error creating subscription:', error);
         }

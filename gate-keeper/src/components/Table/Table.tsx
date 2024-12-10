@@ -28,13 +28,13 @@ export interface EnhancedTableProps {
   tableContainerSx?: object;
 }
   
-export const EnhancedTable: React.FC<EnhancedTableProps> = (
+export const EnhancedTable: React.FC<EnhancedTableProps & { renderCell?: (key: string, value: any, row: Data) => React.ReactNode }> = (
   { 
     rows, headCells, defaultSort, 
     title, defaultRows, stickyColumnIds, 
     page, count, onPageChange, onRowsPerPageChange,   
     stickyRight, menuOptions, onOptionSelect,
-    tableContainerSx
+    tableContainerSx, renderCell
   }
 ) => {
 
@@ -114,6 +114,7 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
                       const stickyQ = stickyColumnIds.includes(headCell.id);
                       const CellComponent = stickyQ ? StickyTableCell : StyledTableCell;
                       const leftPosition = stickyQ ? headIndex + 1 : 0;
+                      const cellValue = row[headCell.id];
                       return (
                         <CellComponent
                           key={headCell.id}
@@ -123,15 +124,15 @@ export const EnhancedTable: React.FC<EnhancedTableProps> = (
                           scope={headCell.id === 'name' ? 'row' : undefined}
                           sx={stickyQ ? { position: 'sticky', left: leftPosition, zIndex: 1 } : {}} 
                         >
-                          {
-                            row[headCell.id] === null
+                          {renderCell ? renderCell(headCell.id, cellValue, row) : (
+                            cellValue === null
                               ? "--"
-                              : typeof row[headCell.id] === 'boolean'
-                              ? row[headCell.id] ? "True" : "False"
-                              : typeof row[headCell.id] === 'object'
-                              ? JSON.stringify(row[headCell.id])
-                              : row[headCell.id]
-                          }
+                              : typeof cellValue === 'boolean'
+                              ? cellValue ? "True" : "False"
+                              : typeof cellValue === 'object'
+                              ? JSON.stringify(cellValue)
+                              : cellValue
+                          )}
                         </CellComponent>
                       );
                     })}

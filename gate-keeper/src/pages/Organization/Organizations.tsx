@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ListOrganizations, DeleteOrganization } from '../../libraries/Organization';
 import OrganizationModal from './OrganizationModal';
 import { EnhancedTable } from '../../components/Table/Table'
 import { HeadCell } from '../../components/Table/Utils';
 import Button from '@mui/material/Button'
-import AddIcon from '@mui/icons-material/Add';
+// import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import { TextField, InputAdornment }  from '@mui/material'; 
 import { CustomizedSnackbars } from '../../components/Common/Toast';
 import CircularProgress from '@mui/material/CircularProgress';
+import OrgTypeModal from '../Settings/OrganizationType/OrgTypeModal';
 
 export function OrganizationPage() {
   return (
@@ -23,6 +26,7 @@ export function OrganizationLoader() {
   const [count, setCount] = useState<number>(-1);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isTypeModalOpen, setIsTypeModalOpen] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState<{ message: string, status: string } | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
@@ -78,6 +82,10 @@ export function OrganizationLoader() {
     setIsModalOpen(true);
   };
 
+  const handleCreateOrgType = async () => {
+    setIsTypeModalOpen(true)
+  }
+
   const onPageChange = async (newPage: number) => {
     await fetchOrganizations(newPage, itemsPerPage)
   };
@@ -108,6 +116,16 @@ export function OrganizationLoader() {
       )}
       <EnhancedTable
         rows={organizations}
+        renderCell={(key, value, row) => {
+          if (key === 'name') {
+            return (
+              <a href={`/organizations/${row.id}`} style={{ textDecoration: 'underline', cursor: 'pointer' }}>
+                {value}
+              </a>
+            );
+          }
+          return value;
+        }}
         headCells={headCells}
         defaultSort="id"
         defaultRows={10}
@@ -131,16 +149,43 @@ export function OrganizationLoader() {
           }
         }}
         title={
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<AddIcon />}
-            onClick={handleCreateOrganization}
-          >
-            CREATE ORGANIZATION
-          </Button>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
+            <TextField
+              variant="outlined"
+              placeholder="Search..."
+              size="small"
+              style={{ width: '400px' }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              // Add onChange handler if needed
+            />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Button
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                // startIcon={<AddIcon />}
+                onClick={handleCreateOrganization}
+              >
+                CREATE ORGANIZATION
+              </Button>
+              <Button
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                onClick={handleCreateOrgType}
+              >
+                CREATE ORGANIZATION TYPE
+              </Button>
+            </div>
+          </div>
         }
       />
       {isModalOpen && (
@@ -149,6 +194,14 @@ export function OrganizationLoader() {
           onOrganizationCreated={handleOrganizationCreated}
         />
       )}
+      {
+        isTypeModalOpen && (
+          <OrgTypeModal
+            onClose={() => setIsTypeModalOpen(false)}
+            onOrgTypeCreated={() => setIsTypeModalOpen(false)}
+          />
+        )
+      }
     </div>
   );
 }
@@ -156,6 +209,7 @@ export function OrganizationLoader() {
 const headCells: HeadCell[] = [
   // { id: 'id', label: 'ID', width: 20 },
   { id: 'name', label: 'Name', width: 20 },
+  // { id: 'decoratedName', label: 'Name', width: 20 },
   { id: 'type', label: 'Type' },
   { id: 'realm', label: 'Realm' },
   { id: 'country', label: 'Country' },

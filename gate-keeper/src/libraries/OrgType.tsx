@@ -1,15 +1,15 @@
 import {
     PostData, DeleteData,
-    PutData, GetData
+    PutData, GetData, BuildUrl
  } from './Utils';
 import {
     API_PATHS, API_BASE_URL
 } from './Paths';
 
-const ORGANIZATION_TYPE_API_BASE_URL = API_BASE_URL + API_PATHS["organizationType"]
+const ORGANIZATION_TYPE_API_BASE_URL = BuildUrl(API_BASE_URL, API_PATHS["organizationType"])
 
 export async function CreateOrganizationType(data: Record<string, any>): Promise<any> {
-  return PostData(`${ORGANIZATION_TYPE_API_BASE_URL}`, data);
+  return PostData(ORGANIZATION_TYPE_API_BASE_URL, data);
 }
 
 export async function ListOrganizationTypes(pageNumber: number, itemsPerPage: number): Promise<any> {
@@ -46,7 +46,7 @@ export async function DeleteOrganizationType(id: string): Promise<void> {
 }
 
 export async function CreateOrganizationTypeInBulk(data: Array<Record<string, any>>): Promise<any> {
-  const url = `${ORGANIZATION_TYPE_API_BASE_URL}/batch`;
+  const url = BuildUrl(ORGANIZATION_TYPE_API_BASE_URL, 'batch');
   return PostData(url, data, { 'Content-Type': 'application/json' }, false);
 }
 

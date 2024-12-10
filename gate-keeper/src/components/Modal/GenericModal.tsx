@@ -27,12 +27,14 @@ interface GenericModalProps {
         const result = await onSubmit(formData);
         onSuccess(result);
         onClose();
-        CustomizedSnackbars({
-          message: `${title} created successfully!`,
-          status: "success",
-          onClose: () => {},
-          open: true
-        });
+        return (
+          <CustomizedSnackbars
+            message={`${title} created successfully!`}
+            status="success"
+            onClose={() => {}}
+            open={true}
+          />
+        );
       } catch (error) {
         console.error(`Error creating ${title.toLowerCase()}:`, error);
       }

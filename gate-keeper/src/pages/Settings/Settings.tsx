@@ -11,7 +11,7 @@ export function SettingsPage () {
     const tabs = [
         { label: "Endpoints", value: "endpoints" },
         { label: "Resources", value: "resources" },
-        { label: "Organization Types", value: "organization-types" },
+        // { label: "Organization Types", value: "organization-types" },
         { label: "Subscription Tiers", value: "subscription-tiers" }
     ];
 
