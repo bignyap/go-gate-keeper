@@ -25,6 +25,16 @@ type CreateTierPricingOutput struct {
 	CreateTierPricingParams
 }
 
+type CreateTierPricingWithTierName struct {
+	CreateTierPricingOutput
+	EndpointName string `json:"endpoint_name"`
+}
+
+type CreateTierPricingOutputWithCount struct {
+	TotalItems int                             `json:"total_items"`
+	Data       []CreateTierPricingWithTierName `json:"data"`
+}
+
 func CreateTierPricingFormValidator(r *http.Request) (*sqlcgen.CreateTierPricingParams, error) {
 
 	err := formvalidator.ParseFormData(r)
@@ -176,22 +186,40 @@ func (apiCfg *ApiConfig) GetTierPricingByTierIdHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	var output []CreateTierPricingOutput
+	totalItems := 0
+	if len(tierPricings) > 0 {
+		switch total := tierPricings[0].TotalItems.(type) {
+		case int64:
+			totalItems = int(total)
+		case int:
+			totalItems = total
+		default:
+			totalItems = 0
+		}
+	}
+
+	var output []CreateTierPricingWithTierName
 
 	for _, tierPricing := range tierPricings {
 
-		output = append(output, CreateTierPricingOutput{
-			ID: int(tierPricing.TierBasePricingID),
-			CreateTierPricingParams: CreateTierPricingParams{
-				SubscriptionTierID: int(tierPricing.SubscriptionTierID),
-				ApiEndpointId:      int(tierPricing.ApiEndpointID),
-				BaseCostPerCall:    tierPricing.BaseCostPerCall,
-				BaseRateLimit:      converter.NullInt32ToInt(&tierPricing.BaseRateLimit),
+		output = append(output, CreateTierPricingWithTierName{
+			EndpointName: tierPricing.EndpointName,
+			CreateTierPricingOutput: CreateTierPricingOutput{
+				ID: int(tierPricing.TierBasePricingID),
+				CreateTierPricingParams: CreateTierPricingParams{
+					SubscriptionTierID: int(tierPricing.SubscriptionTierID),
+					ApiEndpointId:      int(tierPricing.ApiEndpointID),
+					BaseCostPerCall:    tierPricing.BaseCostPerCall,
+					BaseRateLimit:      converter.NullInt32ToInt(&tierPricing.BaseRateLimit),
+				},
 			},
 		})
 	}
 
-	respondWithJSON(w, StatusOK, output)
+	respondWithJSON(w, StatusOK, CreateTierPricingOutputWithCount{
+		Data:       output,
+		TotalItems: totalItems,
+	})
 }
 
 func (apiCfg *ApiConfig) DeleteTierPricingHandler(w http.ResponseWriter, r *http.Request) {
@@ -218,7 +246,7 @@ func (apiCfg *ApiConfig) DeleteTierPricingHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	idStr = r.PathValue("id")
+	idStr = r.PathValue("Id")
 	if idStr == "" {
 		respondWithError(w, StatusBadRequest, "Missing organization_id or id")
 		return

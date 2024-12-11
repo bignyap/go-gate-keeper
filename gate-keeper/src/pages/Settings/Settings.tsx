@@ -9,8 +9,8 @@ export function SettingsPage () {
     const location = useLocation();
 
     const tabs = [
-        { label: "Endpoints", value: "endpoints" },
         { label: "Resources", value: "types" },
+        { label: "Endpoints", value: "endpoints" },
     ];
 
     const initialIndex = tabs.findIndex(t => location.pathname.includes(t.value));

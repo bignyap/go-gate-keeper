@@ -23,8 +23,14 @@ type CreateSubTierParams struct {
 }
 
 type CreateSubTierOuput struct {
-	ID int `json:"id"`
+	ID       int  `json:"id"`
+	Archived bool `json:"archived"`
 	CreateSubTierParams
+}
+
+type CreateSubTierOuputWithCount struct {
+	TotalItems int                  `json:"total_items"`
+	Data       []CreateSubTierOuput `json:"data"`
 }
 
 func CreateSubcriptionTierFormValidation(r *http.Request) (*sqlcgen.CreateSubscriptionTierParams, error) {
@@ -128,6 +134,12 @@ func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *
 		return
 	}
 
+	err = apiCfg.DB.ArchiveExistingSubscriptionTier(r.Context(), input.TierName)
+	if err != nil {
+		respondWithError(w, StatusBadRequest, err.Error())
+		return
+	}
+
 	subTier, err := apiCfg.DB.CreateSubscriptionTier(r.Context(), *input)
 	if err != nil {
 		respondWithError(w, StatusBadRequest, fmt.Sprintf("couldn't create the subscription tier: %s", err))
@@ -146,7 +158,8 @@ func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *
 	}
 
 	output := CreateSubTierOuput{
-		ID: int(insertedID),
+		ID:       int(insertedID),
+		Archived: false,
 		CreateSubTierParams: CreateSubTierParams{
 			Name:        input.TierName,
 			Description: description,
@@ -161,9 +174,19 @@ func (apiCfg *ApiConfig) CreateSubcriptionTierHandler(w http.ResponseWriter, r *
 func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *http.Request) {
 
 	limit, offset := ExtractPaginationDetail(w, r)
+
+	archived := false
+	tierArchived := r.URL.Query().Get("include_archived")
+	if tierArchived == "" {
+		archived = false
+	} else {
+		archived, _ = converter.StrToBool(tierArchived)
+	}
+
 	input := sqlcgen.ListSubscriptionTierParams{
-		Limit:  int32(limit),
-		Offset: int32(offset),
+		TierArchived: archived,
+		Limit:        int32(limit),
+		Offset:       int32(offset),
 	}
 
 	subTiers, err := apiCfg.DB.ListSubscriptionTier(r.Context(), input)
@@ -179,6 +202,18 @@ func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *
 		return
 	}
 
+	totalItems := 0
+	if len(subTiers) > 0 {
+		switch total := subTiers[0].TotalItems.(type) {
+		case int64:
+			totalItems = int(total)
+		case int:
+			totalItems = total
+		default:
+			totalItems = 0
+		}
+	}
+
 	for _, subTier := range subTiers {
 
 		var description *string
@@ -187,7 +222,8 @@ func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *
 		}
 
 		output = append(output, CreateSubTierOuput{
-			ID: int(subTier.SubscriptionTierID),
+			ID:       int(subTier.SubscriptionTierID),
+			Archived: subTier.TierArchived,
 			CreateSubTierParams: CreateSubTierParams{
 				Name:        subTier.TierName,
 				Description: description,
@@ -197,12 +233,15 @@ func (apiCfg *ApiConfig) ListSubscriptionTiersHandler(w http.ResponseWriter, r *
 		})
 	}
 
-	respondWithJSON(w, StatusOK, output)
+	respondWithJSON(w, StatusOK, CreateSubTierOuputWithCount{
+		Data:       output,
+		TotalItems: totalItems,
+	})
 }
 
 func (apiCfg *ApiConfig) DeleteSubscriptionTierHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := converter.StrToInt(r.PathValue("id"))
+	id, err := converter.StrToInt(r.PathValue("Id"))
 	if err != nil {
 		respondWithError(w, StatusBadRequest, "ID is required")
 		return

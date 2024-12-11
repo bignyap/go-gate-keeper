@@ -1,9 +1,9 @@
--- -- name: ListTierPricing :many
--- SELECT * FROM tier_base_pricing
--- ORDER BY subscription_tier_id;
-
 -- name: GetTierPricingByTierId :many
-SELECT * FROM tier_base_pricing
+SELECT 
+    tier_base_pricing.*, api_endpoint.endpoint_name,
+    COUNT(tier_base_pricing_id) OVER() AS total_items
+FROM tier_base_pricing
+INNER JOIN api_endpoint ON tier_base_pricing.api_endpoint_id = api_endpoint.api_endpoint_id
 WHERE subscription_tier_id = ?
 LIMIT ? OFFSET ?;
 

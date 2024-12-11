@@ -96,6 +96,7 @@ type Subscription struct {
 type SubscriptionTier struct {
 	SubscriptionTierID int32
 	TierName           string
+	TierArchived       bool
 	TierDescription    sql.NullString
 	TierCreatedAt      int32
 	TierUpdatedAt      int32

@@ -13,6 +13,7 @@ CREATE TABLE organization_type (
 CREATE TABLE subscription_tier (
   subscription_tier_id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   tier_name varchar(50) NOT NULL,
+  tier_archived boolean DEFAULT false not null,
   tier_description text,
   tier_created_at int NOT NULL,
   tier_updated_at int NOT NULL

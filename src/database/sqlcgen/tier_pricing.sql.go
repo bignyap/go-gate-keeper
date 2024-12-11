@@ -64,8 +64,11 @@ func (q *Queries) DeleteTierPricingByTierId(ctx context.Context, subscriptionTie
 }
 
 const getTierPricingByTierId = `-- name: GetTierPricingByTierId :many
-
-SELECT tier_base_pricing_id, base_cost_per_call, base_rate_limit, api_endpoint_id, subscription_tier_id FROM tier_base_pricing
+SELECT 
+    tier_base_pricing.tier_base_pricing_id, tier_base_pricing.base_cost_per_call, tier_base_pricing.base_rate_limit, tier_base_pricing.api_endpoint_id, tier_base_pricing.subscription_tier_id, api_endpoint.endpoint_name,
+    COUNT(tier_base_pricing_id) OVER() AS total_items
+FROM tier_base_pricing
+INNER JOIN api_endpoint ON tier_base_pricing.api_endpoint_id = api_endpoint.api_endpoint_id
 WHERE subscription_tier_id = ?
 LIMIT ? OFFSET ?
 `
@@ -76,24 +79,33 @@ type GetTierPricingByTierIdParams struct {
 	Offset             int32
 }
 
-// -- name: ListTierPricing :many
-// SELECT * FROM tier_base_pricing
-// ORDER BY subscription_tier_id;
-func (q *Queries) GetTierPricingByTierId(ctx context.Context, arg GetTierPricingByTierIdParams) ([]TierBasePricing, error) {
+type GetTierPricingByTierIdRow struct {
+	TierBasePricingID  int32
+	BaseCostPerCall    float64
+	BaseRateLimit      sql.NullInt32
+	ApiEndpointID      int32
+	SubscriptionTierID int32
+	EndpointName       string
+	TotalItems         interface{}
+}
+
+func (q *Queries) GetTierPricingByTierId(ctx context.Context, arg GetTierPricingByTierIdParams) ([]GetTierPricingByTierIdRow, error) {
 	rows, err := q.db.QueryContext(ctx, getTierPricingByTierId, arg.SubscriptionTierID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []TierBasePricing{}
+	items := []GetTierPricingByTierIdRow{}
 	for rows.Next() {
-		var i TierBasePricing
+		var i GetTierPricingByTierIdRow
 		if err := rows.Scan(
 			&i.TierBasePricingID,
 			&i.BaseCostPerCall,
 			&i.BaseRateLimit,
 			&i.ApiEndpointID,
 			&i.SubscriptionTierID,
+			&i.EndpointName,
+			&i.TotalItems,
 		); err != nil {
 			return nil, err
 		}

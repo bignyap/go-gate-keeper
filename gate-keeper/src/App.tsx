@@ -18,6 +18,7 @@ import { UsagePage } from './pages/Usage/Usage';
 import { SettingsPage } from './pages/Settings/Settings';
 import { EndpointTab } from './pages/Settings/Endpoint/Endpoint';
 import { ResourceTypeTab } from './pages/Settings/ResourceType/ResourceType';
+import { ViewTierPricingPage } from './pages/Pricing/ViewPricing';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -47,8 +48,13 @@ const router = createBrowserRouter(
           element={<ViewOrganizationPage />}
         />
         <Route 
-          path="pricings" 
+          path="subTier" 
           element={<PricingPage />} 
+          errorElement={<Error />}
+        />
+        <Route 
+          path="subTier/:id" 
+          element={<ViewTierPricingPage />} 
           errorElement={<Error />}
         />
         <Route 

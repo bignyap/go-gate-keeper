@@ -13,7 +13,7 @@ import "../../styles/main.css"
 
 const pages = [
   { name: 'Organizations', link: '/organizations' },
-  { name: 'Subscription Tiers', link: '/pricings' },
+  { name: 'Subscription Tiers', link: '/subTier' },
   { name: 'Resources', link: '/resources' },
   { name: 'Usage', link: '/usage' },
 ];

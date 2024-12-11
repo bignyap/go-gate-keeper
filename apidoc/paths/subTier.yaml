@@ -26,6 +26,13 @@ paths:
       parameters:
         - $ref: '../schemas/Pagination.yaml#/components/parameters/PageNumber'
         - $ref: '../schemas/Pagination.yaml#/components/parameters/ItemsPerPage'
+        - name: include_archived
+          in: query
+          description: Include Archive Tiers
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: OK

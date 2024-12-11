@@ -153,3 +153,16 @@ export const StickyTableRow = styled(TableRow)(({ theme }) => ({
       border: 0,
     },
   }));
+
+export function FormatCellValue(cellValue: any): any {
+    if (cellValue === null) {
+      return "--";
+    }
+    if (typeof cellValue === 'boolean') {
+      return cellValue ? "True" : "False";
+    }
+    if (typeof cellValue === 'object') {
+      return JSON.stringify(cellValue);
+    }
+    return cellValue;
+  }

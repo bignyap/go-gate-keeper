@@ -31,6 +31,25 @@ export async function CreateEndpointInBulk(data: Array<Record<string, any>>): Pr
   return PostData(url, data, { 'Content-Type': 'application/json' }, false);
 }
 
+export async function ListAllEndpoints(): Promise<any> {
+  let allEndpoints: any[] = [];
+  let currentPage = 1;
+  const itemsPerPage = 100;
+  let fetchedItems: any[];
+
+  do {
+      const queryParams = {
+          page_number: currentPage.toString(),
+          items_per_page: itemsPerPage.toString()
+      };
+      fetchedItems = await GetData(ENDPOINT_API_BASE_URL, queryParams);
+      allEndpoints = allEndpoints.concat(fetchedItems.map((org: any) => createEndpointData(org)));
+      currentPage++;
+  } while (fetchedItems.length === itemsPerPage);
+
+  return allEndpoints;
+}
+
 function createEndpointData(org: any): EndpointData {
     return {
       id: org.id,

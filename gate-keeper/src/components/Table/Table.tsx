@@ -115,6 +115,7 @@ export const EnhancedTable: React.FC<EnhancedTableProps & { renderCell?: (key: s
                       const CellComponent = stickyQ ? StickyTableCell : StyledTableCell;
                       const leftPosition = stickyQ ? headIndex + 1 : 0;
                       const cellValue = row[headCell.id];
+                      
                       return (
                         <CellComponent
                           key={headCell.id}
@@ -124,15 +125,7 @@ export const EnhancedTable: React.FC<EnhancedTableProps & { renderCell?: (key: s
                           scope={headCell.id === 'name' ? 'row' : undefined}
                           sx={stickyQ ? { position: 'sticky', left: leftPosition, zIndex: 1 } : {}} 
                         >
-                          {renderCell ? renderCell(headCell.id, cellValue, row) : (
-                            cellValue === null
-                              ? "--"
-                              : typeof cellValue === 'boolean'
-                              ? cellValue ? "True" : "False"
-                              : typeof cellValue === 'object'
-                              ? JSON.stringify(cellValue)
-                              : cellValue
-                          )}
+                          {renderCell ? renderCell(headCell.id, cellValue, row) : cellValue}
                         </CellComponent>
                       );
                     })}

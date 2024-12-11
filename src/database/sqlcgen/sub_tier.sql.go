@@ -10,8 +10,19 @@ import (
 	"database/sql"
 )
 
+const archiveExistingSubscriptionTier = `-- name: ArchiveExistingSubscriptionTier :exec
+UPDATE subscription_tier
+SET tier_archived = TRUE
+WHERE tier_name = ?
+`
+
+func (q *Queries) ArchiveExistingSubscriptionTier(ctx context.Context, tierName string) error {
+	_, err := q.db.ExecContext(ctx, archiveExistingSubscriptionTier, tierName)
+	return err
+}
+
 const createSubscriptionTier = `-- name: CreateSubscriptionTier :execresult
-INSERT INTO subscription_tier (tier_name, tier_description, tier_created_at, tier_updated_at) 
+INSERT INTO subscription_tier (tier_name, tier_description, tier_created_at, tier_updated_at)
 VALUES (?, ?, ?, ?)
 `
 
@@ -54,31 +65,46 @@ func (q *Queries) DeleteSubscriptionTierById(ctx context.Context, subscriptionTi
 }
 
 const listSubscriptionTier = `-- name: ListSubscriptionTier :many
-SELECT subscription_tier_id, tier_name, tier_description, tier_created_at, tier_updated_at FROM subscription_tier
-ORDER BY tier_name
+SELECT subscription_tier_id, tier_name, tier_archived, tier_description, tier_created_at, tier_updated_at, COUNT(subscription_tier_id) OVER() AS total_items  
+FROM subscription_tier
+WHERE tier_archived = ?
+ORDER BY subscription_tier_id DESC
 LIMIT ? OFFSET ?
 `
 
 type ListSubscriptionTierParams struct {
-	Limit  int32
-	Offset int32
+	TierArchived bool
+	Limit        int32
+	Offset       int32
 }
 
-func (q *Queries) ListSubscriptionTier(ctx context.Context, arg ListSubscriptionTierParams) ([]SubscriptionTier, error) {
-	rows, err := q.db.QueryContext(ctx, listSubscriptionTier, arg.Limit, arg.Offset)
+type ListSubscriptionTierRow struct {
+	SubscriptionTierID int32
+	TierName           string
+	TierArchived       bool
+	TierDescription    sql.NullString
+	TierCreatedAt      int32
+	TierUpdatedAt      int32
+	TotalItems         interface{}
+}
+
+func (q *Queries) ListSubscriptionTier(ctx context.Context, arg ListSubscriptionTierParams) ([]ListSubscriptionTierRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSubscriptionTier, arg.TierArchived, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []SubscriptionTier{}
+	items := []ListSubscriptionTierRow{}
 	for rows.Next() {
-		var i SubscriptionTier
+		var i ListSubscriptionTierRow
 		if err := rows.Scan(
 			&i.SubscriptionTierID,
 			&i.TierName,
+			&i.TierArchived,
 			&i.TierDescription,
 			&i.TierCreatedAt,
 			&i.TierUpdatedAt,
+			&i.TotalItems,
 		); err != nil {
 			return nil, err
 		}

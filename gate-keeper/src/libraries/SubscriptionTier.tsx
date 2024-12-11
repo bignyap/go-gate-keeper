@@ -18,15 +18,22 @@ export async function ListSubscriptionTiers(pageNumber: number, itemsPerPage: nu
     };
   
     const endpoints = await GetData(SUBSCRIPTION_TIER_API_BASE_URL, queryParams);
+
+    if (endpoints["total_items"] > 0) {
+      endpoints["data"] = endpoints["data"].map((org: any) => createSubscriptionTierData(org));
+    }
     
-    return endpoints.map((endpoint: any) => createSubscriptionTierData(endpoint));
+    return endpoints
   }
 
 export async function ListAllSubscriptionTiers(): Promise<any> {
     let allSubTiers: any[] = [];
     let currentPage = 1;
     const itemsPerPage = 100;
-    let fetchedItems: any[];
+    let fetchedItems: {
+      "data": any[];
+      "total_items": number;
+    }
 
     do {
         const queryParams = {
@@ -34,14 +41,14 @@ export async function ListAllSubscriptionTiers(): Promise<any> {
             items_per_page: itemsPerPage.toString()
         };
         fetchedItems = await GetData(SUBSCRIPTION_TIER_API_BASE_URL, queryParams);
-        allSubTiers = allSubTiers.concat(fetchedItems.map((org: any) => createSubscriptionTierData(org)));
+        allSubTiers = allSubTiers.concat(fetchedItems["data"].map((org: any) => createSubscriptionTierData(org)));
         currentPage++;
-    } while (fetchedItems.length === itemsPerPage);
+    } while (fetchedItems["data"].length === itemsPerPage);
 
     return allSubTiers;
 }
 
-export async function DeleteResourceType(id: string): Promise<void> {
+export async function DeleteSubscriptionTier(id: string): Promise<void> {
   await DeleteData(`${SUBSCRIPTION_TIER_API_BASE_URL}/${id}`);
 }
 
@@ -57,6 +64,7 @@ function createSubscriptionTierData(org: any): SubscriptionTierData {
       description: org.description,
       created_at: org.created_at,
       updated_at: org.updated_at,
+      archived: org.archived,
     };
 }
 
@@ -66,5 +74,6 @@ interface SubscriptionTierData {
     description: string;
     created_at: string;
     updated_at: string;
+    archived: string;
     [key: string]: any;
 }

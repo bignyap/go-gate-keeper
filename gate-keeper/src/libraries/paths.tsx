@@ -7,4 +7,5 @@ export const API_PATHS = {
    "resourceType": "/resourceType",
    "subscriptionTier": "/subTier", 
    "subscription": "/subscription",
+   "tierPricing": "/tierPricing",
 };

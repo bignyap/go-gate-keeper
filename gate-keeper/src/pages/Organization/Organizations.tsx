@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ListOrganizations, DeleteOrganization } from '../../libraries/Organization';
 import OrganizationModal from './OrganizationModal';
 import { EnhancedTable } from '../../components/Table/Table'
-import { HeadCell } from '../../components/Table/Utils';
+import { HeadCell, FormatCellValue } from '../../components/Table/Utils';
 import Button from '@mui/material/Button'
 // import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
@@ -123,8 +123,9 @@ export function OrganizationLoader() {
                 {value}
               </a>
             );
+          }else {
+            return FormatCellValue(value)
           }
-          return value;
         }}
         headCells={headCells}
         defaultSort="id"

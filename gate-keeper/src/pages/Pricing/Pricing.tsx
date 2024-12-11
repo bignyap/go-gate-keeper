@@ -1,7 +1,9 @@
+import { SubScriptionTierTab } from './SubscriptionTier';
+
 export function PricingPage () {
     return (
         <div className = 'container'>
-            <h1>WELCOME !!</h1>
+            <SubScriptionTierTab />
         </div>
     )
 }
